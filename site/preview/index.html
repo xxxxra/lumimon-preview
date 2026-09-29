@@ -3,41 +3,195 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>るみもん｜確認用ページ</title>
+<title>るみもん</title>
 <style>
-:root{--bg:#08101d;--panel:#111c2d;--line:#24344d;--text:#edf6ff;--sub:#9db0c6;--accent:#6dd5ff}
+:root{
+  --bg:#f5f8fb;
+  --card:#ffffff;
+  --text:#203040;
+  --sub:#6d7d8b;
+  --line:#dbe5ed;
+  --blue:#6eaed0;
+  --blue2:#dff1fa;
+  --shadow:0 8px 24px rgba(36,68,88,.08);
+}
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,#091321,#050a12);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(920px,100%);margin:auto;padding:32px 18px 64px}
-h1{font-size:28px;margin:0 0 8px}.lead{color:var(--sub);line-height:1.7;margin:0 0 28px}
-section{margin-top:28px}h2{font-size:15px;letter-spacing:.08em;color:#b9dcf5;margin:0 0 10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
-.item{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--text);background:rgba(17,28,45,.88);border:1px solid var(--line);border-radius:16px;padding:15px;min-height:104px}
-.item:active{transform:scale(.99)}.item strong{font-size:15px;line-height:1.4}.item small{color:var(--sub);overflow-wrap:anywhere}
-.badge{align-self:flex-start;font-size:9px;font-weight:800;letter-spacing:.08em;color:#07131f;background:var(--accent);padding:3px 7px;border-radius:999px}
-.note{margin-top:32px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.035);color:var(--sub);font-size:12px;line-height:1.7}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
+}
+main{
+  width:min(560px,100%);
+  margin:0 auto;
+  padding:34px 18px 56px;
+}
+header{margin-bottom:28px}
+h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:.02em;
+  font-weight:800;
+}
+header p{
+  margin:6px 0 0;
+  color:var(--sub);
+  font-size:14px;
+}
+h2{
+  margin:26px 2px 10px;
+  font-size:14px;
+  font-weight:700;
+  color:var(--sub);
+}
+a{
+  color:inherit;
+  text-decoration:none;
+}
+.primary,
+.card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+.primary{
+  padding:20px 18px;
+  border-color:#b8d8e9;
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbff 100%);
+}
+.primary strong{
+  display:block;
+  font-size:19px;
+  margin-bottom:4px;
+}
+.primary span,
+.card span{
+  display:block;
+  color:var(--sub);
+  font-size:12px;
+  line-height:1.5;
+}
+.arrow{
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:var(--blue2);
+  color:#397b9d;
+  font-size:20px;
+  font-weight:700;
+}
+.stack{display:grid;gap:10px}
+.card{
+  padding:15px 16px;
+  box-shadow:none;
+}
+.card strong{
+  display:block;
+  font-size:15px;
+  margin-bottom:3px;
+}
+.card .arrow{
+  width:30px;
+  height:30px;
+  font-size:18px;
+}
+details{
+  margin-top:26px;
+  background:transparent;
+}
+summary{
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 2px;
+  color:var(--sub);
+  font-size:14px;
+  font-weight:700;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{
+  content:"＋";
+  font-size:20px;
+  font-weight:400;
+}
+details[open] summary::after{content:"−"}
+details .stack{margin-top:4px}
+.note{
+  margin:22px 2px 0;
+  color:var(--sub);
+  font-size:12px;
+  line-height:1.7;
+}
+@media (hover:hover){
+  .primary:hover,.card:hover{border-color:#a9cddd}
+}
 </style>
 </head>
-<body><main>
-<h1>るみもん｜確認用ページ</h1>
-<p class="lead">ダウンロード不要。ここから現在の本編・候補版・実験・Golden Masterを開く。</p>
+<body>
+<main>
+<header>
+  <h1>るみもん</h1>
+  
+</header>
 
-<section><h2>本編</h2><div class="grid">
-<a class="item" href="../"><span class="badge">CURRENT CANONICAL</span><strong>るみもん 本編</strong><small>/</small></a>
-</div></section>
+<a class="primary" href="../">
+  <div>
+    <strong>いまの本編</strong>
+    <span>まずはここ</span>
+  </div>
+  <div class="arrow">›</div>
+</a>
 
-<section><h2>Candidate</h2><div class="grid">
-<a class="item" href="../candidate/l44-progression-safe.html"><span class="badge">REFERENCE</span><strong>Accepted Baseline Candidate</strong><small>candidate/l44-progression-safe.html</small></a>
-</div></section>
+<h2>試作</h2>
+<div class="stack">
+  <a class="card" href="../experiments/memory/">
+    <div>
+      <strong>旅のきおく</strong>
+      <span>相棒が旅の出来事を覚える</span>
+    </div>
+    <div class="arrow">›</div>
+  </a>
+</div>
 
-<section><h2>Experiments</h2><div class="grid">
-<a class="item" href="../experiments/memory/"><span class="badge">NOT CANON</span><strong>旅のきおく EXPERIMENT</strong><small>experiments/memory/</small></a>
-</div></section>
+<details>
+  <summary>比較用</summary>
+  <div class="stack">
+    <a class="card" href="../candidate/l44-progression-safe.html">
+      <div>
+        <strong>基準版</strong>
+        <span>本編との比較</span>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="card" href="../reference/golden-master/shiokaze/sio3-4.html">
+      <div>
+        <strong>シオカゼ</strong>
+        <span>町の見た目の基準</span>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="card" href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
+      <div>
+        <strong>雪の村</strong>
+        <span>雪エリアの基準</span>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+</details>
 
-<section><h2>Golden Master</h2><div class="grid">
-<a class="item" href="../reference/golden-master/shiokaze/sio3-4.html"><span class="badge">GOLDEN MASTER</span><strong>Shiokaze</strong><small>reference/golden-master/shiokaze/sio3-4.html</small></a>
-<a class="item" href="../reference/golden-master/snow/luminaria_snow_village_premium.html"><span class="badge">GOLDEN MASTER</span><strong>Snow Village</strong><small>reference/golden-master/snow/luminaria_snow_village_premium.html</small></a>
-</div></section>
-
-<div class="note">この公開repoは確認用ミラー。実装正本はprivateの lumimon。EXPERIMENT / Candidate / Golden Masterをcanonと混同しない。</div>
-</main></body></html>
+<p class="note">※「旅のきおく」はまだ本編には入っていません。</p>
+</main>
+</body>
+</html>
