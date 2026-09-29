@@ -6,192 +6,299 @@
 <title>るみもん</title>
 <style>
 :root{
-  --bg:#f5f8fb;
+  --ink:#243746;
+  --sub:#6e7f8c;
+  --line:rgba(74,111,134,.14);
+  --blue:#7bb8d6;
+  --blue-deep:#3d7fa1;
+  --sky:#eef8fc;
+  --cream:#fffdf8;
+  --yellow:#f7d86a;
   --card:#ffffff;
-  --text:#203040;
-  --sub:#6d7d8b;
-  --line:#dbe5ed;
-  --blue:#6eaed0;
-  --blue2:#dff1fa;
-  --shadow:0 8px 24px rgba(36,68,88,.08);
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:var(--bg);
-  color:var(--text);
+  min-height:100vh;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 78% 8%, rgba(247,216,106,.26) 0 44px, transparent 45px),
+    radial-gradient(circle at 14% 18%, rgba(123,184,214,.16) 0 60px, transparent 61px),
+    linear-gradient(180deg,#eaf6fb 0%,#f7fbfd 38%,#fffdf8 100%);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
+}
+body:before,
+body:after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:.7;
+}
+body:before{
+  width:7px;height:7px;
+  background:#fff7bd;
+  box-shadow:38px 20px 0 -1px #fff,92px 4px 0 -2px #fff7bd,132px 48px 0 -1px #fff,205px 18px 0 -2px #fff7bd;
+  top:30px;left:24px;
+}
+body:after{
+  width:5px;height:5px;
+  background:#fff;
+  box-shadow:56px 34px 0 -1px #fff5a8,118px 8px 0 -1px #fff,176px 42px 0 -1px #fff5a8;
+  top:76px;right:24px;
 }
 main{
   width:min(560px,100%);
   margin:0 auto;
-  padding:34px 18px 56px;
+  padding:30px 18px 56px;
+  position:relative;
 }
-header{margin-bottom:28px}
+.hero{
+  padding:14px 4px 26px;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.spark{
+  width:24px;height:24px;
+  position:relative;
+  flex:none;
+}
+.spark:before,
+.spark:after{
+  content:"";
+  position:absolute;
+  inset:50% auto auto 50%;
+  background:var(--yellow);
+  border-radius:999px;
+  transform:translate(-50%,-50%);
+}
+.spark:before{width:7px;height:24px}
+.spark:after{width:24px;height:7px}
 h1{
   margin:0;
-  font-size:28px;
-  letter-spacing:.02em;
+  font-size:30px;
+  letter-spacing:.03em;
   font-weight:800;
 }
-header p{
-  margin:6px 0 0;
+.hero p{
+  margin:10px 0 0 34px;
   color:var(--sub);
   font-size:14px;
+  letter-spacing:.01em;
 }
-h2{
-  margin:26px 2px 10px;
-  font-size:14px;
-  font-weight:700;
+a{color:inherit;text-decoration:none}
+.journey{
+  display:block;
+  position:relative;
+  overflow:hidden;
+  padding:22px 20px 20px;
+  min-height:142px;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 86% 24%,rgba(247,216,106,.42) 0 34px,transparent 35px),
+    linear-gradient(145deg,#ffffff 0%,#f5fbfe 58%,#e6f5fb 100%);
+  border:1px solid rgba(94,153,184,.2);
+  box-shadow:0 14px 32px rgba(66,111,136,.12);
+}
+.journey:after{
+  content:"";
+  position:absolute;
+  right:-14px;
+  bottom:-20px;
+  width:150px;
+  height:84px;
+  border:2px solid rgba(80,145,177,.13);
+  border-radius:50%;
+  transform:rotate(-10deg);
+}
+.eyebrow{
+  display:block;
+  color:var(--blue-deep);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  margin-bottom:10px;
+}
+.journey strong{
+  display:block;
+  font-size:22px;
+  line-height:1.35;
+  margin-bottom:5px;
+}
+.journey .sub{
+  display:block;
   color:var(--sub);
+  font-size:13px;
 }
-a{
-  color:inherit;
-  text-decoration:none;
+.go{
+  position:absolute;
+  right:18px;
+  bottom:18px;
+  width:38px;height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#fff;
+  color:var(--blue-deep);
+  box-shadow:0 6px 16px rgba(72,125,151,.14);
+  font-size:24px;
 }
-.primary,
+.section-title{
+  margin:28px 4px 11px;
+  color:#617582;
+  font-size:13px;
+  font-weight:800;
+}
 .card{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
-  background:var(--card);
+  gap:14px;
+  padding:16px 16px 16px 17px;
+  background:rgba(255,255,255,.88);
   border:1px solid var(--line);
   border-radius:18px;
-  box-shadow:var(--shadow);
+  box-shadow:0 6px 18px rgba(60,92,111,.055);
 }
-.primary{
-  padding:20px 18px;
-  border-color:#b8d8e9;
-  background:linear-gradient(180deg,#ffffff 0%,#f4fbff 100%);
-}
-.primary strong{
+.card strong{
   display:block;
-  font-size:19px;
+  font-size:16px;
   margin-bottom:4px;
 }
-.primary span,
 .card span{
   display:block;
   color:var(--sub);
   font-size:12px;
-  line-height:1.5;
+  line-height:1.55;
 }
-.arrow{
+.tag{
+  display:inline-block!important;
+  width:max-content;
+  margin-bottom:7px;
+  padding:3px 8px;
+  border-radius:999px;
+  background:#fff6c9;
+  color:#806a15!important;
+  font-size:10px!important;
+  font-weight:800;
+}
+.mini-go{
   flex:none;
-  width:34px;
-  height:34px;
-  border-radius:50%;
+  width:31px;height:31px;
   display:grid;
   place-items:center;
-  background:var(--blue2);
-  color:#397b9d;
-  font-size:20px;
-  font-weight:700;
+  border-radius:50%;
+  background:#edf7fb;
+  color:var(--blue-deep);
+  font-size:19px;
 }
-.stack{display:grid;gap:10px}
-.card{
-  padding:15px 16px;
-  box-shadow:none;
-}
-.card strong{
-  display:block;
-  font-size:15px;
-  margin-bottom:3px;
-}
-.card .arrow{
-  width:30px;
-  height:30px;
-  font-size:18px;
-}
-details{
-  margin-top:26px;
-  background:transparent;
-}
+details{margin-top:22px}
 summary{
   cursor:pointer;
   list-style:none;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:12px 2px;
-  color:var(--sub);
-  font-size:14px;
-  font-weight:700;
+  padding:12px 4px;
+  color:#71818c;
+  font-size:13px;
+  font-weight:800;
 }
 summary::-webkit-details-marker{display:none}
 summary::after{
   content:"＋";
-  font-size:20px;
+  font-size:19px;
   font-weight:400;
 }
 details[open] summary::after{content:"−"}
-details .stack{margin-top:4px}
-.note{
-  margin:22px 2px 0;
-  color:var(--sub);
-  font-size:12px;
-  line-height:1.7;
+.compare{
+  display:grid;
+  gap:9px;
+  padding-top:2px;
+}
+.compare .card{
+  padding:14px 15px;
+  box-shadow:none;
+  background:rgba(255,255,255,.7);
+}
+.compare .card strong{
+  font-size:14px;
+  margin-bottom:2px;
+}
+.compare .card span{font-size:11px}
+.footer{
+  margin:34px 0 0;
+  text-align:center;
+  color:#9aa8b1;
+  font-size:11px;
 }
 @media (hover:hover){
-  .primary:hover,.card:hover{border-color:#a9cddd}
+  .journey:hover,.card:hover{transform:translateY(-1px)}
+}
+@media (max-width:380px){
+  main{padding-left:15px;padding-right:15px}
+  .journey strong{font-size:20px}
 }
 </style>
 </head>
 <body>
 <main>
-<header>
-  <h1>るみもん</h1>
-  
-</header>
+  <header class="hero">
+    <div class="logo">
+      <span class="spark" aria-hidden="true"></span>
+      <h1>るみもん</h1>
+    </div>
+    <p>きょうはどこ見る？</p>
+  </header>
 
-<a class="primary" href="../">
-  <div>
-    <strong>本編</strong>
-    <span>いまの最新版</span>
-  </div>
-  <div class="arrow">›</div>
-</a>
+  <a class="journey" href="../">
+    <span class="eyebrow">いまのるみもん</span>
+    <strong>つづきを見る</strong>
+    <span class="sub">いま遊べる本編</span>
+    <span class="go" aria-hidden="true">›</span>
+  </a>
 
-<h2>試作</h2>
-<div class="stack">
+  <div class="section-title">おためし</div>
   <a class="card" href="../experiments/memory/">
     <div>
+      <span class="tag">おためし中</span>
       <strong>旅のきおく</strong>
-      <span>相棒が旅の出来事を覚える</span>
+      <span>相棒が、旅のことを少しずつ覚える</span>
     </div>
-    <div class="arrow">›</div>
+    <span class="mini-go" aria-hidden="true">›</span>
   </a>
-</div>
 
-<details>
-  <summary>比較用</summary>
-  <div class="stack">
-    <a class="card" href="../candidate/l44-progression-safe.html">
-      <div>
-        <strong>基準版</strong>
-        <span>本編との比較</span>
-      </div>
-      <div class="arrow">›</div>
-    </a>
-    <a class="card" href="../reference/golden-master/shiokaze/sio3-4.html">
-      <div>
-        <strong>シオカゼ</strong>
-        <span>町の見た目の基準</span>
-      </div>
-      <div class="arrow">›</div>
-    </a>
-    <a class="card" href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
-      <div>
-        <strong>雪の村</strong>
-        <span>雪エリアの基準</span>
-      </div>
-      <div class="arrow">›</div>
-    </a>
-  </div>
-</details>
+  <details>
+    <summary>見くらべる</summary>
+    <div class="compare">
+      <a class="card" href="../candidate/l44-progression-safe.html">
+        <div>
+          <strong>前の基準</strong>
+          <span>本編と見くらべたいとき</span>
+        </div>
+        <span class="mini-go" aria-hidden="true">›</span>
+      </a>
+      <a class="card" href="../reference/golden-master/shiokaze/sio3-4.html">
+        <div>
+          <strong>シオカゼ</strong>
+          <span>町の見た目</span>
+        </div>
+        <span class="mini-go" aria-hidden="true">›</span>
+      </a>
+      <a class="card" href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
+        <div>
+          <strong>雪の村</strong>
+          <span>雪エリアの見た目</span>
+        </div>
+        <span class="mini-go" aria-hidden="true">›</span>
+      </a>
+    </div>
+  </details>
 
-<p class="note">※「旅のきおく」はまだ本編には入っていません。</p>
+  <div class="footer">またここから。</div>
 </main>
 </body>
 </html>
