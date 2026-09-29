@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>るみもん｜旅のきおく EXPERIMENT / visual-aligned</title>
+<title>るみもん｜旅のきおく 試遊版</title>
 <style>
 :root{--ink:#e2e8f0;--muted:#94a3b8;--line:rgba(255,255,255,.10);--glass:rgba(15,23,42,.92);--blue:#38bdf8;--blue2:#0ea5e9;--red:#ef4444}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -18,7 +18,7 @@ canvas#game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;
 .badge b{display:block;font-size:12px;margin-bottom:2px}
 #hud-actions{display:flex;gap:7px;pointer-events:auto}
 .hudbtn{border-radius:11px;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer}
-#toast{position:absolute;top:56px;left:50%;transform:translate(-50%,-8px);opacity:0;transition:.25s;z-index:9;background:rgba(2,8,18,.76);border:1px solid rgba(190,225,255,.2);border-radius:999px;padding:6px 12px;font-size:11px;white-space:nowrap;pointer-events:none}
+#toast{position:absolute;top:56px;left:50%;transform:translate(-50%,-8px);opacity:0;transition:.25s;z-index:9;background:rgba(2,8,18,.82);border:1px solid rgba(190,225,255,.2);border-radius:14px;padding:7px 12px;font-size:11px;line-height:1.45;max-width:88%;text-align:center;white-space:normal;pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #dialog{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:min(92%,520px);display:none;z-index:20;background:rgba(7,14,28,.91);border:1px solid rgba(126,202,255,.38);border-radius:15px;padding:17px 16px 15px;box-shadow:0 18px 45px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 #dialog.show{display:block}
@@ -29,7 +29,7 @@ canvas#game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;
 #modal.show{display:flex}
 .panel{width:min(94%,520px);max-height:88%;overflow:auto;background:linear-gradient(180deg,rgba(14,25,42,.97),rgba(6,12,24,.98));border:1px solid rgba(169,216,255,.26);border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.08)}
 .panel h1,.panel h2{margin:0}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.18em;color:#79c7ff;margin-bottom:8px}.panel h1{font-size:24px;line-height:1.25}.panel .sub{font-size:12px;line-height:1.6;color:var(--muted);margin:10px 0 16px}
-.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.choice{appearance:none;border:1px solid rgba(165,210,245,.18);background:rgba(255,255,255,.035);border-radius:16px;padding:11px 6px 9px;color:#eef7ff;font:inherit;cursor:pointer}.choice.active{border-color:#7dd3fc;background:rgba(56,189,248,.11);box-shadow:0 0 0 1px rgba(125,211,252,.18) inset}.mini-sprite{width:64px;height:64px;margin:0 auto 5px;image-rendering:pixelated}.choice b{display:block;font-size:13px}.choice span{display:block;font-size:9px;color:#98abc0;margin-top:4px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.bond-choices{grid-template-columns:repeat(2,1fr)}.choice{appearance:none;border:1px solid rgba(165,210,245,.18);background:rgba(255,255,255,.035);border-radius:16px;padding:11px 6px 9px;color:#eef7ff;font:inherit;cursor:pointer}.choice.active{border-color:#7dd3fc;background:rgba(56,189,248,.11);box-shadow:0 0 0 1px rgba(125,211,252,.18) inset}.mini-sprite{width:64px;height:64px;margin:0 auto 5px;image-rendering:pixelated}.choice b{display:block;font-size:13px}.choice span{display:block;font-size:9px;color:#98abc0;margin-top:4px}
 .primary{width:100%;margin-top:14px;border:0;border-radius:14px;padding:13px 14px;background:linear-gradient(135deg,#76cfff,#3b88ca);color:#061629;font-weight:900;font-size:14px;box-shadow:0 8px 22px rgba(34,135,210,.24);cursor:pointer}.secondary{width:100%;margin-top:9px;border:1px solid rgba(160,205,240,.18);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.04);color:#dcecff;font-weight:800;cursor:pointer}
 .memory-card{border-radius:18px;border:1px solid rgba(173,218,255,.2);background:rgba(255,255,255,.035);padding:15px;margin-top:14px}.memory-head{display:flex;align-items:center;gap:12px}.token{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,rgba(116,197,255,.16),rgba(255,255,255,.03));border:1px solid rgba(170,220,255,.15);font-size:25px}.memory-card h3{margin:0;font-size:15px}.memory-card small{color:#8ea5bc}.memory-body{margin-top:12px;color:#d9e7f4;font-size:13px;line-height:1.7}.empty{padding:24px 12px;text-align:center;color:#8ea5bc;font-size:13px;line-height:1.7}
 #controls{height:160px;flex:0 0 auto;padding:0 30px calc(8px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#0b0f19,#04060a);border-top:1px solid rgba(255,255,255,.05);z-index:12}
@@ -37,7 +37,7 @@ canvas#game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;
 #knob{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(56,189,248,.4),rgba(2,132,199,.4));border:2px solid rgba(56,189,248,.8);box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 2px 4px rgba(255,255,255,.2);transform:translate(0,0)}
 #buttons{display:flex;align-items:flex-end;gap:12px}.round{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;box-shadow:0 6px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.14);cursor:pointer;touch-action:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}.round.pressed{transform:translateY(1px) scale(.98);filter:brightness(1.08)}#bBtn{width:50px;height:50px;background:linear-gradient(135deg,rgba(239,68,68,.28),rgba(185,28,28,.35));border-color:rgba(248,113,113,.32);font-size:11px}#aBtn{width:64px;height:64px;margin-bottom:0;background:linear-gradient(135deg,rgba(34,197,94,.28),rgba(22,163,74,.35));border-color:rgba(74,222,128,.32);font-size:18px}.btnlabel{pointer-events:none;text-align:center;line-height:1.05}.btnlabel small{display:block;font-size:8px;font-weight:800;opacity:.75;margin-top:3px}
 @media(min-width:768px){#controls{display:none}#app{height:min(92vh,760px);border-radius:22px;border:1px solid rgba(170,215,255,.15);box-shadow:0 25px 90px rgba(0,0,0,.65)}#dialog{bottom:24px}}
-@media(max-width:480px){#controls{height:148px;padding:0 16px calc(8px + env(safe-area-inset-bottom))}#stick{width:112px;height:112px}#aBtn{width:58px;height:58px}#bBtn{width:46px;height:46px}.choices{gap:6px}.choice{padding-left:3px;padding-right:3px}}
+@media(max-width:480px){#hud-actions{gap:4px}.hudbtn{padding:7px 8px;font-size:10px}#controls{height:148px;padding:0 16px calc(8px + env(safe-area-inset-bottom))}#stick{width:112px;height:112px}#aBtn{width:58px;height:58px}#bBtn{width:46px;height:46px}.choices{gap:6px}.choice{padding-left:3px;padding-right:3px}}
 </style>
 </head>
 <body>
@@ -47,7 +47,7 @@ canvas#game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;
     <canvas id="game" width="280" height="400" aria-label="るみもん 旅のきおく実験"></canvas>
     <div id="hud">
       <div class="badge"><b id="placeName">スノーヴィレッジ</b><span id="buddyName">相棒：―</span></div>
-      <div id="hud-actions"><button class="hudbtn" id="buddyBtn">相棒</button><button class="hudbtn" id="memoryBtn">きおく</button></div>
+      <div id="hud-actions"><button class="hudbtn" id="buddyBtn">相棒</button><button class="hudbtn" id="bondBtn">なつき</button><button class="hudbtn" id="memoryBtn">きおく</button></div>
     </div>
     <div id="toast"></div>
     <div id="dialog"><div id="dialog-name"></div><div id="dialog-text"></div><div id="dialog-next">▼</div></div>
@@ -79,29 +79,43 @@ function drawMainPlayerSprite(ctx,key,x,y,scale=1){const data=MAIN_PLAYER[key]||
 // TRANSPLANT/TONE MATCH: same 12x10 character grammar as current main-game NPCs.
 // snowkid is new, but keeps the same head/body/legs density and shared palette.
 const NPC_SPRITES={
- snowkid:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWCCCCWw..","...dDDDDd...","...d.dd.d..."],
- nox:["...dddddd...","..dDDDDDDd..","..dDDDDDDd..",".sSSSSSSSSs.",".sSxSSSSxSs.",".sSVVVVVVSs.","..dDDDDDDd..","..dDddddDd..","...dDDDDd...","...d.dd.d..."]
+ snowkid_d:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWCCCCWw..","...dDDDDd...","...d.dd.d..."],
+ snowkid_u:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".bBBBBBBBBb.",".bBBBBBBBBb.",".bBBBBBBBBb.","..wWWWWWWw..","..wWCCCCWw..","...dDDDDd...","...d.dd.d..."],
+ snowkid_l:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSKSSSSSSs.",".sSHSSSSSSs.","..wWWWWWWw..","..wWCCCCWw..","...dDDDDd...","...d.dd.d..."],
+ snowkid_r:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSSSSSSKSs.",".sSSSSSSHSs.","..wWWWWWWw..","..wWCCCCWw..","...dDDDDd...","...d.dd.d..."],
+ boss_d:["...dddddd...","..dDDDDDDd..","..dDDDDDDd..",".sSSSSSSSSs.",".sSxSSSSxSs.",".sSVVVVVVSs.","..dDDDDDDd..","..dDvvvvDd..","...dDDDDd...","...d.dd.d..."],
+ boss_u:["...dddddd...","..dDDDDDDd..","..dDDDDDDd..",".dDDDDDDDDd.",".dDDDDDDDDd.",".dDvvvvvvDd.","..dDDDDDDd..","..dDvvvvDd..","...dDDDDd...","...d.dd.d..."],
+ boss_l:["...dddddd...","..dDDDDDDd..","..dDDDDDDd..",".sSSSSSSSSs.",".sSxSSSSSSs.",".sSVVVVVVSs.","..dDDDDDDd..","..dDvvvvDd..","...dDDDDd...","...d.dd.d..."],
+ boss_r:["...dddddd...","..dDDDDDDd..","..dDDDDDDd..",".sSSSSSSSSs.",".sSSSSSSxSs.",".sSVVVVVVSs.","..dDDDDDDd..","..dDvvvvDd..","...dDDDDd...","...d.dd.d..."]
 };
 function drawCharSprite(ctx,data,x,y,scale=1){for(let r=0;r<data.length;r++)for(let c=0;c<data[r].length;c++){const col=MAIN_PAL[data[r][c]];if(col){ctx.fillStyle=col;ctx.fillRect(Math.round(x+c*scale),Math.round(y+r*scale),scale,scale)}}}
 
 const BUDDIES={
- penta:{name:'ぺんた',type:'みず',note:'雪、だいすき',token:'❄',cols:['#38bdf8','#7dd3fc','#fff','#facc15'],first:'ぺんたは ためらいなく\n雪のなかへ とびこんだ！',after:'ぺんたは この場所を おぼえていた。\nこんどは 前より速く とびこんだ！',memory1:'はじめての雪。ぺんたは、止める間もなく雪の中へ飛びこんだ。',memory2:'また同じ場所へ戻ると、ぺんたは迷わず二回目へ。どうやらお気に入りになった。'},
- puwawa:{name:'ぷわわ',type:'かぜ',note:'ふわっと様子見',token:'◌',cols:['#7dd3fc','#bae6fd','#fff','#a5f3fc'],first:'ぷわわは 雪のうえで ふわり。\nそっと触れて、びっくりして はねた。',after:'ぷわわは 前の雪を おぼえていた。\n今度は くるっと回ってから 降りた。',memory1:'白い雪に、ぷわわがそっと触れた。冷たかったらしく、ふわっと跳ねた。',memory2:'戻ってくると、ぷわわは雪の上を一周してから同じ場所へ。もう驚かなかった。'},
- yamiusa:{name:'ヤミウサ',type:'やみ',note:'気になるけど慎重',token:'☾',cols:['#27234f','#4f46e5','#f3e8ff','#ef4444'],first:'ヤミウサは しばらく雪を見ている。\n……前足で 一回だけ さわった。',after:'ヤミウサは そこを避けるふりをして、\n結局 また一回だけ さわった。',memory1:'ヤミウサは雪をじっと見たあと、前足で一度だけ触った。気にはなっていたらしい。',memory2:'再び通ると避けるふりをした。でも少し戻って、また一度だけ触った。'}
+ penta:{name:'ぺんた',type:'みず',note:'雪、だいすき',token:'❄',cols:['#38bdf8','#7dd3fc','#fff','#facc15'],first:'ぺんたが 雪に とびこんだ。',after:'また とびこんだ。',memory1:'はじめての雪。ぺんたは、そのまま雪の中へ飛びこんだ。',memory2:'同じ場所へ戻ると、また雪へ。ここが好きらしい。'},
+ puwawa:{name:'ぷわわ',type:'かぜ',note:'ふわっと様子見',token:'◌',cols:['#7dd3fc','#bae6fd','#fff','#a5f3fc'],first:'ぷわわが 雪に そっとふれた。',after:'くるっと回って、雪へ降りた。',memory1:'白い雪に、ぷわわがそっと触れた。',memory2:'戻ってくると、雪の上を一周してから同じ場所へ降りた。'},
+ yamiusa:{name:'ヤミウサ',type:'やみ',note:'気になるけど慎重',token:'☾',cols:['#27234f','#4f46e5','#f3e8ff','#ef4444'],first:'ヤミウサが 前足で 雪をさわった。',after:'通りすぎて――戻ってきた。\nもう一度、前足でさわった。',memory1:'ヤミウサは雪を見て、前足で一度だけ触った。',memory2:'再び通ると一度は通りすぎた。でも戻ってきて、また触った。'}
 };
-const S={mode:'select',map:'village',buddyKey:'penta',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13},dialog:null,dialogName:'',msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],snow:[],idle:0,detour:{active:false,kind:'',timer:0,cooldown:100,target:null},npcMet:false,npcRemembered:false,restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false};
+const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
 const maps={
- village:{name:'スノーヴィレッジ',spawn:{x:4,y:13},exit:{x:16,y:11,to:'path',tx:1,ty:11},spot:{x:11,y:9},rest:{x:4,y:10},npc:{x:6,y:9},detours:{penta:{x:8,y:11,kind:'snowman'},puwawa:{x:14,y:11,kind:'lamp'},yamiusa:{x:9,y:15,kind:'ice'}},blocked:[...rect(0,0,17,2),...rect(0,19,17,2),...rect(0,0,1,21),...rect(6,3,5,4),...rect(2,4,3,3),...rect(13,4,3,4),...rect(8,14,2,3),...rect(13,14,3,3),'6,9','4,10']},
- path:{name:'ゆきみち',spawn:{x:1,y:11},exit:{x:0,y:11,to:'village',tx:15,ty:11},battle:{x:10,y:10},threat:{x:12,y:10},blocked:[...rect(0,0,17,3),...rect(0,18,17,3),...rect(5,4,3,3),...rect(11,4,4,3),...rect(8,13,5,3),'12,10']}
+ village:{name:'スノーヴィレッジ',spawn:{x:4,y:13},exit:{x:16,y:11,to:'path',tx:1,ty:11},spot:{x:11,y:9},rest:{x:4,y:10},npc:{x:6,y:9},detours:{
+ penta:[{x:8,y:11,kind:'snowman'},{x:9,y:15,kind:'icepond'},{x:4,y:15,kind:'snowtree'}],
+ puwawa:[{x:14,y:11,kind:'lamp'},{x:5,y:10,kind:'lamp2'},{x:12,y:16,kind:'treetop'}],
+ yamiusa:[{x:9,y:15,kind:'ice'},{x:2,y:16,kind:'shadowtree'},{x:13,y:15,kind:'quietcorner'}]
+},blocked:[...rect(0,0,17,2),...rect(0,19,17,2),...rect(0,0,1,21),...rect(6,3,5,4),...rect(2,4,3,3),...rect(13,4,3,4),...rect(8,14,2,3),...rect(13,14,3,3),'6,9','4,10']},
+ path:{name:'ゆきみち',spawn:{x:1,y:11},exit:{x:0,y:11,to:'village',tx:15,ty:11},battle:{x:12,y:10},threat:{x:12,y:10},blocked:[...rect(0,0,17,3),...rect(0,18,17,3),...rect(5,4,3,3),...rect(11,4,4,3),...rect(8,13,5,3),'12,10']}
 };
 function rect(x,y,w,h){const a=[];for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)a.push(xx+','+yy);return a}
 function blocked(map,x,y){if(y<2||y>18)return true;if(x<0||x>=MAP_W)return true;return maps[map].blocked.includes(x+','+y)}
 function initSnow(){S.snow=[];for(let i=0;i<120;i++)S.snow.push({x:Math.random()*GW,y:Math.random()*GH,s:.4+Math.random()*1.4,v:.25+Math.random()*.65,a:.18+Math.random()*.55,drift:(Math.random()-.5)*.25})}
 initSnow();
-function openSelect(first=false){S.mode='select';ui.modal.classList.add('show');const cur=S.buddyKey;ui.panel.innerHTML=`<div class="eyebrow">EXPERIMENT / NOT CANON</div><h1>旅のきおく</h1><div class="sub">相棒は寄り道し、呼べば戻る。町の人との再会、休憩、そして危険を先に感じる瞬間まで、旅の出来事を少しずつ覚えます。</div><div class="choices">${Object.entries(BUDDIES).map(([k,b])=>`<button class="choice ${k===cur?'active':''}" data-buddy="${k}"><canvas class="mini-sprite" width="64" height="64" data-mini="${k}"></canvas><b>${b.name}</b><span>${b.note}</span></button>`).join('')}</div><button class="primary" id="startBtn">${first?'この相棒で はじめる':'この相棒に かえる'}</button>${first?'':'<button class="secondary" id="cancelSel">もどる</button>'}`;
- ui.panel.querySelectorAll('[data-buddy]').forEach(btn=>btn.addEventListener('click',()=>{S.buddyKey=btn.dataset.buddy;ui.panel.querySelectorAll('.choice').forEach(x=>x.classList.toggle('active',x.dataset.buddy===S.buddyKey));drawMiniAll()}));
- ui.panel.querySelector('#startBtn').addEventListener('click',()=>{resetMemory(false);ui.modal.classList.remove('show');S.mode='world';updateHud();toast(BUDDIES[S.buddyKey].name+' と あるいてみよう／Bでよぶ');});
- const c=ui.panel.querySelector('#cancelSel');if(c)c.addEventListener('click',()=>{ui.modal.classList.remove('show');S.mode='world'});drawMiniAll();
+function openSelect(first=false){
+ S.mode='select';S.pendingBuddy=S.buddyKey;ui.modal.classList.add('show');
+ const render=()=>{const cur=S.pendingBuddy;ui.panel.innerHTML=`<div class="eyebrow">旅のきおく・試遊版</div><h1>いっしょに歩く相棒</h1><div class="sub">歩いて、寄り道して、ちょっと立ち止まる。相棒といた時間が少しずつ残っていきます。${first?'':'<br>※相棒を変えると、この試遊は最初からになります。'}</div><div class="choices">${Object.entries(BUDDIES).map(([k,b])=>`<button class="choice ${k===cur?'active':''}" data-buddy="${k}"><canvas class="mini-sprite" width="64" height="64" data-mini="${k}"></canvas><b>${b.name}</b><span>${b.note}</span></button>`).join('')}</div><button class="primary" id="startBtn">${first?'この相棒で はじめる':(S.pendingBuddy===S.buddyKey?'このまま もどる':'この相棒で 最初から')}</button>${first?'':'<button class="secondary" id="cancelSel">やめる</button>'}`;
+  ui.panel.querySelectorAll('[data-buddy]').forEach(btn=>btn.addEventListener('click',()=>{S.pendingBuddy=btn.dataset.buddy;render()}));
+  ui.panel.querySelector('#startBtn').addEventListener('click',()=>{const changed=S.pendingBuddy!==S.buddyKey;S.buddyKey=S.pendingBuddy;if(first||changed)resetMemory();ui.modal.classList.remove('show');S.mode='world';updateHud();toast(changed?BUDDIES[S.buddyKey].name+' と 最初から歩いてみよう':BUDDIES[S.buddyKey].name+' と あるいてみよう／Bでよぶ');});
+  const c=ui.panel.querySelector('#cancelSel');if(c)c.addEventListener('click',()=>{S.pendingBuddy=S.buddyKey;ui.modal.classList.remove('show');S.mode='world'});drawMiniAll();
+ };
+ render();
 }
 function drawMiniAll(){ui.panel.querySelectorAll('[data-mini]').forEach(c=>{const q=c.getContext('2d');q.clearRect(0,0,64,64);q.imageSmoothingEnabled=false;drawBuddySprite(q,c.dataset.mini,32,36,2)})}
 function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
