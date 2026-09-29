@@ -6,15 +6,15 @@
 <title>るみもん</title>
 <style>
 :root{
-  --ink:#243746;
-  --sub:#6e7f8c;
-  --line:rgba(74,111,134,.14);
-  --blue:#7bb8d6;
-  --blue-deep:#3d7fa1;
-  --sky:#eef8fc;
+  --ink:#233746;
+  --sub:#74838d;
+  --line:rgba(76,112,133,.14);
+  --blue:#6faecf;
+  --blue-deep:#397b9d;
+  --sky:#edf8fc;
   --cream:#fffdf8;
-  --yellow:#f7d86a;
-  --card:#ffffff;
+  --yellow:#f4cf59;
+  --card:#fff;
 }
 *{box-sizing:border-box}
 body{
@@ -22,122 +22,88 @@ body{
   min-height:100vh;
   color:var(--ink);
   background:
-    radial-gradient(circle at 78% 8%, rgba(247,216,106,.26) 0 44px, transparent 45px),
-    radial-gradient(circle at 14% 18%, rgba(123,184,214,.16) 0 60px, transparent 61px),
-    linear-gradient(180deg,#eaf6fb 0%,#f7fbfd 38%,#fffdf8 100%);
+    linear-gradient(180deg,#ebf7fb 0%,#f7fbfd 32%,#fffdf8 100%);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
-}
-body:before,
-body:after{
-  content:"";
-  position:fixed;
-  border-radius:50%;
-  pointer-events:none;
-  opacity:.7;
-}
-body:before{
-  width:7px;height:7px;
-  background:#fff7bd;
-  box-shadow:38px 20px 0 -1px #fff,92px 4px 0 -2px #fff7bd,132px 48px 0 -1px #fff,205px 18px 0 -2px #fff7bd;
-  top:30px;left:24px;
-}
-body:after{
-  width:5px;height:5px;
-  background:#fff;
-  box-shadow:56px 34px 0 -1px #fff5a8,118px 8px 0 -1px #fff,176px 42px 0 -1px #fff5a8;
-  top:76px;right:24px;
 }
 main{
   width:min(560px,100%);
   margin:0 auto;
-  padding:30px 18px 56px;
-  position:relative;
+  padding:34px 18px 58px;
 }
 .hero{
-  padding:14px 4px 26px;
+  padding:6px 5px 30px;
 }
 .logo{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
 }
-.spark{
-  width:24px;height:24px;
+.glint{
   position:relative;
+  width:18px;
+  height:18px;
   flex:none;
+  filter:drop-shadow(0 0 8px rgba(244,207,89,.45));
 }
-.spark:before,
-.spark:after{
+.glint:before{
   content:"";
   position:absolute;
-  inset:50% auto auto 50%;
+  left:50%;top:50%;
+  width:11px;height:11px;
   background:var(--yellow);
-  border-radius:999px;
+  border-radius:2px;
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+.glint:after{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:3px;height:3px;
+  background:#fff9cf;
+  border-radius:50%;
   transform:translate(-50%,-50%);
 }
-.spark:before{width:7px;height:24px}
-.spark:after{width:24px;height:7px}
 h1{
   margin:0;
-  font-size:30px;
-  letter-spacing:.03em;
+  font-size:31px;
+  letter-spacing:.035em;
   font-weight:800;
-}
-.hero p{
-  margin:10px 0 0 34px;
-  color:var(--sub);
-  font-size:14px;
-  letter-spacing:.01em;
 }
 a{color:inherit;text-decoration:none}
 .journey{
   display:block;
   position:relative;
   overflow:hidden;
-  padding:22px 20px 20px;
-  min-height:142px;
-  border-radius:24px;
+  min-height:148px;
+  padding:24px 22px;
+  border-radius:25px;
   background:
-    radial-gradient(circle at 86% 24%,rgba(247,216,106,.42) 0 34px,transparent 35px),
-    linear-gradient(145deg,#ffffff 0%,#f5fbfe 58%,#e6f5fb 100%);
-  border:1px solid rgba(94,153,184,.2);
-  box-shadow:0 14px 32px rgba(66,111,136,.12);
+    linear-gradient(145deg,#ffffff 0%,#f7fcfe 62%,#edf8fc 100%);
+  border:1px solid rgba(93,150,179,.22);
+  box-shadow:0 14px 32px rgba(66,111,136,.11);
 }
-.journey:after{
-  content:"";
-  position:absolute;
-  right:-14px;
-  bottom:-20px;
-  width:150px;
-  height:84px;
-  border:2px solid rgba(80,145,177,.13);
-  border-radius:50%;
-  transform:rotate(-10deg);
-}
-.eyebrow{
+.journey-label{
   display:block;
+  margin-bottom:12px;
   color:var(--blue-deep);
-  font-size:11px;
+  font-size:12px;
   font-weight:800;
-  letter-spacing:.08em;
-  margin-bottom:10px;
+  letter-spacing:.06em;
 }
 .journey strong{
   display:block;
-  font-size:22px;
-  line-height:1.35;
-  margin-bottom:5px;
-}
-.journey .sub{
-  display:block;
-  color:var(--sub);
-  font-size:13px;
+  position:relative;
+  z-index:2;
+  width:max-content;
+  font-size:24px;
+  line-height:1.3;
 }
 .go{
   position:absolute;
-  right:18px;
+  right:19px;
   bottom:18px;
-  width:38px;height:38px;
+  z-index:3;
+  width:39px;height:39px;
   display:grid;
   place-items:center;
   border-radius:50%;
@@ -146,9 +112,33 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 6px 16px rgba(72,125,151,.14);
   font-size:24px;
 }
+.light-route{
+  position:absolute;
+  width:186px;
+  height:112px;
+  right:34px;
+  top:10px;
+  opacity:.84;
+  pointer-events:none;
+}
+.route-line{
+  fill:none;
+  stroke:url(#routeGlow);
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-dasharray:1 8;
+}
+.route-dot{
+  fill:#fff7b8;
+  filter:drop-shadow(0 0 5px rgba(244,207,89,.72));
+}
+.route-star{
+  fill:#f4cf59;
+  filter:drop-shadow(0 0 7px rgba(244,207,89,.55));
+}
 .section-title{
-  margin:28px 4px 11px;
-  color:#617582;
+  margin:29px 4px 11px;
+  color:#667985;
   font-size:13px;
   font-weight:800;
 }
@@ -157,11 +147,11 @@ a{color:inherit;text-decoration:none}
   align-items:center;
   justify-content:space-between;
   gap:14px;
-  padding:16px 16px 16px 17px;
+  padding:17px;
   background:rgba(255,255,255,.88);
   border:1px solid var(--line);
   border-radius:18px;
-  box-shadow:0 6px 18px rgba(60,92,111,.055);
+  box-shadow:0 6px 18px rgba(60,92,111,.05);
 }
 .card strong{
   display:block;
@@ -173,17 +163,6 @@ a{color:inherit;text-decoration:none}
   color:var(--sub);
   font-size:12px;
   line-height:1.55;
-}
-.tag{
-  display:inline-block!important;
-  width:max-content;
-  margin-bottom:7px;
-  padding:3px 8px;
-  border-radius:999px;
-  background:#fff6c9;
-  color:#806a15!important;
-  font-size:10px!important;
-  font-weight:800;
 }
 .mini-go{
   flex:none;
@@ -229,18 +208,23 @@ details[open] summary::after{content:"−"}
   margin-bottom:2px;
 }
 .compare .card span{font-size:11px}
-.footer{
-  margin:34px 0 0;
-  text-align:center;
-  color:#9aa8b1;
-  font-size:11px;
-}
 @media (hover:hover){
   .journey:hover,.card:hover{transform:translateY(-1px)}
 }
+@media (prefers-reduced-motion:no-preference){
+  .route-star{
+    animation:softGlow 3.8s ease-in-out infinite;
+    transform-origin:center;
+  }
+  @keyframes softGlow{
+    0%,100%{opacity:.74}
+    50%{opacity:1}
+  }
+}
 @media (max-width:380px){
   main{padding-left:15px;padding-right:15px}
-  .journey strong{font-size:20px}
+  .journey strong{font-size:22px}
+  .light-route{right:14px}
 }
 </style>
 </head>
@@ -248,23 +232,35 @@ details[open] summary::after{content:"−"}
 <main>
   <header class="hero">
     <div class="logo">
-      <span class="spark" aria-hidden="true"></span>
+      <span class="glint" aria-hidden="true"></span>
       <h1>るみもん</h1>
     </div>
-    <p>きょうはどこ見る？</p>
   </header>
 
   <a class="journey" href="../">
-    <span class="eyebrow">いまのるみもん</span>
+    <span class="journey-label">本編</span>
     <strong>つづきを見る</strong>
-    <span class="sub">いま遊べる本編</span>
+
+    <svg class="light-route" viewBox="0 0 186 112" aria-hidden="true">
+      <defs>
+        <linearGradient id="routeGlow" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f4cf59" stop-opacity=".18"/>
+          <stop offset="52%" stop-color="#8fc8df" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#6faecf" stop-opacity=".12"/>
+        </linearGradient>
+      </defs>
+      <path class="route-line" d="M20 18 C52 18 51 51 86 48 S126 78 164 82"/>
+      <circle class="route-dot" cx="21" cy="18" r="3.4"/>
+      <circle class="route-dot" cx="86" cy="48" r="2.8"/>
+      <path class="route-star" d="M163 74 L165.8 80.2 L172 83 L165.8 85.8 L163 92 L160.2 85.8 L154 83 L160.2 80.2 Z"/>
+    </svg>
+
     <span class="go" aria-hidden="true">›</span>
   </a>
 
   <div class="section-title">おためし</div>
   <a class="card" href="../experiments/memory/">
     <div>
-      <span class="tag">おためし中</span>
       <strong>旅のきおく</strong>
       <span>相棒が、旅のことを少しずつ覚える</span>
     </div>
@@ -297,7 +293,6 @@ details[open] summary::after{content:"−"}
       </a>
     </div>
   </details>
-
 </main>
 </body>
 </html>
