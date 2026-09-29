@@ -96,7 +96,7 @@ const BUDDIES={
  puwawa:{name:'ぷわわ',type:'かぜ',note:'ふわっと様子見',token:'◌',cols:['#7dd3fc','#bae6fd','#fff','#a5f3fc'],first:'ぷわわが 雪に そっとふれた。',after:'くるっと回って、雪へ降りた。',memory1:'白い雪に、ぷわわがそっと触れた。',memory2:'戻ってくると、雪の上を一周してから同じ場所へ降りた。'},
  yamiusa:{name:'ヤミウサ',type:'やみ',note:'気になるけど慎重',token:'☾',cols:['#27234f','#4f46e5','#f3e8ff','#ef4444'],first:'ヤミウサが 前足で 雪をさわった。',after:'通りすぎて――戻ってきた。\nもう一度、前足でさわった。',memory1:'ヤミウサは雪を見て、前足で一度だけ触った。',memory2:'再び通ると一度は通りすぎた。でも戻ってきて、また触った。'}
 };
-const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],cprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0,lookTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
+const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],cprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
 const maps={
  village:{name:'スノーヴィレッジ',spawn:{x:4,y:13},exit:{x:16,y:11,to:'path',tx:1,ty:11},spot:{x:11,y:9},rest:{x:4,y:10},npc:{x:6,y:9},detours:{
  penta:[{x:8,y:11,kind:'snowman'},{x:9,y:15,kind:'icepond'},{x:4,y:15,kind:'snowtree'}],
@@ -148,7 +148,7 @@ function openSelect(first=false){
  render();
 }
 function drawMiniAll(){ui.panel.querySelectorAll('[data-mini]').forEach(c=>{const q=c.getContext('2d');q.clearRect(0,0,64,64);q.imageSmoothingEnabled=false;drawBuddySprite(q,c.dataset.mini,32,36,2)})}
-function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.cprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0,lookTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
+function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.cprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
 function bondLabel(){return S.bond==='close'?'かなり仲良し':'まだ慣れてない'}
 function updateHud(){ui.place.textContent=maps[S.map].name;ui.buddy.textContent='相棒：'+BUDDIES[S.buddyKey].name}
 function toast(t){ui.toast.textContent=t;ui.toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>ui.toast.classList.remove('show'),1700)}
@@ -262,15 +262,15 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
        d.lookTimer--;
        if(d.lookTimer<=0){d.phase='going';setCompGoal(d.anchor.x,d.anchor.y,true)}
      }else if(d.phase==='going'){
-       if(S.comp.route.length===0&&Math.hypot(S.comp.x-d.anchor.x,S.comp.y-d.anchor.y)<.7){d.phase='engrossed';d.timer=S.bond==='close'?720:390;d.stepTimer=24;pickDetourStep()}
+       if(S.comp.route.length===0&&Math.hypot(S.comp.x-d.anchor.x,S.comp.y-d.anchor.y)<.7){d.phase='engrossed';d.timer=S.bond==='close'?900:520;d.stepTimer=24;pickDetourStep()}
      }else if(d.phase==='engrossed'){
        d.timer--;d.stepTimer--;
        if(d.stepTimer<=0&&S.comp.route.length===0)pickDetourStep();
-       if(d.timer<=0||dist(S.px,S.py,S.comp.x,S.comp.y)>leash){d.phase='returning';d.stepTimer=0}
+       if(d.timer<=0||dist(S.px,S.py,S.comp.x,S.comp.y)>leash){d.phase='returning';d.stepTimer=0;d.target=compFollowPoint()}
      }else if(d.phase==='returning'){
        d.stepTimer--;
-       if(d.stepTimer<=0){const t=compFollowPoint();setCompGoal(t.x,t.y,true);d.stepTimer=16}
-       if(dist(S.px,S.py,S.comp.x,S.comp.y)<=1.5){d.active=false;d.cooldown=S.bond==='close'?180:230}
+       if(d.stepTimer<=0){d.target=compFollowPoint();setCompGoal(d.target.x,d.target.y,true);d.stepTimer=16}
+       if(S.comp.route.length===0&&d.target&&Math.hypot(S.comp.x-d.target.x,S.comp.y-d.target.y)<.45){d.active=false;d.cooldown=S.bond==='close'?220:280}
      }
    }else if(S.detour.cooldown<=0){
      const ds=maps.village.detours[S.buddyKey]||[],noticeRange=S.bond==='close'?9:6,candidates=ds.filter(d=>dist(S.px,S.py,d.x,d.y)<=noticeRange);
@@ -296,11 +296,13 @@ function loop(){update();draw()}
 function tile(x,y,c){X.fillStyle=c;X.fillRect(x*TS,y*TS,TS,TS)}
 function villagePathTile(x,y){return (y>=11&&y<=13&&x>=3&&x<=16)||(x>=7&&x<=9&&y>=7&&y<=13)||(x>=3&&x<=6&&y>=9&&y<=13)}
 function drawGround(){
- for(let y=2;y<=18;y++)for(let x=0;x<MAP_W;x++){
+ for(let y=0;y<Math.ceil(GH/TS);y++)for(let x=0;x<MAP_W;x++){
    const n=(x*19+y*31+x*y*7)%17;
-   let col=S.map==='village'?(villagePathTile(x,y)?(n<5?'#c8dbe7':'#cedfe9'):(n<4?'#d8e8f1':'#e1eef5')):(n<5?'#cbdce8':'#d7e6ef');
+   const outside=y<2||y>18;
+   let col=S.map==='village'?(outside?(n<5?'#c7dbe7':'#d1e3ec'):(villagePathTile(x,y)?(n<5?'#c8dbe7':'#cedfe9'):(n<4?'#d8e8f1':'#e1eef5'))):(outside?(n<5?'#b9cfdd':'#c8dae5'):(n<5?'#cbdce8':'#d7e6ef'));
    tile(x,y,col);
-   if(!villagePathTile(x,y)&&n===3){X.fillStyle='rgba(255,255,255,.48)';X.fillRect(x*TS+3,y*TS+4,5,2)}
+   if(!villagePathTile(x,y)&&n===3){X.fillStyle='rgba(255,255,255,.42)';X.fillRect(x*TS+3,y*TS+4,5,2)}
+   if(outside&&n===7){X.fillStyle='rgba(88,118,143,.10)';X.fillRect(x*TS,y*TS+12,TS,2)}
    if(S.map==='path'&&((x+y*3)%9===0)){X.fillStyle='rgba(119,151,177,.12)';X.fillRect(x*TS,y*TS+11,TS,2)}
  }
  if(S.map==='village'){
