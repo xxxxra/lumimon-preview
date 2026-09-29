@@ -116,21 +116,72 @@ document.getElementById('memoryBtn').onclick=openMemory;document.getElementById(
 let selectNavAt=0;
 function selectBuddyStep(dir){if(S.mode!=='select'||(dir!=='l'&&dir!=='r'))return false;const now=Date.now();if(now-selectNavAt<240)return true;selectNavAt=now;const keys=Object.keys(BUDDIES),i=Math.max(0,keys.indexOf(S.buddyKey)),ni=(i+(dir==='r'?1:-1)+keys.length)%keys.length;S.buddyKey=keys[ni];ui.panel.querySelectorAll('.choice').forEach(x=>x.classList.toggle('active',x.dataset.buddy===S.buddyKey));drawMiniAll();const active=ui.panel.querySelector('.choice.active');if(active)active.scrollIntoView({block:'nearest',inline:'center'});return true}
 function tryMove(dir){if(S.mode==='select'){selectBuddyStep(dir);return}if(S.moveT>0||S.eventAnim>0||S.dialog||S.mode!=='world')return;const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[dir];S.face=dir;let nx=S.px+d[0],ny=S.py+d[1];const ex=maps[S.map].exit;if(nx===ex.x&&ny===ex.y){transfer(ex);return}if(!blocked(S.map,nx,ny)){S.opx=S.px;S.opy=S.py;S.px=nx;S.py=ny;S.moveT=8;S.history.unshift({x:S.opx,y:S.opy});S.history=S.history.slice(0,4);S.footprints.push({map:S.map,x:S.opx,y:S.opy,life:250});}}
-function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true;toast('あの雪のところへ 戻ってみよう')}else if(from==='village'&&S.map==='path'&&S.battleDone){S.battleRevisit=true;toast('前に戦った場所が この先にある')}else toast(maps[S.map].name);updateHud()}
+function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true;toast('あの雪のところへ 戻ってみよう')}else if(from==='village'&&S.map==='path'&&S.battleDone&&!S.battleRevisitDone){S.battleRevisit=true;S.battleRevisitCue=false;toast('前にヤミカゲと向き合った雪道だ')}else toast(maps[S.map].name);updateHud()}
 function dist(a,b,c,d){return Math.abs(a-c)+Math.abs(b-d)}
 function spotState(){if(S.map!=='village')return null;const sp=maps.village.spot;const near=dist(S.px,S.py,sp.x,sp.y)<=2;if(!near)return null;if(!S.firstDone)return 'first';if(S.revisitReady&&!S.revisitDone)return 'revisit';return 'done'}
 function frontCoord(){const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[S.face];return{x:S.px+d[0],y:S.py+d[1]}}
 function nearPoint(p,r=1){return p&&dist(S.px,S.py,p.x,p.y)<=r}
-function callBuddy(){if(S.mode!=='world'||S.dialog||S.eventAnim>0||S.restAnim>0||S.battleAnim>0)return;const b=BUDDIES[S.buddyKey];S.detour.active=false;S.detour.cooldown=120;S.comp.tx=S.px+(S.face==='l'?1:S.face==='r'?-1:0);S.comp.ty=S.py+(S.face==='u'?1:S.face==='d'?-1:0);if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65);const line=S.buddyKey==='penta'?'ぺんたが ぴたっと そばへ戻った。まだ少し震えている。':S.buddyKey==='puwawa'?'ぷわわが 主人公の肩の近くまで ふわっと戻った。':'ヤミウサは 何も言わず 主人公の足元まで戻った。';toast(line);return}const line=S.buddyKey==='penta'?'ぺんたが すべるように もどってきた！':S.buddyKey==='puwawa'?'ぷわわが ふわっと もどってきた。':'ヤミウサは 一度だけ振り返ってから そばへ戻った。';toast(line)}
-function talkNpc(){const b=BUDDIES[S.buddyKey];if(!S.npcMet){S.npcMet=true;showMsg(`${b.name}、かわいいね。\nこの村の雪、気に入った？`,'ゆきあそびの こ');return}if(S.leftAfterMemory&&!S.npcRemembered){S.npcRemembered=true;showMsg(`${b.name}、またきた！\nさっきより 雪まみれになってない？`,'ゆきあそびの こ');toast('町の子が 相棒を おぼえていた');return}showMsg(`${b.name}、また雪で あそんでるね。`,'ゆきあそびの こ')}
-function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;S.comp.tx=S.px;S.comp.ty=S.py-1;toast('少し ひとやすみ')}
-function finishRest(){if(!S.restDone){S.restDone=true;const line=S.buddyKey==='penta'?'ぺんたは ベンチの下の雪を ずっとつついていた。':S.buddyKey==='puwawa'?'ぷわわは 灯りのあたたかい空気に ふわふわ浮いていた。':'ヤミウサは すぐ隣には来ず、少し離れて同じ景色を見ていた。';showMsg(line,BUDDIES[S.buddyKey].name);toast('休んだ時間も きおくに残った')}else showMsg('前にも ここで ひとやすみした。\n相棒は もう落ち着く場所を知っている。')}
-function startBattleMemory(){if(S.battleAnim>0)return;S.battleAnim=150;S.detour.active=false;S.comp.tx=S.px+1;S.comp.ty=S.py;toast(S.battleDone?'前の戦いを 思い出している':'あやしい人影と 向き合った')}
-function finishBattleMemory(){const b=BUDDIES[S.buddyKey];if(!S.battleDone){S.battleDone=true;S.battleRevisit=false;S.battleRevisitDone=false;const line=S.buddyKey==='penta'?'激しい雪のなかの戦い。\nぺんたは最後まで前へ出て、勝ったあと雪にころんだ。':S.buddyKey==='puwawa'?'激しい雪のなかの戦い。\nぷわわは風を読んで、最後の一撃をよけた。':'激しい雪のなかの戦い。\nヤミウサは一度も振り返らず、終わってからだけ主人公のそばへ来た。';showMsg(line,b.name);toast('戦いの場所を おぼえた')}else{S.battleRevisit=false;S.battleRevisitDone=true;const line=S.buddyKey==='penta'?'ぺんたは ここへ来ると少し胸を張る。':S.buddyKey==='puwawa'?'ぷわわは 一瞬だけ風向きを確かめて、もう平気そうに進んだ。':'ヤミウサは 足を止めた。……でも今度は自分から先へ進んだ。';showMsg(line,b.name);toast('前とは違う反応をした')}}
-function detourText(kind){if(kind==='snowman')return'雪だるまが 気になるみたい';if(kind==='lamp')return'灯りのまわりを ふわふわしている';return'こおった地面を じっと見ている'}
-function tryAction(){if(S.mode==='select'){const start=ui.panel.querySelector('#startBtn');if(start)start.click();return}if(S.dialog){advanceMsg();return}if(S.eventAnim>0||S.restAnim>0||S.battleAnim>0||S.mode!=='world')return;const f=frontCoord();if(S.map==='village'&&f.x===maps.village.npc.x&&f.y===maps.village.npc.y){talkNpc();return}if(S.map==='village'&&nearPoint(maps.village.rest,1)){startRest();return}if(S.map==='path'&&nearPoint(S.battleDone?maps.path.battle:maps.path.threat,2)){startBattleMemory();return}const st=spotState();const sp=maps.village.spot;if((st==='first'||st==='revisit')&&dist(S.px,S.py,sp.x,sp.y)<=2){startEvent(st);return}if(st==='done'&&dist(S.px,S.py,sp.x,sp.y)<=2){showMsg('雪は さっきと同じように\nしんしんと積もっている。');return}if(S.detour.active){toast(detourText(S.detour.kind));return}if(S.map==='path'&&S.px<=2)toast('← 村へ戻れる');else toast('気になるものは なさそう')}
+function callBuddy(){
+ if(S.mode!=='world'||S.dialog||S.eventAnim>0||S.restAnim>0||S.battleAnim>0)return;
+ S.detour.active=false;S.detour.cooldown=210;
+ const close=S.bond==='close';
+ const back=S.face==='l'?{x:S.px+1,y:S.py}:S.face==='r'?{x:S.px-1,y:S.py}:S.face==='u'?{x:S.px,y:S.py+1}:{x:S.px,y:S.py-1};
+ const far=S.face==='l'?{x:S.px+2,y:S.py}:S.face==='r'?{x:S.px-2,y:S.py}:S.face==='u'?{x:S.px,y:S.py+2}:{x:S.px,y:S.py-2};
+ const t=close?back:far;S.comp.tx=t.x;S.comp.ty=t.y;
+ if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){
+   S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65);
+   toast(close?'すぐ そばまで来た':'こっちを見て、少ししてから来た');return;
+ }
+ toast(close?'すぐ そばまで来た':'こっちを見て、少ししてから来た');
+}
+function talkNpc(){const b=BUDDIES[S.buddyKey];S.npcDir={u:'d',d:'u',l:'r',r:'l'}[S.face]||'d';if(!S.npcMet){S.npcMet=true;showMsg(`あ、その子 はじめて見る。\n${b.name}っていうの？`,'ゆきあそびの こ');return}if(S.leftAfterMemory&&!S.npcRemembered){S.npcRemembered=true;showMsg(`あ、${b.name}。\nまた来たんだ。`,'ゆきあそびの こ');return}showMsg(`${b.name}、また雪のとこ行ってた？`,'ゆきあそびの こ')}
+function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;if(S.bond==='close'){S.comp.tx=S.px;S.comp.ty=S.py-1}else{S.comp.tx=S.px+2;S.comp.ty=S.py}toast('ひとやすみ')}
+function finishRest(){if(!S.restDone){S.restDone=true;const close=S.bond==='close';const line=S.buddyKey==='penta'?(close?'ぺんたが 足元で ぺたんと座った。':'ぺんたは 少し離れた雪を つついている。'):S.buddyKey==='puwawa'?(close?'ぷわわが 肩の近くで ふわふわしている。':'ぷわわは 灯りのほうへ ふわっと離れた。'):(close?'ヤミウサが すぐ横に座った。':'ヤミウサは 少し離れて座った。');showMsg(line)}else showMsg(S.bond==='close'?'また となりに来た。':'前と同じ場所に座った。')}
+function threatFacePlayer(){const t=maps.path.threat;const dx=S.px-t.x,dy=S.py-t.y;if(Math.abs(dx)>Math.abs(dy))S.threatDir=dx<0?'l':'r';else S.threatDir=dy<0?'u':'d'}
+function startBossPrelude(){if(S.battleDone||S.battleAnim>0)return;S.detour.active=false;S.bossStandoff=true;threatFacePlayer();
+ const close=S.bond==='close';
+ if(close){S.comp.tx=S.px+(S.face==='r'?-1:S.face==='l'?1:0);S.comp.ty=S.py+(S.face==='d'?-1:S.face==='u'?1:0)}
+ else{const h=S.history[2]||S.history[1]||{x:S.px-2,y:S.py};S.comp.tx=h.x;S.comp.ty=h.y}
+ S.threatReactTimer=120;
+ showMsg('……来たか。\n通るなら、来い。','ヤミカゲ',()=>startBossBattle());
+}
+function startBossBattle(){S.battleAnim=180;S.bossStandoff=false;S.threatReactTimer=90;S.detour.active=false;S.comp.tx=S.px+(S.face==='r'?1:S.face==='l'?-1:0);S.comp.ty=S.py+(S.face==='d'?1:S.face==='u'?-1:0);toast('ヤミカゲとの戦い')}
+function finishBattleMemory(){const b=BUDDIES[S.buddyKey];if(S.battleDone)return;S.battleDone=true;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;const line=S.buddyKey==='penta'?'ぺんたが 雪の上に ぺたんと座った。':S.buddyKey==='puwawa'?'ぷわわが いつもの高さまで戻った。':'ヤミウサが こちらへ戻ってきた。';showMsg(line)}
+function triggerBattleRevisit(){if(!S.battleDone||!S.battleRevisit||S.battleRevisitDone)return;S.battleRevisit=false;S.battleRevisitDone=true;S.battleRevisitCue=true;S.threatReactTimer=70;const b=BUDDIES[S.buddyKey];const line=S.buddyKey==='penta'?'ぺんたが 一度止まって、先に歩きだした。':S.buddyKey==='puwawa'?'ぷわわが 一周して、そのまま前へ進んだ。':'ヤミウサが 止まらず一歩前へ出た。';S.comp.tx=Math.min(MAP_W-2,S.px+1);S.comp.ty=S.py;showMsg(line)}
+function detourText(kind){
+ if(kind==='snowman')return'雪だるまのほうへ行った';
+ if(kind==='icepond')return'こおった池のほうへ走っていった';
+ if(kind==='snowtree')return'雪のつもった木のほうへ行った';
+ if(kind==='lamp'||kind==='lamp2')return'灯りのほうへ飛んでいった';
+ if(kind==='treetop')return'木の上のほうへ浮かんでいった';
+ if(kind==='shadowtree')return'木かげのほうへ歩いていった';
+ if(kind==='quietcorner')return'村のすみのほうへ行った';
+ return'こおった地面のほうへ行った';
+}
+function detourIdleText(kind){
+ if(kind==='snowman')return'雪だるまのまわりで遊んでいる';
+ if(kind==='icepond')return'こおった池のふちを行ったり来たりしている';
+ if(kind==='snowtree')return'木の根元の雪をつついている';
+ if(kind==='lamp'||kind==='lamp2')return'灯りのまわりをまだ飛んでいる';
+ if(kind==='treetop')return'木の上でふわふわしている';
+ if(kind==='shadowtree')return'木かげから村を見ている';
+ if(kind==='quietcorner')return'村のすみでじっとしている';
+ return'氷のあたりをまだ見ている';
+}
+function pickDetourStep(){
+ const d=S.detour;if(!d.anchor)return;
+ const spread=S.bond==='close'?2:1;
+ const opts=[];
+ for(let oy=-spread;oy<=spread;oy++)for(let ox=-spread;ox<=spread;ox++){
+   if(Math.abs(ox)+Math.abs(oy)>spread+1)continue;
+   const x=d.anchor.x+ox,y=d.anchor.y+oy;
+   if(!blocked('village',x,y))opts.push({x,y});
+ }
+ if(opts.length){const t=opts[Math.floor(Math.random()*opts.length)];d.target=t;d.stepTimer=55+Math.floor(Math.random()*80)}
+}
+function tryAction(){if(S.mode==='select'){const start=ui.panel.querySelector('#startBtn');if(start)start.click();return}if(S.dialog){advanceMsg();return}if(S.eventAnim>0||S.restAnim>0||S.battleAnim>0||S.mode!=='world')return;const f=frontCoord();if(S.map==='village'&&f.x===maps.village.npc.x&&f.y===maps.village.npc.y){talkNpc();return}if(S.map==='village'&&nearPoint(maps.village.rest,1)){startRest();return}if(S.map==='path'&&!S.battleDone&&nearPoint(maps.path.threat,2)){startBossPrelude();return}const st=spotState();const sp=maps.village.spot;if((st==='first'||st==='revisit')&&dist(S.px,S.py,sp.x,sp.y)<=2){startEvent(st);return}if(st==='done'&&dist(S.px,S.py,sp.x,sp.y)<=2){showMsg('雪は さっきと同じように\nしんしんと積もっている。');return}if(S.detour.active){toast(S.detour.phase==='engrossed'?detourIdleText(S.detour.kind):detourText(S.detour.kind));return}if(S.map==='path'&&S.px<=2)toast('← 村へ戻れる');else toast('気になるものは なさそう')}
 function startEvent(kind){S.eventAnim=90;S.eventPhase=kind==='first'?1:2;S.notice=false;const sp=maps.village.spot;S.comp.tx=sp.x;S.comp.ty=sp.y+1;}
-function finishEvent(){const b=BUDDIES[S.buddyKey];if(S.eventPhase===1){S.firstDone=true;showMsg(b.first,b.name);toast('旅のきおく に残った')}else{S.revisitDone=true;S.revisitReady=false;showMsg(b.after,b.name);toast('きおくが 少し変わった')}S.eventPhase=0}
+function finishEvent(){const b=BUDDIES[S.buddyKey];if(S.eventPhase===1){S.firstDone=true;showMsg(b.first,b.name)}else{S.revisitDone=true;S.revisitReady=false;showMsg(b.after,b.name)}S.eventPhase=0}
 function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min(S.dialog.length,S.msgI+.62);ui.dtext.textContent=S.dialog.slice(0,Math.floor(S.msgI))}
  if(S.moveT>0)S.moveT--;
  if(S.eventAnim>0){S.eventAnim--;if(S.eventAnim===1)finishEvent();}
@@ -138,10 +189,11 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
  if(S.battleAnim>0){S.battleAnim--;if(S.battleAnim===1)finishBattleMemory();}
  const st=spotState();S.notice=(st==='first'||st==='revisit')&&S.eventAnim===0&&!S.dialog;
  if(S.map==='path'&&!S.battleDone&&!S.threatSeen&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){
-   S.threatSeen=true;S.threatReactTimer=120;S.detour.active=false;
-   const line=S.buddyKey==='penta'?'ぺんたが ぶるっと震えて、それでも前を見た。':S.buddyKey==='puwawa'?'ぷわわの浮き方が ふっと低くなった。':'ヤミウサが 足を止めた。耳の先だけが小さく震えている。';
-   toast(line);
+   S.threatSeen=true;S.threatReactTimer=120;S.detour.active=false;threatFacePlayer();
+   const h=S.history[S.bond==='close'?0:2]||S.history[0]||{x:S.px-1,y:S.py};S.comp.tx=h.x;S.comp.ty=h.y;
+   const line=S.buddyKey==='penta'?'ぺんたが ぶるっと震えた。':S.buddyKey==='puwawa'?'ぷわわが 低く降りた。':'ヤミウサが 足を止めた。';toast(line);
  }
+ if(S.map==='path'&&S.battleRevisit&&!S.battleRevisitDone&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.battle.x,maps.path.battle.y)<=4){triggerBattleRevisit()}
  if(S.threatReactTimer>0)S.threatReactTimer--;
  const busy=S.moveT>0||S.eventAnim>0||S.restAnim>0||S.battleAnim>0||!!S.dialog||S.mode!=='world';
  if(!busy&&S.map==='village'){
