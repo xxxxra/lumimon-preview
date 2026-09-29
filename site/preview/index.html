@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>るみもん｜確認用ページ</title>
+<style>
+:root{--bg:#08101d;--panel:#111c2d;--line:#24344d;--text:#edf6ff;--sub:#9db0c6;--accent:#6dd5ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#091321,#050a12);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(920px,100%);margin:auto;padding:32px 18px 64px}
+h1{font-size:28px;margin:0 0 8px}.lead{color:var(--sub);line-height:1.7;margin:0 0 28px}
+section{margin-top:28px}h2{font-size:15px;letter-spacing:.08em;color:#b9dcf5;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.item{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--text);background:rgba(17,28,45,.88);border:1px solid var(--line);border-radius:16px;padding:15px;min-height:104px}
+.item:active{transform:scale(.99)}.item strong{font-size:15px;line-height:1.4}.item small{color:var(--sub);overflow-wrap:anywhere}
+.badge{align-self:flex-start;font-size:9px;font-weight:800;letter-spacing:.08em;color:#07131f;background:var(--accent);padding:3px 7px;border-radius:999px}
+.note{margin-top:32px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.035);color:var(--sub);font-size:12px;line-height:1.7}
+</style>
+</head>
+<body><main>
+<h1>るみもん｜確認用ページ</h1>
+<p class="lead">ダウンロード不要。ここから現在の本編・候補版・実験・Golden Masterを開く。</p>
+
+<section><h2>本編</h2><div class="grid">
+<a class="item" href="../"><span class="badge">CURRENT CANONICAL</span><strong>るみもん 本編</strong><small>/</small></a>
+</div></section>
+
+<section><h2>Candidate</h2><div class="grid">
+<a class="item" href="../candidate/l44-progression-safe.html"><span class="badge">REFERENCE</span><strong>Accepted Baseline Candidate</strong><small>candidate/l44-progression-safe.html</small></a>
+</div></section>
+
+<section><h2>Experiments</h2><div class="grid">
+<a class="item" href="../experiments/memory/"><span class="badge">NOT CANON</span><strong>旅のきおく EXPERIMENT</strong><small>experiments/memory/</small></a>
+</div></section>
+
+<section><h2>Golden Master</h2><div class="grid">
+<a class="item" href="../reference/golden-master/shiokaze/sio3-4.html"><span class="badge">GOLDEN MASTER</span><strong>Shiokaze</strong><small>reference/golden-master/shiokaze/sio3-4.html</small></a>
+<a class="item" href="../reference/golden-master/snow/luminaria_snow_village_premium.html"><span class="badge">GOLDEN MASTER</span><strong>Snow Village</strong><small>reference/golden-master/snow/luminaria_snow_village_premium.html</small></a>
+</div></section>
+
+<div class="note">この公開repoは確認用ミラー。実装正本はprivateの lumimon。EXPERIMENT / Candidate / Golden Masterをcanonと混同しない。</div>
+</main></body></html>
