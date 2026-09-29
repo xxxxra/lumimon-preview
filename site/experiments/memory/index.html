@@ -206,7 +206,7 @@ function startBossPrelude(){if(S.battleDone||S.battleAnim>0)return;S.detour.acti
 }
 function startBossBattle(){S.battleAnim=180;S.bossStandoff=false;S.threatReactTimer=90;S.detour.active=false;setCompGoal(S.px+(S.face==='r'?1:S.face==='l'?-1:0),S.py+(S.face==='d'?1:S.face==='u'?-1:0),true)}
 function finishBattleMemory(){const b=BUDDIES[S.buddyKey];if(S.battleDone)return;S.battleDone=true;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;const line=S.buddyKey==='penta'?'ぺんたが 雪の上に ぺたんと座った。':S.buddyKey==='puwawa'?'ぷわわが いつもの高さまで戻った。':'ヤミウサが こちらへ戻ってきた。';showMsg(line)}
-function triggerBattleRevisit(){if(!S.battleDone||!S.battleRevisit||S.battleRevisitDone)return;S.battleRevisit=false;S.battleRevisitDone=true;S.battleRevisitCue=true;S.threatReactTimer=70;const b=BUDDIES[S.buddyKey];const line=S.buddyKey==='penta'?'ぺんたが 一度止まって、先に歩きだした。':S.buddyKey==='puwawa'?'ぷわわが 一周して、そのまま前へ進んだ。':'ヤミウサが 止まらず一歩前へ出た。';setCompGoal(Math.min(MAP_W-2,S.px+1),S.py,true);showMsg(line)
+function triggerBattleRevisit(){if(!S.battleDone||!S.battleRevisit||S.battleRevisitDone)return;S.battleRevisit=false;S.battleRevisitDone=true;S.battleRevisitCue=true;S.threatReactTimer=70;const b=BUDDIES[S.buddyKey];const line=S.buddyKey==='penta'?'ぺんたが 一度止まって、先に歩きだした。':S.buddyKey==='puwawa'?'ぷわわが 一周して、そのまま前へ進んだ。':'ヤミウサが 止まらず一歩前へ出た。';setCompGoal(Math.min(MAP_W-2,S.px+1),S.py,true);showMsg(line)}
 function detourText(kind){
  if(kind==='snowman')return'雪だるまのほうへ行った';
  if(kind==='icepond')return'こおった池のほうへ走っていった';
