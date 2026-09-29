@@ -6,290 +6,351 @@
 <title>るみもん</title>
 <style>
 :root{
-  --ink:#233746;
-  --sub:#74838d;
-  --line:rgba(76,112,133,.14);
-  --blue:#6faecf;
-  --blue-deep:#397b9d;
-  --sky:#edf8fc;
-  --cream:#fffdf8;
-  --yellow:#f4cf59;
-  --card:#fff;
+  --ink:#263845;
+  --sub:#6f818c;
+  --blue:#72b5d3;
+  --blue-deep:#397b9c;
+  --yellow:#f3d56c;
+  --line:rgba(70,111,134,.15);
 }
 *{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#eef8fc}
 body{
-  margin:0;
-  min-height:100vh;
+  min-height:100dvh;
   color:var(--ink);
-  background:
-    linear-gradient(180deg,#ebf7fb 0%,#f7fbfd 32%,#fffdf8 100%);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
-}
-main{
-  width:min(560px,100%);
-  margin:0 auto;
-  padding:34px 18px 58px;
-}
-.hero{
-  padding:6px 5px 30px;
-}
-.logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.glint{
-  position:relative;
-  width:18px;
-  height:18px;
-  flex:none;
-  filter:drop-shadow(0 0 8px rgba(244,207,89,.45));
-}
-.glint:before{
-  content:"";
-  position:absolute;
-  left:50%;top:50%;
-  width:11px;height:11px;
-  background:var(--yellow);
-  border-radius:2px;
-  transform:translate(-50%,-50%) rotate(45deg);
-}
-.glint:after{
-  content:"";
-  position:absolute;
-  left:50%;top:50%;
-  width:3px;height:3px;
-  background:#fff9cf;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-}
-h1{
-  margin:0;
-  font-size:31px;
-  letter-spacing:.035em;
-  font-weight:800;
+  background:
+    linear-gradient(180deg,#dff2fb 0%,#eef8fc 42%,#fffdf7 100%);
 }
 a{color:inherit;text-decoration:none}
-.journey{
-  display:block;
+main{
+  width:min(560px,100%);
+  min-height:100dvh;
+  margin:0 auto;
   position:relative;
   overflow:hidden;
-  min-height:148px;
-  padding:24px 22px;
-  border-radius:25px;
-  background:
-    linear-gradient(145deg,#ffffff 0%,#f7fcfe 62%,#edf8fc 100%);
-  border:1px solid rgba(93,150,179,.22);
-  box-shadow:0 14px 32px rgba(66,111,136,.11);
+  padding:0 18px calc(28px + env(safe-area-inset-bottom));
 }
-.journey-label{
-  display:block;
-  margin-bottom:12px;
-  color:var(--blue-deep);
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:.06em;
-}
-.journey strong{
-  display:block;
+.brand{
   position:relative;
-  z-index:2;
-  width:max-content;
-  font-size:24px;
-  line-height:1.3;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  padding-top:calc(28px + env(safe-area-inset-top));
 }
-.go{
+.brand-mark{
+  width:14px;height:14px;
+  position:relative;
+  filter:drop-shadow(0 0 9px rgba(243,213,108,.65));
+}
+.brand-mark:before{
+  content:"";
   position:absolute;
-  right:19px;
-  bottom:18px;
-  z-index:3;
-  width:39px;height:39px;
-  display:grid;
-  place-items:center;
+  inset:2px;
+  background:var(--yellow);
+  border-radius:2px;
+  transform:rotate(45deg);
+}
+.brand h1{
+  margin:0;
+  font-size:30px;
+  letter-spacing:.05em;
+  font-weight:800;
+}
+.scene{
+  position:relative;
+  height:540px;
+  margin:8px -18px 0;
+}
+.sun{
+  position:absolute;
+  top:42px;right:46px;
+  width:82px;height:82px;
   border-radius:50%;
-  background:#fff;
-  color:var(--blue-deep);
-  box-shadow:0 6px 16px rgba(72,125,151,.14);
-  font-size:24px;
+  background:radial-gradient(circle,#fff7c7 0%,rgba(250,226,130,.72) 42%,rgba(250,226,130,0) 72%);
+  filter:blur(.2px);
 }
-.light-route{
+.sparkles{
   position:absolute;
-  width:186px;
-  height:112px;
-  right:34px;
-  top:10px;
-  opacity:.84;
+  inset:0;
   pointer-events:none;
+}
+.sparkles span{
+  position:absolute;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 0 8px rgba(255,255,255,.8);
+}
+.sparkles span:nth-child(1){left:14%;top:18%}
+.sparkles span:nth-child(2){left:34%;top:11%;width:3px;height:3px}
+.sparkles span:nth-child(3){left:65%;top:20%;width:3px;height:3px}
+.sparkles span:nth-child(4){left:83%;top:31%;width:5px;height:5px}
+.sparkles span:nth-child(5){left:24%;top:34%;width:3px;height:3px}
+.hill{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+}
+.hill-back{
+  width:710px;height:170px;
+  bottom:160px;
+  background:#dcecf0;
+}
+.hill-mid{
+  width:620px;height:190px;
+  bottom:105px;
+  margin-left:72px;
+  background:#cfe5e4;
+}
+.hill-front{
+  width:690px;height:185px;
+  bottom:28px;
+  margin-left:-84px;
+  background:#e8eee0;
+}
+.ground{
+  position:absolute;
+  left:-40px;right:-40px;bottom:-34px;
+  height:120px;
+  background:linear-gradient(180deg,#f0f0e5 0%,#fffdf7 86%);
+  border-radius:50% 50% 0 0 / 45% 45% 0 0;
+}
+.route{
+  position:absolute;
+  left:50%;
+  top:62px;
+  width:320px;
+  height:330px;
+  transform:translateX(-50%);
+  pointer-events:none;
+  z-index:2;
+  overflow:visible;
 }
 .route-line{
   fill:none;
-  stroke:url(#routeGlow);
-  stroke-width:2.2;
+  stroke:url(#routeGradient);
+  stroke-width:3;
   stroke-linecap:round;
-  stroke-dasharray:1 8;
+  stroke-dasharray:2 10;
+  opacity:.72;
 }
-.route-dot{
-  fill:#fff7b8;
-  filter:drop-shadow(0 0 5px rgba(244,207,89,.72));
+.route-glow{
+  fill:#fff6b6;
+  filter:drop-shadow(0 0 8px rgba(243,213,108,.85));
 }
-.route-star{
-  fill:#f4cf59;
-  filter:drop-shadow(0 0 7px rgba(244,207,89,.55));
+.route-end{
+  fill:#f1cf54;
+  filter:drop-shadow(0 0 10px rgba(243,213,108,.8));
 }
-.section-title{
-  margin:29px 4px 11px;
-  color:#667985;
-  font-size:13px;
+.main-action{
+  position:absolute;
+  z-index:4;
+  left:50%;
+  top:250px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:212px;
+  height:64px;
+  padding:0 28px;
+  border-radius:999px;
+  color:#fff;
+  background:linear-gradient(180deg,#74b7d5 0%,#5da3c4 100%);
+  box-shadow:
+    0 14px 30px rgba(68,132,164,.22),
+    0 0 0 7px rgba(255,255,255,.34);
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:.03em;
+}
+.main-action:before{
+  content:"本編";
+  position:absolute;
+  top:-24px;
+  left:50%;
+  transform:translateX(-50%);
+  color:var(--blue-deep);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.main-action:after{
+  content:"›";
+  margin-left:14px;
+  font-size:24px;
+  font-weight:400;
+}
+.memory{
+  position:relative;
+  z-index:6;
+  margin-top:-22px;
+  padding:0 2px;
+}
+.memory-label{
+  margin:0 0 8px 2px;
+  color:#7b8c95;
+  font-size:12px;
   font-weight:800;
 }
-.card{
+.memory-link{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:14px;
-  padding:17px;
-  background:rgba(255,255,255,.88);
-  border:1px solid var(--line);
-  border-radius:18px;
-  box-shadow:0 6px 18px rgba(60,92,111,.05);
+  padding:15px 2px 15px 0;
+  border-top:1px solid rgba(77,112,131,.13);
+  border-bottom:1px solid rgba(77,112,131,.13);
 }
-.card strong{
+.memory-copy strong{
   display:block;
-  font-size:16px;
   margin-bottom:4px;
+  font-size:16px;
 }
-.card span{
+.memory-copy span{
   display:block;
   color:var(--sub);
   font-size:12px;
-  line-height:1.55;
+  line-height:1.5;
 }
-.mini-go{
+.memory-arrow{
   flex:none;
-  width:31px;height:31px;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  background:#edf7fb;
   color:var(--blue-deep);
-  font-size:19px;
+  font-size:24px;
+  padding-right:6px;
 }
-details{margin-top:22px}
+details{
+  position:relative;
+  z-index:6;
+  margin-top:18px;
+}
 summary{
-  cursor:pointer;
   list-style:none;
+  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:12px 4px;
-  color:#71818c;
+  padding:11px 2px;
+  color:#74838d;
   font-size:13px;
   font-weight:800;
 }
 summary::-webkit-details-marker{display:none}
 summary::after{
   content:"＋";
-  font-size:19px;
+  font-size:18px;
   font-weight:400;
 }
 details[open] summary::after{content:"−"}
 .compare{
   display:grid;
-  gap:9px;
-  padding-top:2px;
+  margin-top:4px;
+  border-top:1px solid var(--line);
 }
-.compare .card{
-  padding:14px 15px;
-  box-shadow:none;
-  background:rgba(255,255,255,.7);
+.compare a{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
 }
-.compare .card strong{
+.compare strong{
   font-size:14px;
-  margin-bottom:2px;
+  font-weight:800;
 }
-.compare .card span{font-size:11px}
+.compare span{
+  color:var(--sub);
+  font-size:11px;
+}
 @media (hover:hover){
-  .journey:hover,.card:hover{transform:translateY(-1px)}
+  .main-action:hover{transform:translateX(-50%) translateY(-1px)}
+  .memory-link:hover .memory-arrow{transform:translateX(2px)}
 }
 @media (prefers-reduced-motion:no-preference){
-  .route-star{
-    animation:softGlow 3.8s ease-in-out infinite;
+  .route-end{
+    animation:glow 3s ease-in-out infinite;
     transform-origin:center;
   }
-  @keyframes softGlow{
-    0%,100%{opacity:.74}
-    50%{opacity:1}
+  .sparkles span{
+    animation:twinkle 4s ease-in-out infinite;
   }
+  .sparkles span:nth-child(2){animation-delay:.8s}
+  .sparkles span:nth-child(4){animation-delay:1.6s}
+  @keyframes glow{0%,100%{opacity:.72}50%{opacity:1}}
+  @keyframes twinkle{0%,100%{opacity:.35}50%{opacity:.95}}
 }
-@media (max-width:380px){
-  main{padding-left:15px;padding-right:15px}
-  .journey strong{font-size:22px}
-  .light-route{right:14px}
+@media (max-width:390px){
+  .scene{height:510px}
+  .main-action{top:238px;min-width:198px}
+  .route{top:56px;width:300px;height:310px}
 }
 </style>
 </head>
 <body>
 <main>
-  <header class="hero">
-    <div class="logo">
-      <span class="glint" aria-hidden="true"></span>
-      <h1>るみもん</h1>
-    </div>
+  <header class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <h1>るみもん</h1>
   </header>
 
-  <a class="journey" href="../">
-    <span class="journey-label">本編</span>
-    <strong>つづきを見る</strong>
+  <section class="scene" aria-label="旅の入口">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="sparkles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
 
-    <svg class="light-route" viewBox="0 0 186 112" aria-hidden="true">
+    <div class="hill hill-back" aria-hidden="true"></div>
+    <div class="hill hill-mid" aria-hidden="true"></div>
+    <div class="hill hill-front" aria-hidden="true"></div>
+    <div class="ground" aria-hidden="true"></div>
+
+    <svg class="route" viewBox="0 0 320 330" aria-hidden="true">
       <defs>
-        <linearGradient id="routeGlow" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#f4cf59" stop-opacity=".18"/>
-          <stop offset="52%" stop-color="#8fc8df" stop-opacity=".55"/>
-          <stop offset="100%" stop-color="#6faecf" stop-opacity=".12"/>
+        <linearGradient id="routeGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f4d86b" stop-opacity=".35"/>
+          <stop offset="48%" stop-color="#ffffff" stop-opacity=".92"/>
+          <stop offset="100%" stop-color="#72b5d3" stop-opacity=".42"/>
         </linearGradient>
       </defs>
-      <path class="route-line" d="M20 18 C52 18 51 51 86 48 S126 78 164 82"/>
-      <circle class="route-dot" cx="21" cy="18" r="3.4"/>
-      <circle class="route-dot" cx="86" cy="48" r="2.8"/>
-      <path class="route-star" d="M163 74 L165.8 80.2 L172 83 L165.8 85.8 L163 92 L160.2 85.8 L154 83 L160.2 80.2 Z"/>
+      <path class="route-line" d="M246 18 C232 76 188 79 196 132 C205 189 127 179 131 238 C133 267 148 282 159 306"/>
+      <circle class="route-glow" cx="246" cy="18" r="4"/>
+      <circle class="route-glow" cx="196" cy="132" r="3.2"/>
+      <circle class="route-glow" cx="131" cy="238" r="3.4"/>
+      <path class="route-end" d="M159 295 L162.4 302.6 L170 306 L162.4 309.4 L159 317 L155.6 309.4 L148 306 L155.6 302.6 Z"/>
     </svg>
 
-    <span class="go" aria-hidden="true">›</span>
-  </a>
+    <a class="main-action" href="../">つづきを見る</a>
+  </section>
 
-  <div class="section-title">おためし</div>
-  <a class="card" href="../experiments/memory/">
-    <div>
-      <strong>旅のきおく</strong>
-      <span>相棒が、旅のことを少しずつ覚える</span>
-    </div>
-    <span class="mini-go" aria-hidden="true">›</span>
-  </a>
+  <section class="memory">
+    <div class="memory-label">おためし</div>
+    <a class="memory-link" href="../experiments/memory/">
+      <div class="memory-copy">
+        <strong>旅のきおく</strong>
+        <span>相棒が、旅のことを少しずつ覚える</span>
+      </div>
+      <span class="memory-arrow" aria-hidden="true">›</span>
+    </a>
+  </section>
 
   <details>
     <summary>見くらべる</summary>
     <div class="compare">
-      <a class="card" href="../candidate/l44-progression-safe.html">
-        <div>
-          <strong>前の版</strong>
-          <span>いまの本編と見くらべる</span>
-        </div>
-        <span class="mini-go" aria-hidden="true">›</span>
+      <a href="../candidate/l44-progression-safe.html">
+        <strong>前の版</strong>
+        <span>いまの本編と見くらべる</span>
       </a>
-      <a class="card" href="../reference/golden-master/shiokaze/sio3-4.html">
-        <div>
-          <strong>シオカゼ</strong>
-          <span>町の見た目</span>
-        </div>
-        <span class="mini-go" aria-hidden="true">›</span>
+      <a href="../reference/golden-master/shiokaze/sio3-4.html">
+        <strong>シオカゼ</strong>
+        <span>町の見た目</span>
       </a>
-      <a class="card" href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
-        <div>
-          <strong>雪の村</strong>
-          <span>雪エリアの見た目</span>
-        </div>
-        <span class="mini-go" aria-hidden="true">›</span>
+      <a href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
+        <strong>雪の村</strong>
+        <span>雪エリアの見た目</span>
       </a>
     </div>
   </details>
