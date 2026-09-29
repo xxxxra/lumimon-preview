@@ -96,7 +96,7 @@ const BUDDIES={
  puwawa:{name:'ぷわわ',type:'かぜ',note:'ふわっと様子見',token:'◌',cols:['#7dd3fc','#bae6fd','#fff','#a5f3fc'],first:'ぷわわが 雪に そっとふれた。',after:'くるっと回って、雪へ降りた。',memory1:'白い雪に、ぷわわがそっと触れた。',memory2:'戻ってくると、雪の上を一周してから同じ場所へ降りた。'},
  yamiusa:{name:'ヤミウサ',type:'やみ',note:'気になるけど慎重',token:'☾',cols:['#27234f','#4f46e5','#f3e8ff','#ef4444'],first:'ヤミウサが 前足で 雪をさわった。',after:'通りすぎて――戻ってきた。\nもう一度、前足でさわった。',memory1:'ヤミウサは雪を見て、前足で一度だけ触った。',memory2:'再び通ると一度は通りすぎた。でも戻ってきて、また触った。'}
 };
-const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
+const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],cprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0,lookTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
 const maps={
  village:{name:'スノーヴィレッジ',spawn:{x:4,y:13},exit:{x:16,y:11,to:'path',tx:1,ty:11},spot:{x:11,y:9},rest:{x:4,y:10},npc:{x:6,y:9},detours:{
  penta:[{x:8,y:11,kind:'snowman'},{x:9,y:15,kind:'icepond'},{x:4,y:15,kind:'snowtree'}],
@@ -107,6 +107,35 @@ const maps={
 };
 function rect(x,y,w,h){const a=[];for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)a.push(xx+','+yy);return a}
 function blocked(map,x,y){if(y<2||y>18)return true;if(x<0||x>=MAP_W)return true;return maps[map].blocked.includes(x+','+y)}
+function openGoal(map,gx,gy){
+ gx=Math.max(0,Math.min(MAP_W-1,Math.round(gx)));gy=Math.max(2,Math.min(18,Math.round(gy)));
+ if(!blocked(map,gx,gy))return{x:gx,y:gy};
+ for(let r=1;r<=3;r++)for(const [dx,dy] of [[r,0],[-r,0],[0,r],[0,-r],[r,r],[-r,r],[r,-r],[-r,-r]]){const x=gx+dx,y=gy+dy;if(!blocked(map,x,y))return{x,y}}
+ return null;
+}
+function findPath(map,sx,sy,gx,gy){
+ const g=openGoal(map,gx,gy);if(!g)return[];
+ sx=Math.max(0,Math.min(MAP_W-1,Math.round(sx)));sy=Math.max(2,Math.min(18,Math.round(sy)));
+ const sk=sx+','+sy,gk=g.x+','+g.y;if(sk===gk)return[{x:sx,y:sy}];
+ const q=[{x:sx,y:sy}],prev=new Map([[sk,null]]),dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+ for(let qi=0;qi<q.length;qi++){const p=q[qi];for(const [dx,dy] of dirs){const x=p.x+dx,y=p.y+dy,k=x+','+y;if(prev.has(k)||blocked(map,x,y))continue;prev.set(k,p.x+','+p.y);if(k===gk){const out=[{x:g.x,y:g.y}];let cur=prev.get(k);while(cur){const [cx,cy]=cur.split(',').map(Number);out.push({x:cx,y:cy});cur=prev.get(cur)}return out.reverse()}q.push({x,y})}}
+ return[];
+}
+function setCompGoal(x,y,force=false){
+ const g=openGoal(S.map,x,y);if(!g)return;
+ const key=g.x+','+g.y;if(!force&&S.comp.routeGoal===key&&S.comp.route.length)return;
+ const p=findPath(S.map,S.comp.x,S.comp.y,g.x,g.y);S.comp.route=p.slice(1);S.comp.routeGoal=key;S.comp.tx=g.x;S.comp.ty=g.y;
+}
+function compFollowPoint(){
+ const idx=S.bond==='close'?0:Math.min(2,S.history.length-1);const h=S.history[idx]||{x:S.px-1,y:S.py};
+ return openGoal(S.map,h.x,h.y)||{x:S.px,y:S.py};
+}
+function advanceComp(speed){
+ if(S.comp.returnDelay>0){S.comp.returnDelay--;if(S.comp.returnDelay===0&&S.comp.callGoal){setCompGoal(S.comp.callGoal.x,S.comp.callGoal.y,true);S.comp.callGoal=null}return}
+ const n=S.comp.route[0];if(!n)return;const dx=n.x-S.comp.x,dy=n.y-S.comp.y,d=Math.hypot(dx,dy);
+ if(d<=speed+.03){S.comp.x=n.x;S.comp.y=n.y;S.comp.route.shift();if(S.map==='village'||S.map==='path')S.cprints.push({map:S.map,x:n.x,y:n.y,life:210});return}
+ S.comp.x+=dx/d*speed;S.comp.y+=dy/d*speed;
+}
 function initSnow(){S.snow=[];for(let i=0;i<120;i++)S.snow.push({x:Math.random()*GW,y:Math.random()*GH,s:.4+Math.random()*1.4,v:.25+Math.random()*.65,a:.18+Math.random()*.55,drift:(Math.random()-.5)*.25})}
 initSnow();
 function openSelect(first=false){
@@ -119,7 +148,7 @@ function openSelect(first=false){
  render();
 }
 function drawMiniAll(){ui.panel.querySelectorAll('[data-mini]').forEach(c=>{const q=c.getContext('2d');q.clearRect(0,0,64,64);q.imageSmoothingEnabled=false;drawBuddySprite(q,c.dataset.mini,32,36,2)})}
-function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
+function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.cprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:100,target:null,anchor:null,stepTimer:0,lookTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
 function bondLabel(){return S.bond==='close'?'かなり仲良し':'まだ慣れてない'}
 function updateHud(){ui.place.textContent=maps[S.map].name;ui.buddy.textContent='相棒：'+BUDDIES[S.buddyKey].name}
 function toast(t){ui.toast.textContent=t;ui.toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>ui.toast.classList.remove('show'),1700)}
@@ -147,47 +176,37 @@ function openBond(){
  };
  render();
 }
-function positionBuddyNearPlayer(){
- const back=S.face==='r'?{x:S.px-1,y:S.py}:S.face==='l'?{x:S.px+1,y:S.py}:S.face==='d'?{x:S.px,y:S.py-1}:{x:S.px,y:S.py+1};
- const far=S.face==='r'?{x:S.px-2,y:S.py}:S.face==='l'?{x:S.px+2,y:S.py}:S.face==='d'?{x:S.px,y:S.py-2}:{x:S.px,y:S.py+2};
- const t=S.bond==='close'?back:far;S.comp.tx=t.x;S.comp.ty=t.y;
-}
+function positionBuddyNearPlayer(){const t=compFollowPoint();setCompGoal(t.x,t.y,true)}
 document.getElementById('menuBtn').onclick=openMenu;
 let selectNavAt=0;
 function selectBuddyStep(dir){if(S.mode!=='select'||(dir!=='l'&&dir!=='r'))return false;const now=Date.now();if(now-selectNavAt<240)return true;selectNavAt=now;const ks=Object.keys(BUDDIES),i=Math.max(0,ks.indexOf(S.pendingBuddy)),ni=(i+(dir==='r'?1:-1)+ks.length)%ks.length;S.pendingBuddy=ks[ni];ui.panel.querySelectorAll('.choice').forEach(x=>x.classList.toggle('active',x.dataset.buddy===S.pendingBuddy));const start=ui.panel.querySelector('#startBtn');if(start)start.textContent=S.pendingBuddy===S.buddyKey?'このまま もどる':'この相棒で 最初から';const active=ui.panel.querySelector('.choice.active');if(active)active.scrollIntoView({block:'nearest',inline:'center'});return true}
 function tryMove(dir){if(S.mode==='select'){selectBuddyStep(dir);return}if(S.moveT>0||S.eventAnim>0||S.dialog||S.mode!=='world')return;const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[dir];S.face=dir;let nx=S.px+d[0],ny=S.py+d[1];const ex=maps[S.map].exit;if(nx===ex.x&&ny===ex.y){transfer(ex);return}if(!blocked(S.map,nx,ny)){S.opx=S.px;S.opy=S.py;S.px=nx;S.py=ny;S.moveT=8;S.history.unshift({x:S.opx,y:S.opy});S.history=S.history.slice(0,4);S.footprints.push({map:S.map,x:S.opx,y:S.opy,life:250});}}
-function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true;toast('あの雪のところへ 戻ってみよう')}else if(from==='village'&&S.map==='path'&&S.battleDone&&!S.battleRevisitDone){S.battleRevisit=true;S.battleRevisitCue=false;toast('前にヤミカゲと向き合った雪道だ')}else toast(maps[S.map].name);updateHud()}
+function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.comp.route=[];S.comp.routeGoal=null;S.comp.callGoal=null;S.comp.returnDelay=0;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true;toast('あの雪のところへ 戻ってみよう')}else if(from==='village'&&S.map==='path'&&S.battleDone&&!S.battleRevisitDone){S.battleRevisit=true;S.battleRevisitCue=false;toast('前にヤミカゲと向き合った雪道だ')}else toast(maps[S.map].name);updateHud()}
 function dist(a,b,c,d){return Math.abs(a-c)+Math.abs(b-d)}
 function spotState(){if(S.map!=='village')return null;const sp=maps.village.spot;const near=dist(S.px,S.py,sp.x,sp.y)<=2;if(!near)return null;if(!S.firstDone)return 'first';if(S.revisitReady&&!S.revisitDone)return 'revisit';return 'done'}
 function frontCoord(){const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[S.face];return{x:S.px+d[0],y:S.py+d[1]}}
 function nearPoint(p,r=1){return p&&dist(S.px,S.py,p.x,p.y)<=r}
 function callBuddy(){
  if(S.mode!=='world'||S.dialog||S.eventAnim>0||S.restAnim>0||S.battleAnim>0)return;
- S.detour.active=false;S.detour.cooldown=210;
- const close=S.bond==='close';
- const back=S.face==='l'?{x:S.px+1,y:S.py}:S.face==='r'?{x:S.px-1,y:S.py}:S.face==='u'?{x:S.px,y:S.py+1}:{x:S.px,y:S.py-1};
- const far=S.face==='l'?{x:S.px+2,y:S.py}:S.face==='r'?{x:S.px-2,y:S.py}:S.face==='u'?{x:S.px,y:S.py+2}:{x:S.px,y:S.py-2};
- const t=close?back:far;S.comp.tx=t.x;S.comp.ty=t.y;
- if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){
-   S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65);
-   toast(close?'すぐ そばまで来た':'こっちを見て、少ししてから来た');return;
- }
- toast(close?'すぐ そばまで来た':'こっちを見て、少ししてから来た');
+ const close=S.bond==='close',t=compFollowPoint();S.detour.active=false;S.detour.cooldown=210;S.comp.route=[];S.comp.routeGoal=null;
+ S.comp.react='!';S.comp.reactTimer=32;S.comp.callGoal=t;S.comp.returnDelay=close?0:22;
+ if(close){setCompGoal(t.x,t.y,true);S.comp.callGoal=null}
+ if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65)}
 }
 function talkNpc(){const b=BUDDIES[S.buddyKey];S.npcDir={u:'d',d:'u',l:'r',r:'l'}[S.face]||'d';if(!S.npcMet){S.npcMet=true;showMsg(`あ、その子 はじめて見る。\n${b.name}っていうの？`,'ゆきあそびの こ');return}if(S.leftAfterMemory&&!S.npcRemembered){S.npcRemembered=true;showMsg(`あ、${b.name}。\nまた来たんだ。`,'ゆきあそびの こ');return}showMsg(`${b.name}、また雪のとこ行ってた？`,'ゆきあそびの こ')}
-function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;if(S.bond==='close'){S.comp.tx=S.px;S.comp.ty=S.py-1}else{S.comp.tx=S.px+2;S.comp.ty=S.py}toast('ひとやすみ')}
+function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;const t=S.bond==='close'?{x:S.px,y:S.py-1}:{x:S.px+2,y:S.py};setCompGoal(t.x,t.y,true)}
 function finishRest(){if(!S.restDone){S.restDone=true;const close=S.bond==='close';const line=S.buddyKey==='penta'?(close?'ぺんたが 足元で ぺたんと座った。':'ぺんたは 少し離れた雪を つついている。'):S.buddyKey==='puwawa'?(close?'ぷわわが 肩の近くで ふわふわしている。':'ぷわわは 灯りのほうへ ふわっと離れた。'):(close?'ヤミウサが すぐ横に座った。':'ヤミウサは 少し離れて座った。');showMsg(line)}else showMsg(S.bond==='close'?'また となりに来た。':'前と同じ場所に座った。')}
 function threatFacePlayer(){const t=maps.path.threat;const dx=S.px-t.x,dy=S.py-t.y;if(Math.abs(dx)>Math.abs(dy))S.threatDir=dx<0?'l':'r';else S.threatDir=dy<0?'u':'d'}
 function startBossPrelude(){if(S.battleDone||S.battleAnim>0)return;S.detour.active=false;S.bossStandoff=true;threatFacePlayer();
  const close=S.bond==='close';
- if(close){S.comp.tx=S.px+(S.face==='r'?-1:S.face==='l'?1:0);S.comp.ty=S.py+(S.face==='d'?-1:S.face==='u'?1:0)}
- else{const h=S.history[2]||S.history[1]||{x:S.px-2,y:S.py};S.comp.tx=h.x;S.comp.ty=h.y}
+ if(close){setCompGoal(S.px+(S.face==='r'?-1:S.face==='l'?1:0),S.py+(S.face==='d'?-1:S.face==='u'?1:0),true)}
+ else{const h=S.history[2]||S.history[1]||{x:S.px-2,y:S.py};setCompGoal(h.x,h.y,true)}
  S.threatReactTimer=120;
  showMsg('……来たか。\n通るなら、来い。','ヤミカゲ',()=>startBossBattle());
 }
-function startBossBattle(){S.battleAnim=180;S.bossStandoff=false;S.threatReactTimer=90;S.detour.active=false;S.comp.tx=S.px+(S.face==='r'?1:S.face==='l'?-1:0);S.comp.ty=S.py+(S.face==='d'?1:S.face==='u'?-1:0);toast('ヤミカゲとの戦い')}
+function startBossBattle(){S.battleAnim=180;S.bossStandoff=false;S.threatReactTimer=90;S.detour.active=false;setCompGoal(S.px+(S.face==='r'?1:S.face==='l'?-1:0),S.py+(S.face==='d'?1:S.face==='u'?-1:0),true)}
 function finishBattleMemory(){const b=BUDDIES[S.buddyKey];if(S.battleDone)return;S.battleDone=true;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;const line=S.buddyKey==='penta'?'ぺんたが 雪の上に ぺたんと座った。':S.buddyKey==='puwawa'?'ぷわわが いつもの高さまで戻った。':'ヤミウサが こちらへ戻ってきた。';showMsg(line)}
-function triggerBattleRevisit(){if(!S.battleDone||!S.battleRevisit||S.battleRevisitDone)return;S.battleRevisit=false;S.battleRevisitDone=true;S.battleRevisitCue=true;S.threatReactTimer=70;const b=BUDDIES[S.buddyKey];const line=S.buddyKey==='penta'?'ぺんたが 一度止まって、先に歩きだした。':S.buddyKey==='puwawa'?'ぷわわが 一周して、そのまま前へ進んだ。':'ヤミウサが 止まらず一歩前へ出た。';S.comp.tx=Math.min(MAP_W-2,S.px+1);S.comp.ty=S.py;showMsg(line)}
+function triggerBattleRevisit(){if(!S.battleDone||!S.battleRevisit||S.battleRevisitDone)return;S.battleRevisit=false;S.battleRevisitDone=true;S.battleRevisitCue=true;S.threatReactTimer=70;const b=BUDDIES[S.buddyKey];const line=S.buddyKey==='penta'?'ぺんたが 一度止まって、先に歩きだした。':S.buddyKey==='puwawa'?'ぷわわが 一周して、そのまま前へ進んだ。':'ヤミウサが 止まらず一歩前へ出た。';setCompGoal(Math.min(MAP_W-2,S.px+1),S.py,true);showMsg(line)
 function detourText(kind){
  if(kind==='snowman')return'雪だるまのほうへ行った';
  if(kind==='icepond')return'こおった池のほうへ走っていった';
@@ -217,10 +236,10 @@ function pickDetourStep(){
    const x=d.anchor.x+ox,y=d.anchor.y+oy;
    if(!blocked('village',x,y))opts.push({x,y});
  }
- if(opts.length){const t=opts[Math.floor(Math.random()*opts.length)];d.target=t;d.stepTimer=55+Math.floor(Math.random()*80)}
+ if(opts.length){const t=opts[Math.floor(Math.random()*opts.length)];d.target=t;d.stepTimer=55+Math.floor(Math.random()*80);setCompGoal(t.x,t.y,true)}
 }
 function tryAction(){if(S.mode==='select'){const start=ui.panel.querySelector('#startBtn');if(start)start.click();return}if(S.dialog){advanceMsg();return}if(S.eventAnim>0||S.restAnim>0||S.battleAnim>0||S.mode!=='world')return;const f=frontCoord();if(S.map==='village'&&f.x===maps.village.npc.x&&f.y===maps.village.npc.y){talkNpc();return}if(S.map==='village'&&nearPoint(maps.village.rest,1)){startRest();return}if(S.map==='path'&&!S.battleDone&&nearPoint(maps.path.threat,2)){startBossPrelude();return}const st=spotState();const sp=maps.village.spot;if((st==='first'||st==='revisit')&&dist(S.px,S.py,sp.x,sp.y)<=2){startEvent(st);return}if(st==='done'&&dist(S.px,S.py,sp.x,sp.y)<=2){showMsg('雪は さっきと同じように\nしんしんと積もっている。');return}if(S.detour.active){toast(S.detour.phase==='engrossed'?detourIdleText(S.detour.kind):detourText(S.detour.kind));return}if(S.map==='path'&&S.px<=2)toast('← 村へ戻れる');else toast('気になるものは なさそう')}
-function startEvent(kind){S.eventAnim=90;S.eventPhase=kind==='first'?1:2;S.notice=false;const sp=maps.village.spot;S.comp.tx=sp.x;S.comp.ty=sp.y+1;}
+function startEvent(kind){S.eventAnim=90;S.eventPhase=kind==='first'?1:2;S.notice=false;const sp=maps.village.spot;setCompGoal(sp.x,sp.y+1,true);}
 function finishEvent(){const b=BUDDIES[S.buddyKey];if(S.eventPhase===1){S.firstDone=true;showMsg(b.first,b.name)}else{S.revisitDone=true;S.revisitReady=false;showMsg(b.after,b.name)}S.eventPhase=0}
 function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min(S.dialog.length,S.msgI+.62);ui.dtext.textContent=S.dialog.slice(0,Math.floor(S.msgI))}
  if(S.moveT>0)S.moveT--;
