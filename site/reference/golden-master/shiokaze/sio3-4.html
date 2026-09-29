@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>しおかぜシティ - 船内経由プレビュー</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100dvh;overflow:hidden;background:#030508;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;touch-action:none;user-select:none;}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#app{position:relative;width:100%;max-width:900px;display:flex;flex-direction:column;height:100%;background:#000;box-shadow:0 0 60px rgba(0,0,0,1);}
+#ga{flex:1;position:relative;width:100%;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
+canvas{display:block;image-rendering:pixelated;image-rendering:-moz-crisp-edges;image-rendering:crisp-edges;}
+#gc{width:100%;height:100%;object-fit:contain;}
+#ct{height:160px;width:100%;background:linear-gradient(180deg,#0b0f19,#04060a);display:flex;align-items:center;justify-content:space-between;padding:0 30px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05);padding-bottom:calc(8px + env(safe-area-inset-bottom));}
+#jc{position:relative;width:120px;height:120px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 20px rgba(0,0,0,.5);flex-shrink:0;cursor:pointer;}
+.desc{color:#8b9bb4;font-size:12px;text-align:right;line-height:1.6;text-shadow:0 2px 4px rgba(0,0,0,.5);}
+.desc strong{color:#ffb347;font-size:18px;letter-spacing:1px;text-shadow:0 0 12px rgba(255,179,71,0.8);}
+@media (max-width:480px){#ct{padding:0 16px calc(8px + env(safe-area-inset-bottom));height:148px;} #jc{width:112px;height:112px;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="ga"><canvas id="gc"></canvas></div>
+  <div id="ct">
+    <canvas id="jc" width="120" height="120"></canvas>
+    <div class="desc">
+      <strong>しおかぜシティ</strong><br>
+      船内 → ゆきみち → 雪村 Preview<br><br>
+      🚢 港町の船内ロビーを抜けて雪村方面へ<br>
+      ✨ 温度差のある導線と質感表現を強化
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const C = document.getElementById("gc"), X = C.getContext("2d");
+let GW = 360, GH = 500, SC = 1, TK = 0; 
+const TS = 16;
+
+function resize(){
+    const a = document.getElementById("ga");
+    SC = Math.min(a.clientWidth / GW, a.clientHeight / GH);
+    C.width = GW; C.height = GH;
+    C.style.width = (GW * SC) + "px"; C.style.height = (GH * SC) + "px";
+}
+resize(); window.addEventListener("resize", resize);
+
+// --- スプライト ---
+const PAL = {'.':null,'X':'#181425','x':'#262b44','S':'#ffcd75','s':'#cb815e','H':'#ff8933','K':'#262b44','W':'#ffffff','w':'#8b9bb4','R':'#e43b44','r':'#a22633','B':'#0099db','b':'#2ce8f4','Y':'#fee761','y':'#e4a672','P':'#e2e8f0','p':'#94a3b8','V':'#8b5cf6','v':'#5b21b6','D':'#3a4466','d':'#262b44','L':'#e879f9','l':'#be185d','T':'#78350f','t':'#451a03','M':'#10b981','m':'#047857','C':'#06b6d4','c':'#0369a1','O':'#f97316','o':'#c2410c'};
+const SPRITES = {
+  pl_d:["...rrrrrr...","..rRRRRRRr..","..rRRRRRRr..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWRRRRw..","...dDDDDd...","...d.dd.d..."],
+  pl_u:["...rrrrrr...","..rRRRRRRr..","..rRRRRRRr..",".rRRRRRRRRr.",".rRRRRRRRRr.",".rRRRRRRRRr.","..wWWWWWWw..","..wWRRRRw..","...dDDDDd...","...d.dd.d..."],
+  pl_l:["...rrrrrr...","..rRRRRRRr..","..rRRRRRRr..",".sSSSSSSSSs.",".sSKSSSSSSs.",".sSHSSSSSSs.","..wWWWWWWw..","..wWRRRRw..","...dDDDDd...","...d.dd.d..."],
+  pl_r:["...rrrrrr...","..rRRRRRRr..","..rRRRRRRr..",".sSSSSSSSSs.",".sSSSSSSKSs.",".sSSSSSSHSs.","..wWWWWWWw..","..wWRRRRw..","...dDDDDd...","...d.dd.d..."],
+  sailor:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWPPPPw...","...dDDDDd...","...d.dd.d..."],
+  girl:["...yyyyyy...","..yyyyyyyy..","..yyyyyyyy..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWLLLLWw..","...dDDDDd...","...d.dd.d..."],
+  boy:["...bbbbbb...","..bBBBBBBb..","..bBBBBBBb..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWBBBBw...","...dDDDDd...","...d.dd.d..."],
+  granny:["...pppppp...","..pPPPPPPp..","..pPPPPPPp..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWLLLLw...","...dDDDDd...","...d.dd.d..."],
+  nurse:["...llllll...","..lLLLLLLl..","..lLLLLLLl..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWLLPLLw..","...wWWWWw...","...w.ww.w..."],
+  clerk:["...OOOOOO...","..oOOOOOOo..","..oOOOOOOo..",".sSSSSSSSSs.",".sSKSSSSKSs.",".sSHSSSSHSs.","..wWWWWWWw..","..wWOOOOWw..","...dDDDDd...","...d.dd.d..."]
+};
+
+function drawSpr(k, px, py, flip=false) {
+    const d = SPRITES[k] || SPRITES['girl']; 
+    X.save();
+    if(flip) { X.translate(px + 12, py); X.scale(-1, 1); px = 0; py = 0; }
+    for(let r=0; r<d.length; r++) for(let c=0; c<d[r].length; c++){
+        const col = PAL[d[r][c]];
+        if(col) { X.fillStyle = col; X.fillRect(px+c, py+r, 1, 1); }
+    }
+    X.restore();
+}
+
+// --- 超巨大マップデータ (60 x 50) ---
+const MW = 60, MH = 50;
+const mapTiles = new Array(MW * MH).fill(0);
+
+function setRect(x, y, w, h, tile) {
+    for(let iy=y; iy<y+h; iy++) {
+        for(let ix=x; ix<x+w; ix++) {
+            if(ix>=0 && ix<MW && iy>=0 && iy<MH) mapTiles[iy*MW+ix] = tile;
+        }
+    }
+}
+
+setRect(0, 0, MW, MH, 0); 
+setRect(0, 12, MW, 24, 20); 
+
+for(let x=0; x<MW; x++) {
+    let shoreY = 35 + Math.floor(Math.sin(x * 0.4) * 2.5);
+    setRect(x, shoreY, 1, MH - shoreY, 11); 
+    setRect(x, shoreY + 3 + Math.floor(Math.cos(x)*1.5), 1, MH, 3); 
+}
+
+setRect(48, 28, 12, 18, 3); 
+setRect(50, 29, 10, 16, 11); 
+setRect(52, 28, 6, 17, 11);
+
+setRect(12, 36, 8, 10, 21);
+setRect(40, 36, 4, 6, 21);
+
+setRect(8, 15, 6, 5, 8);   
+setRect(46, 15, 6, 5, 8);  
+setRect(22, 15, 5, 4, 8);  
+setRect(34, 15, 5, 4, 8);  
+setRect(28, 8, 7, 5, 8);   
+setRect(12, 24, 5, 4, 8);  
+setRect(42, 24, 5, 4, 8);  
+setRect(32, 28, 5, 4, 8);  
+setRect(54, 30, 4, 4, 8);  
+setRect(4, 42, 8, 3, 8);   // 大型船
+setRect(36, 40, 4, 2, 8);  
+setRect(45, 41, 4, 2, 8);  
+setRect(20, 26, 4, 2, 8);  
+setRect(26, 26, 4, 2, 8);  
+
+// 船のタラップ（乗船口）を歩けるように設定
+mapTiles[43 * MW + 11] = 21; // タラップ
+
+const palms = [[10, 20], [18, 20], [40, 20], [50, 20], [15, 30], [28, 30], [45, 29], [52, 34], [5, 26], [38, 26], [20, 10], [40, 10], [2, 36], [28, 36]];
+palms.forEach(p => { if(p[0]>=0 && p[0]<MW && p[1]>=0 && p[1]<MH) mapTiles[p[1]*MW+p[0]] = 8; });
+const planters = [[26,13], [33,13], [20,18], [24,18], [36,18], [40,18], [12,23], [17,23], [41,23], [47,23]];
+planters.forEach(p => { if(p[0]>=0 && p[0]<MW && p[1]>=0 && p[1]<MH) mapTiles[p[1]*MW+p[0]] = 8; });
+setRect(0, 0, MW, 2, 8);
+for(let y=0; y<MH; y++){ mapTiles[y*MW] = 8; mapTiles[y*MW + MW-1] = 8; }
+
+// --- 室内・3番道路マップジェネレーター ---
+function createRoom(type) {
+    const w = 13, h = 13;
+    let t = new Array(w * h).fill(101); // 壁
+    for(let y=3; y<h-1; y++) {
+        for(let x=1; x<w-1; x++) { t[y*w+x] = 100; } // 床
+    }
+    t[(h-2)*w + 6] = 103; // 出口マット
+
+    if(type === 'center') {
+        for(let x=4; x<=8; x++) t[5*w+x] = 102; 
+        t[4*w+6] = 105; 
+        t[8*w+2] = 106; t[8*w+10] = 106; 
+    } else if(type === 'shop') {
+        for(let x=2; x<=4; x++) t[5*w+x] = 102;
+        for(let x=8; x<=10; x++) t[5*w+x] = 102;
+        for(let x=2; x<=10; x++) { if(x!==6) t[8*w+x] = 104; }
+    } else if(type === 'cafe') {
+        for(let x=5; x<=7; x++) t[4*w+x] = 105; 
+        t[7*w+3] = 102; t[7*w+9] = 102; 
+        t[9*w+3] = 102; t[9*w+9] = 102;
+    } else if(type === 'gym') {
+        for(let y=3; y<h-1; y++) {
+            for(let x=1; x<w-1; x++) { t[y*w+x] = 108; } 
+        }
+        for(let y=5; y<h-1; y++) { t[y*w+6] = 100; } 
+        for(let y=4; y<=6; y++) {
+            for(let x=4; x<=8; x++) { t[y*w+x] = 100; } 
+        }
+        t[3*w+6] = 102; 
+        t[4*w+4] = 105; t[4*w+8] = 105; 
+    } else {
+        t[4*w+2] = 102; t[4*w+3] = 102; 
+        t[6*w+6] = 107; 
+        t[4*w+10] = 104; 
+        t[8*w+2] = 106; 
+    }
+    return t;
+}
+
+function createShipInterior() {
+    const w = 19, h = 15;
+    const t = new Array(w * h).fill(101);
+    const put = (x, y, v) => { if(x >= 0 && x < w && y >= 0 && y < h) t[y * w + x] = v; };
+    for(let y = 1; y < h - 1; y++) {
+        for(let x = 1; x < w - 1; x++) put(x, y, 100);
+    }
+    for(let y = 1; y < h - 1; y++) {
+        put(8, y, 109); put(9, y, 109); put(10, y, 109);
+    }
+    put(9, 13, 103);
+    put(9, 1, 103);
+
+    [[3,4],[4,4],[3,8],[4,8],[13,4],[14,4],[13,8],[14,8],[6,6],[12,6]].forEach(([x,y]) => put(x,y,102));
+    [[15,3],[15,9],[3,11],[14,11]].forEach(([x,y]) => put(x,y,104));
+    [[2,2],[16,2],[9,3],[9,11]].forEach(([x,y]) => put(x,y,105));
+    [[2,10],[16,10],[5,11],[13,11]].forEach(([x,y]) => put(x,y,106));
+    [[4,6],[14,6]].forEach(([x,y]) => put(x,y,107));
+    return t;
+}
+
+function createRoute3() {
+    const w = 18, h = 14;
+    const t = new Array(w * h).fill(110);
+    const put = (x, y, v) => { if(x >= 0 && x < w && y >= 0 && y < h) t[y * w + x] = v; };
+    const rect = (x, y, ww, hh, v) => { for(let iy = y; iy < y + hh; iy++) for(let ix = x; ix < x + ww; ix++) put(ix, iy, v); };
+
+    rect(0, 10, 6, 4, 21);
+    rect(5, 8, 4, 6, 21);
+    rect(8, 4, 4, 6, 21);
+    rect(10, 0, 3, 5, 21);
+
+    [[1,9],[2,9],[13,2],[14,2],[15,2],[14,7],[15,7],[16,7],[5,3],[4,3],[3,3],[15,11],[16,11]].forEach(([x,y]) => put(x,y,112));
+    [[2,8],[3,8],[4,8],[12,9],[13,9],[14,9],[15,9]].forEach(([x,y]) => put(x,y,3));
+
+    put(2, 12, 111);
+    put(11, 1, 111);
+    return t;
+}
+
+function createSnowVillage() {
+    const w = 20, h = 15;
+    const t = new Array(w * h).fill(110);
+    const put = (x, y, v) => { if(x >= 0 && x < w && y >= 0 && y < h) t[y * w + x] = v; };
+    const rect = (x, y, ww, hh, v) => { for(let iy = y; iy < y + hh; iy++) for(let ix = x; ix < x + ww; ix++) put(ix, iy, v); };
+
+    rect(8, 10, 4, 5, 21);
+    rect(5, 7, 10, 4, 21);
+    rect(6, 3, 3, 5, 21);
+    rect(12, 3, 3, 5, 21);
+
+    [[2,2],[3,2],[4,2],[15,2],[16,2],[17,2],[2,12],[3,12],[16,12],[17,12],[1,8],[18,8],[9,2],[10,2]].forEach(([x,y]) => put(x,y,112));
+    put(10, 14, 111);
+    return t;
+}
+
+const MAPS = {
+    city:   { w: MW, h: MH, data: mapTiles },
+    gym:    { w: 13, h: 13, data: createRoom('gym') },
+    center: { w: 13, h: 13, data: createRoom('center') },
+    shop:   { w: 13, h: 13, data: createRoom('shop') },
+    houseA: { w: 13, h: 13, data: createRoom('house') },
+    houseB: { w: 13, h: 13, data: createRoom('house') },
+    cafe:   { w: 13, h: 13, data: createRoom('cafe') },
+    villa1: { w: 13, h: 13, data: createRoom('villa') },
+    villa2: { w: 13, h: 13, data: createRoom('villa') },
+    ship:   { w: 19, h: 15, data: createShipInterior() },
+    r3:     { w: 18, h: 14, data: createRoute3() },
+    snow:   { w: 20, h: 15, data: createSnowVillage() }
+};
+
+const portals = [
+    { from: "city", x: 31, y: 12, to: "gym", tx: 6, ty: 10 },
+    { from: "city", x: 24, y: 18, to: "center", tx: 6, ty: 10 },
+    { from: "city", x: 36, y: 18, to: "shop", tx: 6, ty: 10 },
+    { from: "city", x: 14, y: 27, to: "houseA", tx: 6, ty: 10 },
+    { from: "city", x: 44, y: 27, to: "houseB", tx: 6, ty: 10 },
+    { from: "city", x: 34, y: 31, to: "cafe", tx: 6, ty: 10 },
+    { from: "city", x: 11, y: 19, to: "villa1", tx: 6, ty: 10 },
+    { from: "city", x: 49, y: 19, to: "villa2", tx: 6, ty: 10 },
+    { from: "city", x: 11, y: 43, to: "ship", tx: 9, ty: 13 },
+
+    { from: "gym", x: 6, y: 11, to: "city", tx: 31, ty: 13 },
+    { from: "center", x: 6, y: 11, to: "city", tx: 24, ty: 19 },
+    { from: "shop", x: 6, y: 11, to: "city", tx: 36, ty: 19 },
+    { from: "houseA", x: 6, y: 11, to: "city", tx: 14, ty: 28 },
+    { from: "houseB", x: 6, y: 11, to: "city", tx: 44, ty: 28 },
+    { from: "cafe", x: 6, y: 11, to: "city", tx: 34, ty: 32 },
+    { from: "villa1", x: 6, y: 11, to: "city", tx: 11, ty: 20 },
+    { from: "villa2", x: 6, y: 11, to: "city", tx: 49, ty: 20 },
+
+    { from: "ship", x: 9, y: 13, to: "city", tx: 12, ty: 43 },
+    { from: "ship", x: 9, y: 1, to: "r3", tx: 2, ty: 12 },
+
+    { from: "r3", x: 2, y: 12, to: "ship", tx: 9, ty: 2 },
+    { from: "r3", x: 11, y: 1, to: "snow", tx: 10, ty: 13 },
+
+    { from: "snow", x: 10, y: 14, to: "r3", tx: 11, ty: 2 }
+];
+portals.forEach(p => { if(p.from === "city") mapTiles[p.y * MW + p.x] = 20; });
+
+const npcs = [
+  {map:"city", x:28, y:22, sn:"girl", flip: false},
+  {map:"city", x:32, y:22, sn:"boy", flip: true},
+  {map:"city", x:15, y:44, sn:"sailor", flip: true},
+  {map:"city", x:18, y:44, sn:"boy", flip: false},
+  {map:"city", x:42, y:40, sn:"sailor", flip: false},
+  {map:"city", x:32, y:31, sn:"girl", flip: false},
+  {map:"city", x:22, y:27, sn:"granny", flip: false},
+  {map:"city", x:26, y:27, sn:"girl", flip: true},
+  {map:"city", x:26, y:17, sn:"sailor", flip: false},
+  {map:"city", x:34, y:17, sn:"granny", flip: true},
+  {map:"city", x:54, y:34, sn:"sailor", flip: true},
+  {map:"city", x:10, y:37, sn:"girl", flip: false},
+  {map:"city", x:45, y:25, sn:"boy", flip: true},
+  {map:"center", x:6, y:4, sn:"nurse", flip: false},
+  {map:"center", x:3, y:7, sn:"boy", flip: true},
+  {map:"shop", x:3, y:4, sn:"clerk", flip: false},
+  {map:"shop", x:9, y:4, sn:"clerk", flip: true},
+  {map:"shop", x:7, y:9, sn:"granny", flip: true},
+  {map:"cafe", x:6, y:3, sn:"sailor", flip: false},
+  {map:"cafe", x:3, y:8, sn:"girl", flip: true},
+  {map:"cafe", x:9, y:6, sn:"boy", flip: false},
+  {map:"gym", x:6, y:3, sn:"girl", flip: false},
+  {map:"houseA", x:7, y:6, sn:"granny", flip: true},
+  {map:"houseB", x:4, y:6, sn:"sailor", flip: false},
+  {map:"villa1", x:8, y:6, sn:"boy", flip: true},
+  {map:"villa2", x:6, y:4, sn:"girl", flip: false},
+  {map:"ship", x:4, y:11, sn:"sailor", flip: false},
+  {map:"ship", x:14, y:4, sn:"boy", flip: true},
+  {map:"ship", x:5, y:6, sn:"girl", flip: false},
+  {map:"ship", x:11, y:10, sn:"granny", flip: true},
+  {map:"r3", x:9, y:6, sn:"sailor", flip: false},
+  {map:"snow", x:8, y:8, sn:"girl", flip: false},
+  {map:"snow", x:13, y:6, sn:"granny", flip: true},
+  {map:"snow", x:5, y:11, sn:"boy", flip: false}
+];
+
+let currentMap = "city";
+
+function getT(x, y) { 
+    const m = MAPS[currentMap];
+    if (x < 0 || y < 0 || x >= m.w || y >= m.h) return 8; 
+    return m.data[y * m.w + x]; 
+}
+function canW(x, y) { 
+    const t = getT(x,y);
+    return t === 0 || t === 11 || t === 20 || t === 21 || t === 100 || t === 103 || t === 109 || t === 110 || t === 111; 
+}
+
+const JC = document.getElementById("jc"), JX = JC.getContext("2d");
+let jx = 0, jy = 0, jAct = false;
+function jUpd(cx, cy){ const dx=cx-60, dy=cy-60, dist=Math.sqrt(dx*dx+dy*dy); if(dist>36){jx=dx/dist*36; jy=dy/dist*36;} else {jx=dx; jy=dy;} }
+["touchstart", "touchmove"].forEach(ev => JC.addEventListener(ev, e => { e.preventDefault(); jAct=true; const r=JC.getBoundingClientRect(); jUpd(e.touches[0].clientX-r.left, e.touches[0].clientY-r.top); }, {passive:false}));
+["touchend", "touchcancel"].forEach(ev => JC.addEventListener(ev, e => { e.preventDefault(); jAct=false; jx=0; jy=0; }, {passive:false}));
+JC.addEventListener("mousedown", e => { jAct = true; const r = JC.getBoundingClientRect(); jUpd(e.clientX - r.left, e.clientY - r.top); });
+document.addEventListener("mousemove", e => { if(!jAct) return; const r = JC.getBoundingClientRect(); jUpd(e.clientX - r.left, e.clientY - r.top); });
+document.addEventListener("mouseup", () => { jAct = false; jx = 0; jy = 0; });
+let keys = {};
+document.addEventListener("keydown", e => { keys[e.key]=true; });
+document.addEventListener("keyup", e => { keys[e.key]=false; });
+
+let ripples = [];
+function addRipple(e) {
+    if(currentMap !== 'city') return;
+    const r = C.getBoundingClientRect();
+    const mx = (e.clientX || e.touches[0].clientX) - r.left;
+    const my = (e.clientY || e.touches[0].clientY) - r.top;
+    const worldX = window.currentCamX + mx / SC;
+    const worldY = window.currentCamY + my / SC;
+    if(getT(Math.floor(worldX/TS), Math.floor(worldY/TS)) === 3) { 
+        ripples.push({x: worldX, y: worldY, r: 0, life: 0});
+    }
+}
+C.addEventListener("mousedown", addRipple);
+C.addEventListener("touchstart", e => { e.preventDefault(); addRipple(e); }, {passive:false});
+
+let px = 30, py = 24, opx = 30, opy = 24, face = 'd', mvT = 0; 
+let particles = [];
+let footprints = []; 
+let lightSources = []; 
+window.currentCamX = 0; window.currentCamY = 0;
+
+// --- HD-2D風・美麗なタイル・家具描画 ---
+function drawTile(dx, dy, t, tx, ty) {
+    // 3番道路（雪原）
+    if(t === 110) { 
+        X.fillStyle = '#f4f8fb'; X.fillRect(dx, dy, TS, TS); 
+        X.fillStyle = '#e4edf5'; X.fillRect(dx, dy+TS-2, TS, 2); 
+        return; 
+    }
+    if(t === 111) { 
+        X.fillStyle = '#f4f8fb'; X.fillRect(dx, dy, TS, TS); 
+        X.fillStyle = '#3498db'; X.fillRect(dx+2, dy+2, TS-4, TS-4); 
+        return; 
+    }
+    if(currentMap === 'ship') {
+        if(t === 109) {
+            X.fillStyle = '#203452'; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = '#d6b36a'; X.fillRect(dx, dy, 2, TS); X.fillRect(dx+TS-2, dy, 2, TS);
+            X.fillStyle = 'rgba(255,255,255,0.06)'; X.fillRect(dx+2, dy+2, TS-4, TS-4);
+            return;
+        }
+        if(t === 100 || t === 103) {
+            const floor = X.createLinearGradient(0, dy, 0, dy + TS);
+            floor.addColorStop(0, '#5e402c'); floor.addColorStop(1, '#3a2418');
+            X.fillStyle = floor; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = '#714d35'; X.fillRect(dx, dy+4, TS, 1); X.fillRect(dx, dy+12, TS, 1);
+            X.fillStyle = 'rgba(255,255,255,0.05)'; X.fillRect(dx+1, dy+1, TS-2, 2);
+            if(t === 103) {
+                X.fillStyle = 'rgba(198, 51, 70, 0.85)'; X.fillRect(dx+2, dy+2, TS-4, TS-4);
+                X.fillStyle = 'rgba(255,255,255,0.15)'; X.fillRect(dx+2, dy+2, TS-4, 1);
+            }
+            return;
+        }
+        if(t === 101) {
+            const wall = X.createLinearGradient(0, dy, 0, dy + TS);
+            wall.addColorStop(0, '#11263d'); wall.addColorStop(1, '#0b1727');
+            X.fillStyle = wall; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = '#6a4c2c'; X.fillRect(dx, dy+TS-4, TS, 4);
+            X.fillStyle = 'rgba(255,255,255,0.06)'; X.fillRect(dx, dy, TS, 1);
+            if((ty === 0 || ty === 14) && (tx === 4 || tx === 9 || tx === 14)) {
+                X.fillStyle = '#c89b45'; X.beginPath(); X.arc(dx+8, dy+8, 5, 0, Math.PI*2); X.fill();
+                X.fillStyle = '#9fd5ff'; X.beginPath(); X.arc(dx+8, dy+8, 3.5, 0, Math.PI*2); X.fill();
+            }
+            return;
+        }
+        if(t === 102) {
+            X.fillStyle = '#14263c'; X.fillRect(dx, dy+TS-8, TS, 8);
+            X.fillStyle = '#223f66'; X.fillRect(dx, dy+TS-12, TS, 4);
+            X.fillStyle = '#d6b36a'; X.fillRect(dx, dy+TS-13, TS, 1);
+            return;
+        }
+        if(t === 104) {
+            X.fillStyle = '#3c2a1c'; X.fillRect(dx+1, dy+2, TS-2, TS-2);
+            X.fillStyle = '#6d4b2f'; X.fillRect(dx+2, dy+3, TS-4, TS-4);
+            X.fillStyle = '#b9873d'; X.fillRect(dx+4, dy+5, TS-8, 2);
+            X.fillStyle = 'rgba(0,0,0,0.25)'; X.fillRect(dx+2, dy+TS-4, TS-4, 2);
+            return;
+        }
+        if(t === 105) {
+            X.fillStyle = '#2d3948'; X.fillRect(dx+2, dy+2, TS-4, TS-2);
+            X.fillStyle = '#c79c4a'; X.fillRect(dx+5, dy+4, 6, 6);
+            X.fillStyle = '#ffdc8d'; X.fillRect(dx+6, dy+5, 4, 4);
+            lightSources.push({x: dx+8, y: dy+8, r: 54, c: 'rgba(255, 202, 120, 0.48)'});
+            return;
+        }
+        if(t === 106) {
+            X.fillStyle = '#d1d9e5'; X.beginPath(); X.arc(dx+8, dy+8, 5, 0, Math.PI*2); X.fill();
+            X.fillStyle = '#d24b52'; X.beginPath(); X.arc(dx+8, dy+8, 3, 0, Math.PI*2); X.fill();
+            X.fillStyle = '#d1d9e5'; X.fillRect(dx+7, dy+2, 2, 12); X.fillRect(dx+2, dy+7, 12, 2);
+            return;
+        }
+        if(t === 107) {
+            X.fillStyle = '#334b63'; X.fillRect(dx+1, dy+3, TS-2, TS-6);
+            X.fillStyle = '#98d0ff'; X.fillRect(dx+3, dy+5, TS-6, TS-10);
+            X.fillStyle = '#d6b36a'; X.fillRect(dx+4, dy+6, 4, 1); X.fillRect(dx+8, dy+8, 3, 1);
+            return;
+        }
+    }
+
+    // 室内タイル
+    if(t >= 100) { 
+        let fC = '#3e2723', fLine = '#2d1c15'; 
+        let wC = '#e0e0e0', wBot = '#7f8c8d', wTop = '#b0b0b0'; 
+
+        if(currentMap === 'center') { fC = '#ecf0f1'; fLine = '#dce4ec'; wC = '#ffffff'; wBot = '#e74c3c'; wTop = '#d1d8e0'; }
+        if(currentMap === 'shop') { fC = '#2c3e50'; fLine = '#1a252f'; wC = '#1e2b3c'; wBot = '#3498db'; wTop = '#0f171e'; }
+        if(currentMap === 'cafe') { fC = '#2d1c15'; fLine = '#1f130e'; wC = '#4e342e'; wBot = '#1a100b'; wTop = '#2d1c15'; }
+        if(currentMap === 'gym') { fC = '#121620'; fLine = '#0a0d14'; wC = '#0d131f'; wBot = '#2980b9'; wTop = '#04070d'; }
+        if(currentMap.startsWith('house') || currentMap.startsWith('villa')) { fC = '#4e342e'; fLine = '#3e2723'; wBot = '#1abc9c'; }
+
+        if(t === 100) { // 床
+            X.fillStyle = fC; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = fLine; 
+            if(currentMap === 'center' || currentMap === 'shop' || currentMap === 'gym') {
+                X.fillRect(dx, dy, TS, 1); X.fillRect(dx, dy, 1, TS);
+                X.fillStyle = 'rgba(255,255,255,0.03)'; X.fillRect(dx+1, dy+1, TS-2, TS-2); 
+            } else {
+                X.fillRect(dx, dy+4, TS, 1); X.fillRect(dx, dy+12, TS, 1); 
+                if((tx*ty)%3===0) { X.fillStyle='rgba(0,0,0,0.1)'; X.fillRect(dx, dy, TS, TS); }
+            }
+            return;
+        }
+        if(t === 101) { // 壁
+            let wallGrd = X.createLinearGradient(0, dy, 0, dy+TS);
+            wallGrd.addColorStop(0, wTop); wallGrd.addColorStop(1, wC);
+            X.fillStyle = wallGrd; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = wBot; X.fillRect(dx, dy+TS-4, TS, 4); 
+            X.fillStyle = 'rgba(255,255,255,0.15)'; X.fillRect(dx, dy+TS-4, TS, 1);
+            X.fillStyle = 'rgba(0,0,0,0.4)'; X.fillRect(dx, dy+TS-1, TS, 1);
+
+            if(currentMap !== 'gym' && ty === 2 && (tx === 4 || tx === 5 || tx === 7 || tx === 8)) {
+                X.fillStyle = '#2c3e50'; X.fillRect(dx, dy+4, TS, TS-4); 
+                let winGrd = X.createLinearGradient(0, dy+4, 0, dy+TS);
+                winGrd.addColorStop(0, '#e67e22'); winGrd.addColorStop(1, '#8e44ad');
+                X.fillStyle = winGrd; X.fillRect(dx+2, dy+6, TS-4, TS-6);
+                X.fillStyle = 'rgba(255,255,255,0.4)'; X.beginPath(); X.moveTo(dx+TS-4, dy+6); X.lineTo(dx+2, dy+TS-2); X.lineTo(dx+2, dy+TS-6); X.lineTo(dx+TS-8, dy+6); X.fill();
+            }
+            return; 
+        }
+        if(t === 103) { // 出口マット
+            X.fillStyle = fC; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = '#c0392b'; X.fillRect(dx+1, dy+2, TS-2, TS-2);
+            return; 
+        }
+        if(t === 108) { // 水（ジム）
+            X.fillStyle = '#0a2a3a'; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = 'rgba(41, 128, 185, 0.5)'; X.fillRect(dx, dy, TS, TS);
+            X.fillStyle = 'rgba(100, 200, 255, 0.15)'; 
+            X.fillRect(dx+2, dy+4+Math.sin(TK*0.03+tx)*2, 12, 1);
+            X.fillRect(dx+4, dy+10+Math.cos(TK*0.04+tx)*2, 8, 1);
+            return;
+        }
+
+        X.fillStyle = fC; X.fillRect(dx, dy, TS, TS);
+        X.fillStyle = 'rgba(0,0,0,0.5)'; X.fillRect(dx+2, dy+TS-2, TS, 6); 
+
+        if(t === 102) { // 家具・テーブル
+            let h = 8;
+            if(currentMap === 'center') {
+                X.fillStyle = '#bdc3c7'; X.fillRect(dx, dy+TS-h, TS, h); 
+                X.fillStyle = '#ffffff'; X.fillRect(dx, dy+TS-h-6, TS, 6); 
+                X.fillStyle = '#e74c3c'; X.fillRect(dx, dy+TS-h+2, TS, 2); 
+            } else if(currentMap === 'shop') {
+                X.fillStyle = '#2980b9'; X.fillRect(dx, dy+TS-h, TS, h); 
+                X.fillStyle = '#3498db'; X.fillRect(dx, dy+TS-h-6, TS, 6); 
+                X.fillStyle = '#f1c40f'; X.fillRect(dx+2, dy+TS-h-4, 4, 4); X.fillStyle = '#e74c3c'; X.fillRect(dx+8, dy+TS-h-2, 4, 4);
+            } else if(currentMap === 'cafe') {
+                X.fillStyle = '#1a100b'; X.beginPath(); X.arc(dx+8, dy+TS-4, 7, 0, Math.PI*2); X.fill(); 
+                X.fillStyle = '#f1c40f'; X.beginPath(); X.arc(dx+6, dy+TS-5, 2, 0, Math.PI*2); X.fill(); 
+                lightSources.push({x: dx+6, y: dy+TS-5, r: 40, c: "rgba(241, 196, 15, 0.4)"});
+            } else if(currentMap === 'gym') {
+                X.fillStyle = '#f39c12'; X.fillRect(dx+2, dy+TS-12, 12, 12); 
+                X.fillStyle = '#f1c40f'; X.fillRect(dx+2, dy+TS-16, 12, 4); 
+            } else { 
+                X.fillStyle = '#1e2b3c'; X.fillRect(dx, dy+TS-h, TS, h); 
+                X.fillStyle = '#2c3e50'; X.fillRect(dx, dy+TS-h-6, TS, 6); 
+                X.fillStyle = '#fff'; X.fillRect(dx+2, dy+TS-h-4, 8, 4); 
+            }
+            return;
+        }
+        if(t === 104) { // 棚
+            X.fillStyle = '#3e2723'; X.fillRect(dx, dy+TS-14, TS, 14); 
+            X.fillStyle = '#5c4033'; X.fillRect(dx, dy+TS-18, TS, 4); 
+            X.fillStyle = '#1a100b'; X.fillRect(dx+2, dy+TS-12, TS-4, 10); 
+            const cols = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#ecf0f1'];
+            for(let i=0; i<3; i++) {
+                X.fillStyle = cols[(tx+i)%cols.length];
+                X.fillRect(dx+3+i*4, dy+TS-10+(i%2), 2, 6-(i%2)); 
+            }
+            return;
+        }
+        if(t === 105) { // 設備
+            if(currentMap === 'center') {
+                X.fillStyle = '#7f8c8d'; X.fillRect(dx+2, dy+TS-12, TS-4, 12);
+                X.fillStyle = '#ecf0f1'; X.fillRect(dx+2, dy+TS-16, TS-4, 4);
+                X.fillStyle = '#2ecc71'; X.beginPath(); X.arc(dx+8, dy+TS-14, 3, 0, Math.PI*2); X.fill(); 
+                lightSources.push({x: dx+8, y: dy+TS-14, r: 50, c: "rgba(46, 204, 113, 0.6)"});
+            } else if(currentMap === 'cafe') {
+                X.fillStyle = '#2c3e50'; X.fillRect(dx, dy+TS-10, TS, 10); 
+                X.fillStyle = '#34495e'; X.fillRect(dx, dy+TS-14, TS, 4); 
+                X.fillStyle = '#ecf0f1'; X.fillRect(dx+2, dy+TS-12, 2, 2); 
+            } else if(currentMap === 'gym') {
+                X.fillStyle = '#0a3a4a'; X.fillRect(dx+2, dy, 12, TS);
+                X.fillStyle = '#1abc9c'; X.fillRect(dx+4, dy+2, 8, TS-4);
+                lightSources.push({x: dx+8, y: dy+TS-8, r: 60, c: "rgba(26, 188, 156, 0.6)"});
+            }
+            return;
+        }
+        if(t === 106) { // 観葉植物
+            X.fillStyle = '#2c3e50'; X.fillRect(dx+4, dy+TS-6, 8, 6); 
+            X.fillStyle = '#1e8449'; X.beginPath(); X.arc(dx+8, dy+TS-10, 8, 0, Math.PI*2); X.fill();
+            X.fillStyle = '#27ae60'; X.beginPath(); X.arc(dx+6, dy+TS-12, 5, 0, Math.PI*2); X.fill();
+            return;
+        }
+        if(t === 107) { // 海図テーブル
+            X.fillStyle = '#2c3e50'; X.fillRect(dx, dy+TS-8, TS, 8); 
+            X.fillStyle = '#34495e'; X.fillRect(dx, dy+TS-12, TS, 4); 
+            X.fillStyle = '#f5b041'; X.fillRect(dx+2, dy+TS-14, TS-4, 8); 
+            X.fillStyle = '#c0392b'; X.fillRect(dx+4, dy+TS-12, 2, 2); 
+            return;
+        }
+    }
+
+    // 屋外タイル
+    X.fillStyle = '#4fa362'; X.fillRect(dx, dy, TS, TS);
+
+    if(t===0){ if((tx*7+ty)%2===0){X.fillStyle='#78cc89';X.fillRect(dx+3,dy+3,2,2);} return;}
+    if(t===20){ 
+        X.fillStyle='#aab6c4'; X.fillRect(dx,dy,TS,TS);
+        X.fillStyle='#cbd5e1'; X.fillRect(dx+1,dy+1,14,14);
+        X.fillStyle='#f1f5f9'; X.fillRect(dx+2,dy+2,2,2);
+        return;
+    }
+    if(t===11){ 
+        X.fillStyle='#d4c4a8'; X.fillRect(dx,dy,TS,TS); 
+        if((tx+ty)%3===0){X.fillStyle='#c2b296';X.fillRect(dx+2,dy+2,4,2);} 
+        return;
+    }
+    if(t===21){ 
+        X.fillStyle='#8c7b6c'; X.fillRect(dx,dy,TS,TS);
+        X.fillStyle='#6b5b4e'; X.fillRect(dx,dy+14,TS,2); X.fillRect(dx+7,dy,2,TS);
+        if(currentMap === 'r3' || currentMap === 'snow') {
+            X.fillStyle='rgba(255,255,255,0.08)'; X.fillRect(dx, dy+1, TS, 1);
+            X.fillStyle='rgba(255,255,255,0.12)'; X.fillRect(dx+2, dy+3, 3, 1);
+        }
+        return;
+    }
+    if(t===112){
+        X.fillStyle='#dfeaf7'; X.fillRect(dx,dy,TS,TS);
+        X.fillStyle='#c8d9ee'; X.fillRect(dx,dy+TS-4,TS,4);
+        X.fillStyle='rgba(255,255,255,0.45)'; X.fillRect(dx+2,dy+2,TS-4,4);
+        X.fillStyle='rgba(181, 202, 228, 0.65)'; X.beginPath(); X.arc(dx+8,dy+10,5,0,Math.PI*2); X.fill();
+        return;
+    }
+    if(t===3){ 
+        let wg = X.createLinearGradient(0, dy, 0, dy+TS);
+        wg.addColorStop(0, '#2980b9'); wg.addColorStop(1, '#1f618d');
+        X.fillStyle = wg; X.fillRect(dx, dy, TS, TS);
+
+        const wave = Math.sin(TK*0.04 + tx*0.5 + ty*0.2);
+        if(wave > 0.5) {
+            X.fillStyle = 'rgba(255,255,255,0.25)';
+            X.fillRect(dx + 2, dy + 6, 12, 2);
+        }
+
+        if (ty > 0 && getT(tx, ty-1) === 11) {
+            const shoreWave = Math.sin(TK*0.02 + tx*0.3);
+            if(shoreWave > -0.5) {
+                X.fillStyle = `rgba(255,255,255,${(shoreWave+0.5)*0.5})`;
+                X.beginPath();
+                X.moveTo(dx, dy + 6 - shoreWave*6);
+                X.quadraticCurveTo(dx+TS/2, dy - shoreWave*8, dx+TS, dy + 6 - shoreWave*6);
+                X.lineTo(dx+TS, dy); X.lineTo(dx, dy); X.fill();
+            }
+        }
+        return;
+    }
+}
+
+// === 屋外用の各種描画関数群 ===
+function drawBackgroundEffects(cx, cy) {
+    if(currentMap !== 'city') return;
+    X.save();
+    X.globalCompositeOperation = "color-dodge";
+    for(let i=0; i<80; i++) {
+        const wx = (i * 37 + TK * 0.15) % (GW + 100) - 50;
+        const wy = (30 * TS - cy) + (i * 17) % (20 * TS);
+        if (wy < 30 * TS - cy) continue;
+        const wWidth = 15 + Math.sin(TK * 0.05 + i) * 20;
+        X.fillStyle = `rgba(255, 120, 60, ${0.15 + Math.sin(TK * 0.08 + i)*0.2})`;
+        X.fillRect(wx, wy, wWidth, 2);
+    }
+    X.restore();
+}
+
+function drawStreetLamp(x, y) {
+    X.fillStyle = '#2c3e50'; X.fillRect(x-2, y-35, 4, 35);
+    X.fillStyle = '#17222c'; X.fillRect(x-4, y, 8, 4);
+    X.fillStyle = '#d35400'; X.fillRect(x-5, y-45, 10, 10);
+    X.fillStyle = '#fffae6'; X.fillRect(x-3, y-43, 6, 6);
+    X.fillStyle = '#2c3e50'; X.beginPath(); X.moveTo(x-6, y-45); X.lineTo(x+6, y-45); X.lineTo(x, y-51); X.closePath(); X.fill();
+    lightSources.push({x: x, y: y-42, r: 80, c: "rgba(255, 200, 100, 0.45)"});
+}
+
+function drawPlanter(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.fillRect(x+2, y+12, 12, 6);
+    X.fillStyle = '#bdc3c7'; X.fillRect(x+2, y+8, 12, 6);
+    X.fillStyle = '#95a5a6'; X.fillRect(x+2, y+10, 12, 4); 
+    X.fillStyle = '#8b5a2b'; X.fillRect(x+4, y+8, 8, 2); 
+    X.fillStyle = '#27ae60'; X.beginPath(); X.arc(x+6, y+6, 4, 0, Math.PI*2); X.fill();
+    X.beginPath(); X.arc(x+10, y+6, 4, 0, Math.PI*2); X.fill();
+    X.beginPath(); X.arc(x+8, y+4, 4, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#e74c3c'; X.fillRect(x+5, y+4, 2, 2); X.fillRect(x+9, y+5, 2, 2);
+    X.fillStyle = '#f1c40f'; X.fillRect(x+7, y+3, 2, 2);
+}
+
+function drawStarfish(x, y) {
+    X.save(); X.translate(x+8, y+8); X.rotate(TK*0.01 + x);
+    X.fillStyle = 'rgba(0,0,0,0.2)'; X.beginPath(); X.arc(1, 1, 4, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#e74c3c';
+    for(let i=0; i<5; i++) {
+        X.beginPath(); X.moveTo(0, 0);
+        X.lineTo(Math.cos(i*Math.PI*2/5)*4, Math.sin(i*Math.PI*2/5)*4);
+        X.lineTo(Math.cos((i+0.5)*Math.PI*2/5)*1.5, Math.sin((i+0.5)*Math.PI*2/5)*1.5);
+        X.lineTo(Math.cos((i-0.5)*Math.PI*2/5)*1.5, Math.sin((i-0.5)*Math.PI*2/5)*1.5);
+        X.fill();
+    }
+    X.fillStyle = '#f1c40f'; X.beginPath(); X.arc(0, 0, 1.5, 0, Math.PI*2); X.fill();
+    X.restore();
+}
+
+function drawMarineBuilding(x, y, w, h, roofColor, type, awningColor2) {
+    const W = w * 16, H = h * 16;
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.fillRect(x + 4, y + H - 2, W, 8); 
+    X.fillStyle = '#ecf0f1'; X.fillRect(x + 2, y + 16, W - 4, H - 16); 
+    X.fillStyle = '#bdc3c7'; X.fillRect(x + 2, y + 16, 2, H - 16); 
+
+    X.fillStyle = roofColor;
+    X.beginPath(); X.moveTo(x - 8, y + 16); X.lineTo(x + W / 2, y - 4); X.lineTo(x + W + 8, y + 16); X.closePath(); X.fill();
+    X.fillStyle = 'rgba(0,0,0,0.2)'; X.fillRect(x - 8, y + 16, W + 16, 3);
+    X.fillStyle = 'rgba(255,255,255,0.2)';
+    X.beginPath(); X.moveTo(x - 8, y + 16); X.lineTo(x + W / 2, y - 4); X.lineTo(x + W / 2, y + 2); X.lineTo(x + 2, y + 16); X.fill();
+
+    const dx = x + Math.floor(w/2) * 16, dy = y + H - 16;
+    X.fillStyle = '#8b5a2b'; X.fillRect(dx, dy, 16, 16);
+    X.fillStyle = '#3a2210'; X.fillRect(dx + 2, dy + 2, 12, 14);
+
+    lightSources.push({x: dx+8, y: dy+8, r: 40, c: "rgba(255, 180, 80, 0.3)"});
+
+    const winW = 12, winH = 16;
+    X.fillStyle = '#fffae6'; 
+    X.fillRect(x + 8, y + 28, winW, winH);
+    X.fillRect(x + W - 20, y + 28, winW, winH);
+
+    lightSources.push({x: x + 14, y: y + 36, r: 50, c: "rgba(255, 210, 100, 0.35)"});
+    lightSources.push({x: x + W - 14, y: y + 36, r: 50, c: "rgba(255, 210, 100, 0.35)"});
+
+    X.strokeStyle = '#34495e'; X.lineWidth = 2; 
+    X.strokeRect(x + 8, y + 28, winW, winH); X.strokeRect(x + W - 20, y + 28, winW, winH);
+    X.beginPath(); X.moveTo(x + 14, y + 28); X.lineTo(x + 14, y + 44); X.moveTo(x + 8, y + 36); X.lineTo(x + 20, y + 36); X.stroke();
+    X.beginPath(); X.moveTo(x + W - 14, y + 28); X.lineTo(x + W - 14, y + 44); X.moveTo(x + W - 20, y + 36); X.lineTo(x + W - 8, y + 36); X.stroke();
+
+    const awningW = 8;
+    const awnings = 3;
+    const startX = dx - (awnings*awningW) / 2 + 8;
+    for(let i=0; i<awnings; i++) {
+        X.fillStyle = i%2===0 ? roofColor : awningColor2;
+        X.fillRect(startX + i*awningW, y + 16, awningW, 6);
+        X.beginPath(); X.arc(startX + awningW/2 + i*awningW, y + 22, awningW/2, 0, Math.PI); X.fill();
+    }
+
+    const drawWinAwning = (wx) => {
+        for(let i=0; i<2; i++) {
+            X.fillStyle = i%2===0 ? roofColor : awningColor2;
+            X.fillRect(wx - 2 + i*8, y + 24, 8, 4);
+            X.beginPath(); X.arc(wx - 2 + 4 + i*8, y + 28, 4, 0, Math.PI); X.fill();
+        }
+    };
+    drawWinAwning(x + 8);
+    drawWinAwning(x + W - 20);
+
+    if(type === 'center') {
+        X.fillStyle = '#fff'; X.beginPath(); X.arc(x + W/2, y + 10, 8, 0, Math.PI*2); X.fill();
+        X.fillStyle = '#e74c3c'; X.beginPath(); X.arc(x + W/2, y + 10, 8, Math.PI, 0); X.fill();
+        X.fillStyle = '#2c3e50'; X.fillRect(x + W/2 - 8, y + 9, 16, 2); 
+        X.beginPath(); X.arc(x + W/2, y + 10, 3, 0, Math.PI*2); X.fill();
+        X.fillStyle = '#fff'; X.beginPath(); X.arc(x + W/2, y + 10, 1.5, 0, Math.PI*2); X.fill();
+    } else if (type === 'shop') {
+        X.fillStyle = '#f1c40f'; X.beginPath(); X.arc(x + W/2, y + 10, 8, 0, Math.PI*2); X.fill();
+        X.fillStyle = '#3498db'; X.fillRect(x + W/2 - 5, y + 7, 10, 6);
+        X.fillStyle = '#fff'; X.fillRect(x + W/2 - 3, y + 9, 6, 2);
+    } else if (type === 'cafe') {
+        X.fillStyle = '#8e44ad'; X.fillRect(x + W/2 - 10, y + 4, 20, 10);
+        X.fillStyle = '#f1c40f'; X.fillRect(x + W/2 - 4, y + 6, 8, 6);
+        X.fillRect(x + W/2 + 2, y + 7, 4, 4);
+        X.fillStyle = '#8e44ad'; X.fillRect(x + W/2 + 3, y + 8, 2, 2);
+    }
+}
+
+function drawGymBuilding(x, y, w, h) {
+    const W = w * 16, H = h * 16;
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.fillRect(x + 4, y + H - 2, W, 8); 
+
+    X.fillStyle = '#ecf0f1'; X.fillRect(x + 2, y + 24, W - 4, H - 24); 
+    X.fillStyle = '#bdc3c7'; X.fillRect(x + 2, y + 24, 2, H - 24); 
+
+    for(let i=0; i<4; i++) {
+        X.fillStyle = '#fff'; X.fillRect(x + 12 + i*26, y + 24, 10, H - 24);
+        X.fillStyle = '#dce4ec'; X.fillRect(x + 20 + i*26, y + 24, 2, H - 24);
+    }
+
+    X.fillStyle = '#2980b9'; 
+    X.beginPath(); X.moveTo(x - 8, y + 24); X.lineTo(x + W/2, y - 8); X.lineTo(x + W + 8, y + 24); X.closePath(); X.fill();
+    X.fillStyle = '#1f618d'; 
+    X.beginPath(); X.moveTo(x + W/2, y - 8); X.lineTo(x + W + 8, y + 24); X.lineTo(x + W/2, y + 24); X.closePath(); X.fill();
+
+    X.fillStyle = '#f1c40f'; X.fillRect(x - 8, y + 22, W + 16, 2);
+
+    const dx = x + Math.floor(w/2)*16 - 8, dy = y + H - 24;
+    X.fillStyle = '#8b5a2b'; X.fillRect(dx, dy + 8, 16, 16); 
+    X.fillStyle = '#3a2210'; X.fillRect(dx + 2, dy + 10, 12, 14);
+
+    X.fillStyle = '#f39c12'; X.beginPath(); X.arc(x + W / 2, y + 10, 12, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#f1c40f'; X.beginPath(); X.arc(x + W / 2, y + 10, 10, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#3498db'; X.beginPath(); X.arc(x + W / 2, y + 10, 5, 0, Math.PI*2); X.fill();
+
+    lightSources.push({x: x + W/2, y: dy + 16, r: 60, c: "rgba(255, 230, 100, 0.4)"});
+}
+
+function drawResortVilla(x, y, w, h) {
+    const W = w * 16, H = h * 16;
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.fillRect(x + 4, y + H - 2, W, 8); 
+
+    X.fillStyle = '#ecf0f1'; X.fillRect(x + 2, y + H/2, W - 4, H/2 - 2); 
+    X.fillStyle = '#d4c4a8'; X.fillRect(x + 2, y + H - 6, W - 4, 12);
+    for(let i=0; i<W; i+=8){ X.fillStyle='#c2b296'; X.fillRect(x+2+i, y+H-6, 1, 12); }
+
+    X.fillStyle = '#f8fbfc'; X.fillRect(x + 8, y + 16, W - 16, H/2 - 16); 
+    X.fillStyle = '#dce4ec'; X.fillRect(x + W - 8, y + 16, 2, H/2 - 16); 
+
+    X.fillStyle = '#2980b9'; X.fillRect(x, y + 10, W, 8);
+    X.fillStyle = '#3498db'; X.fillRect(x+2, y + 12, W-4, 4);
+
+    X.fillStyle = '#fffae6'; 
+    const glassW = W/2 - 8;
+    X.fillRect(x + 16, y + H/2 + 8, glassW, H/2 - 16);
+    X.strokeStyle = '#bdc3c7'; X.lineWidth = 2; X.strokeRect(x + 16, y + H/2 + 8, glassW, H/2 - 16);
+    X.beginPath(); X.moveTo(x+16+glassW/2, y+H/2+8); X.lineTo(x+16+glassW/2, y+H-8); X.stroke();
+    lightSources.push({x: x + W/4 + 12, y: y + H*0.75 + 4, r: 70, c: "rgba(255, 220, 120, 0.4)"});
+
+    const dx = x + Math.floor(w/2)*16, dy = y + H - 16;
+    X.fillStyle = '#8b5a2b'; X.fillRect(dx, dy, 16, 16);
+    X.fillStyle = '#3a2210'; X.fillRect(dx + 2, dy + 2, 12, 14);
+
+    X.fillStyle = '#bdc3c7'; X.fillRect(x + 4, y + H/2 - 4, W - 8, 6);
+    X.fillStyle = '#7f8c8d'; 
+    for(let i=0; i<W-8; i+=6) { X.fillRect(x + 4 + i, y + H/2 - 10, 2, 6); }
+    X.fillRect(x + 4, y + H/2 - 10, W - 8, 2);
+
+    X.fillStyle = '#fffae6'; X.fillRect(x + 20, y + 24, 16, 16);
+    lightSources.push({x: x + 28, y: y + 32, r: 50, c: "rgba(255, 210, 100, 0.35)"});
+    X.strokeStyle = '#34495e'; X.lineWidth = 2;
+    X.strokeRect(x + 20, y + 24, 16, 16);
+    X.beginPath(); X.moveTo(x+28, y+24); X.lineTo(x+28, y+40); X.stroke();
+
+    X.fillStyle = '#27ae60';
+    X.beginPath(); X.arc(x + 12, y + H/2 - 12, 6, 0, Math.PI*2); X.fill();
+    X.beginPath(); X.arc(x + W - 12, y + H/2 - 12, 6, 0, Math.PI*2); X.fill();
+}
+
+function drawMarketStall(x, y, color1, color2) {
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.fillRect(x+4, y+24, 24, 6);
+    X.fillStyle = '#8b5a2b'; X.fillRect(x+4, y+12, 2, 12); X.fillRect(x+26, y+12, 2, 12);
+    X.fillStyle = '#d4c4a8'; X.fillRect(x+4, y+16, 24, 8); 
+
+    X.fillStyle = '#e74c3c'; X.beginPath(); X.arc(x+10, y+14, 3, 0, Math.PI*2); X.fill(); X.beginPath(); X.arc(x+14, y+15, 3, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#f39c12'; X.beginPath(); X.arc(x+20, y+14, 3, 0, Math.PI*2); X.fill(); X.beginPath(); X.arc(x+24, y+15, 3, 0, Math.PI*2); X.fill();
+
+    for(let i=0; i<4; i++) {
+        X.fillStyle = i%2===0 ? color1 : color2;
+        X.fillRect(x+i*8, y, 8, 12);
+        X.beginPath(); X.arc(x+4+i*8, y+12, 4, 0, Math.PI); X.fill();
+    }
+}
+
+function drawBeachParasol(x, y, color1, color2) {
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.beginPath(); X.ellipse(x+16, y+28, 16, 6, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#ecf0f1'; X.fillRect(x+4, y+24, 10, 4); X.fillRect(x+26, y+26, 10, 4);
+    X.fillStyle = '#bdc3c7'; X.fillRect(x+15, y+4, 2, 24); 
+
+    X.fillStyle = color1; X.beginPath(); X.arc(x+16, y+4, 24, Math.PI, 0); X.fill();
+    X.fillStyle = color2; X.beginPath(); X.moveTo(x+16, y-20); X.lineTo(x-4, y+4); X.lineTo(x+36, y+4); X.fill();
+    X.beginPath(); X.moveTo(x+16, y-20); X.lineTo(x+4, y+4); X.lineTo(x+28, y+4); X.fill();
+}
+
+function drawBeachTowel(x, y, color) {
+    X.fillStyle = 'rgba(0,0,0,0.1)'; X.fillRect(x+2, y+2, 12, 20);
+    X.fillStyle = color; X.fillRect(x, y, 12, 20);
+    X.fillStyle = '#fff'; X.fillRect(x, y+2, 12, 2); X.fillRect(x, y+16, 12, 2);
+}
+
+function drawSmallBoat(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.4)'; X.beginPath(); X.ellipse(x+32, y+16, 36, 10, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#e67e22'; X.beginPath(); X.moveTo(x, y+8); X.lineTo(x+64, y+8); X.lineTo(x+56, y+20); X.lineTo(x+8, y+20); X.fill();
+    X.fillStyle = '#d35400'; X.beginPath(); X.moveTo(x-4, y+2); X.lineTo(x+68, y+2); X.lineTo(x+64, y+8); X.lineTo(x, y+8); X.fill();
+    X.fillStyle = '#ecf0f1'; X.fillRect(x+16, y+4, 32, 4); 
+}
+
+function drawShip(sx, sy) {
+    X.fillStyle = 'rgba(0,0,0,0.5)'; X.beginPath(); X.ellipse(sx+60, sy+25, 65, 12, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#3e2723'; X.beginPath(); X.moveTo(sx, sy+10); X.lineTo(sx+120, sy+10); X.lineTo(sx+100, sy+30); X.lineTo(sx+20, sy+30); X.fill();
+    X.fillStyle = '#5d4037'; X.beginPath(); X.moveTo(sx-10, sy-5); X.lineTo(sx+130, sy-5); X.lineTo(sx+120, sy+10); X.lineTo(sx, sy+10); X.fill();
+    X.strokeStyle = 'rgba(0,0,0,0.4)'; X.lineWidth = 1; X.beginPath(); X.moveTo(sx-2, sy+2); X.lineTo(sx+122, sy+2); X.stroke();
+    X.fillStyle = '#212121'; X.fillRect(sx+40, sy-70, 6, 80); X.fillRect(sx+80, sy-50, 5, 60); 
+    X.fillStyle = '#bdc3c7'; X.fillRect(sx+20, sy-40, 46, 8); X.fillRect(sx+65, sy-25, 35, 6); 
+
+    // タラップ (3番道路への道)
+    X.fillStyle = '#8c7b6c'; X.fillRect(sx+110, sy+15, 20, 8);
+    X.fillStyle = '#6b5b4e'; X.fillRect(sx+110, sy+21, 20, 2);
+
+    X.fillStyle = '#f1c40f'; X.fillRect(sx+10, sy-10, 4, 6); X.fillRect(sx+110, sy-10, 4, 6);
+    lightSources.push({x: sx+12, y: sy-8, r: 40, c: "rgba(255, 200, 50, 0.4)"});
+    lightSources.push({x: sx+112, y: sy-8, r: 40, c: "rgba(255, 200, 50, 0.4)"});
+}
+
+function drawLighthouse(lx, ly) {
+    X.fillStyle = 'rgba(0,0,0,0.5)'; X.beginPath(); X.ellipse(lx+32, ly+30, 40, 15, 0, 0, Math.PI*2); X.fill();
+    X.save();
+    X.beginPath(); X.moveTo(lx-8, ly+30); X.lineTo(lx+72, ly+30); X.lineTo(lx+52, ly-140); X.lineTo(lx+12, ly-140); X.clip();
+    let lhWhite = X.createLinearGradient(lx-8, 0, lx+72, 0); lhWhite.addColorStop(0, '#7f8c8d'); lhWhite.addColorStop(0.5, '#ecf0f1'); lhWhite.addColorStop(1, '#bdc3c7');
+    X.fillStyle = lhWhite; X.fillRect(lx-20, ly-150, 100, 200);
+    X.fillStyle = '#c0392b'; 
+    X.beginPath(); X.ellipse(lx+32, ly, 45, 10, 0, 0, Math.PI*2); X.fill(); X.fillRect(lx-20, ly-15, 100, 15);
+    X.beginPath(); X.ellipse(lx+32, ly-60, 35, 8, 0, 0, Math.PI*2); X.fill(); X.fillRect(lx-20, ly-75, 100, 15);
+    X.beginPath(); X.ellipse(lx+32, ly-120, 25, 6, 0, 0, Math.PI*2); X.fill(); X.fillRect(lx-20, ly-135, 100, 15);
+    X.restore();
+    X.fillStyle = '#2c3e50'; X.fillRect(lx+4, ly-144, 56, 8);
+    X.fillStyle = '#34495e'; X.fillRect(lx+16, ly-164, 32, 20);
+    X.fillStyle = '#fffae6'; X.fillRect(lx+24, ly-160, 16, 12);
+    X.fillStyle = '#2c3e50'; X.beginPath(); X.moveTo(lx+8, ly-164); X.lineTo(lx+32, ly-184); X.lineTo(lx+56, ly-164); X.fill();
+}
+
+function drawPalmTree(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.4)'; X.beginPath(); X.ellipse(x+8, y+14, 12, 4, 0, 0, Math.PI*2); X.fill();
+    X.strokeStyle = '#5c3a21'; X.lineWidth = 5; X.lineCap = 'round';
+    X.beginPath(); X.moveTo(x+8, y+14); X.quadraticCurveTo(x+16, y, x+8, y-24); X.stroke();
+    X.fillStyle = '#27ae60';
+    for(let i=0; i<5; i++) {
+        X.beginPath(); X.moveTo(x+8, y-24);
+        const a = i * (Math.PI*2/5) + Math.sin(TK*0.02 + x)*0.1;
+        X.quadraticCurveTo(x+8 + Math.cos(a-0.5)*20, y-24 + Math.sin(a-0.5)*20, x+8 + Math.cos(a)*30, y-24 + Math.sin(a)*15);
+        X.quadraticCurveTo(x+8 + Math.cos(a+0.5)*20, y-24 + Math.sin(a+0.5)*20, x+8, y-24);
+        X.fill();
+    }
+}
+
+function drawFountain(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.3)'; X.beginPath(); X.ellipse(x+16, y+24, 30, 12, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#7f8c8d'; X.beginPath(); X.ellipse(x+16, y+20, 30, 12, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#2980b9'; X.beginPath(); X.ellipse(x+16, y+20, 26, 10, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#bdc3c7'; X.fillRect(x+12, y+6, 8, 14);
+    X.beginPath(); X.ellipse(x+16, y+6, 10, 4, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = 'rgba(255,255,255,0.8)';
+    for(let i=0; i<12; i++) {
+        const h = Math.random()*16 + 8;
+        X.beginPath(); X.arc(x+16 + (Math.random()-0.5)*24, y+20 - h, Math.random()*2+1, 0, Math.PI*2); X.fill();
+    }
+}
+
+function drawCrate(x, y) {
+    X.fillStyle = '#8b5a2b'; X.fillRect(x, y, 14, 14);
+    X.fillStyle = '#6a4128'; X.fillRect(x+1, y+1, 12, 12);
+    X.strokeStyle = '#543826'; X.lineWidth = 1;
+    X.beginPath(); X.moveTo(x+1, y+1); X.lineTo(x+13, y+13); X.stroke();
+    X.beginPath(); X.moveTo(x+13, y+1); X.lineTo(x+1, y+13); X.stroke();
+    X.strokeRect(x+0.5, y+0.5, 13, 13);
+}
+
+function drawPorthole(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.25)'; X.beginPath(); X.arc(x+8, y+8, 8, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#c79c4a'; X.beginPath(); X.arc(x+8, y+8, 6, 0, Math.PI*2); X.fill();
+    const sea = X.createLinearGradient(0, y+2, 0, y+14);
+    sea.addColorStop(0, '#7fc9ff'); sea.addColorStop(1, '#24527a');
+    X.fillStyle = sea; X.beginPath(); X.arc(x+8, y+8, 4.3, 0, Math.PI*2); X.fill();
+    X.fillStyle = 'rgba(255,255,255,0.28)'; X.fillRect(x+6, y+5, 4, 1);
+    lightSources.push({x: x+8, y: y+8, r: 30, c: 'rgba(120, 190, 255, 0.18)'});
+}
+
+function drawWallLamp(x, y, warm = true) {
+    X.fillStyle = '#2d3948'; X.fillRect(x+5, y+6, 6, 8);
+    X.fillStyle = warm ? '#ffd891' : '#b8ecff'; X.fillRect(x+6, y+7, 4, 5);
+    lightSources.push({x: x+8, y: y+9, r: warm ? 58 : 46, c: warm ? 'rgba(255, 210, 125, 0.42)' : 'rgba(170, 230, 255, 0.26)'});
+}
+
+function drawSnowPine(x, y) {
+    X.fillStyle = 'rgba(0,0,0,0.2)'; X.beginPath(); X.ellipse(x+8, y+18, 10, 4, 0, 0, Math.PI*2); X.fill();
+    X.fillStyle = '#5b3a26'; X.fillRect(x+7, y+12, 3, 8);
+    X.fillStyle = '#355b4a'; X.beginPath(); X.moveTo(x+8, y); X.lineTo(x-2, y+12); X.lineTo(x+18, y+12); X.fill();
+    X.beginPath(); X.moveTo(x+8, y+4); X.lineTo(x, y+15); X.lineTo(x+16, y+15); X.fill();
+    X.fillStyle = '#eef6ff'; X.fillRect(x+1, y+7, 14, 2); X.fillRect(x+3, y+12, 10, 2);
+}
+
+function drawSnowLantern(x, y) {
+    X.fillStyle = '#5e4b3a'; X.fillRect(x+7, y+4, 2, 16);
+    X.fillStyle = '#2d3948'; X.fillRect(x+4, y, 8, 7);
+    X.fillStyle = '#ffd891'; X.fillRect(x+5, y+1, 6, 5);
+    lightSources.push({x: x+8, y: y+4, r: 64, c: 'rgba(255, 215, 145, 0.42)'});
+}
+
+function drawSnowCabin(x, y, w = 48, h = 34, roof = '#7c3f55') {
+    X.fillStyle = 'rgba(0,0,0,0.22)'; X.fillRect(x+4, y+h-2, w, 8);
+    X.fillStyle = '#6e4c35'; X.fillRect(x+2, y+14, w-4, h-14);
+    X.fillStyle = '#8e6646'; X.fillRect(x+2, y+14, w-4, 4);
+    X.fillStyle = roof;
+    X.beginPath(); X.moveTo(x-4, y+16); X.lineTo(x+w/2, y-2); X.lineTo(x+w+4, y+16); X.closePath(); X.fill();
+    X.fillStyle = '#eef6ff'; X.fillRect(x-2, y+12, w+4, 4);
+    X.fillStyle = '#ffefb4'; X.fillRect(x+8, y+20, 10, 10); X.fillRect(x+w-18, y+20, 10, 10);
+    X.fillStyle = '#3d2b1f'; X.fillRect(x+w/2-6, y+h-14, 12, 14);
+    lightSources.push({x: x+13, y: y+25, r: 44, c: 'rgba(255, 224, 145, 0.34)'});
+    lightSources.push({x: x+w-13, y: y+25, r: 44, c: 'rgba(255, 224, 145, 0.34)'});
+}
+
+function drawDockPost(x, y) {
+    X.fillStyle = '#5e4633'; X.fillRect(x+5, y+4, 6, 18);
+    X.fillStyle = '#b48b58'; X.fillRect(x+4, y+2, 8, 4);
+}
+
+function drawSignpost(x, y) {
+    X.fillStyle = '#674b33'; X.fillRect(x+7, y+10, 2, 14);
+    X.fillStyle = '#d7c39f'; X.fillRect(x, y, 16, 10);
+    X.fillStyle = '#7a6248'; X.fillRect(x+2, y+3, 12, 1); X.fillRect(x+2, y+6, 8, 1);
+}
+
+// 【Zソート描画】
+function drawObjects(cx, cy, dpx, dpy) {
+    const cpx = (tx, ty) => [~~(tx * TS - cx), ~~(ty * TS - cy)];
+    let renderList = [];
+
+    if(currentMap === 'city') {
+        palms.forEach(p => {
+            const [px, py] = cpx(p[0], p[1]);
+            renderList.push({ y: p[1]*TS + 14, draw: () => drawPalmTree(px, py) });
+        });
+
+        planters.forEach(p => {
+            const [px, py] = cpx(p[0], p[1]);
+            renderList.push({ y: p[1]*TS + 12, draw: () => drawPlanter(px, py) });
+        });
+
+        [[4,36], [10,38], [38,32], [48,34], [52,38]].forEach(p => {
+            const [px, py] = cpx(p[0], p[1]);
+            renderList.push({ y: p[1]*TS + 4, draw: () => drawStarfish(px, py) });
+        });
+
+        [[15,22], [30,22], [45,22], [20,32], [35,32], [14,38], [18,38], [41,38], [28,14], [40,14]].forEach(p => {
+            const [sx, sy] = cpx(p[0], p[1]);
+            renderList.push({ y: p[1]*TS + 5, draw: () => drawStreetLamp(sx+8, sy+14) });
+        });
+
+        const [fx, fy] = cpx(30, 22);
+        renderList.push({ y: 22*TS + 24, draw: () => drawFountain(fx, fy) });
+
+        const drawBench = (x, y) => {
+            X.fillStyle = '#a04000'; X.fillRect(x, y+8, 16, 4); X.fillRect(x, y+4, 16, 2);
+            X.fillStyle = '#2c3e50'; X.fillRect(x+2, y+8, 2, 6); X.fillRect(x+12, y+8, 2, 6);
+        };
+
+        const [b1x, b1y] = cpx(27, 24); renderList.push({ y: 24*TS + 12, draw: () => drawBench(b1x, b1y) });
+        const [b2x, b2y] = cpx(33, 24); renderList.push({ y: 24*TS + 12, draw: () => drawBench(b2x, b2y) });
+        const [b3x, b3y] = cpx(12, 33); renderList.push({ y: 33*TS + 12, draw: () => drawBench(b3x, b3y) });
+        const [b4x, b4y] = cpx(26, 33); renderList.push({ y: 33*TS + 12, draw: () => drawBench(b4x, b4y) });
+
+        const drawCafeTable = (cfx, cfy) => {
+            X.fillStyle = 'rgba(0,0,0,0.3)'; X.beginPath(); X.ellipse(cfx+8, cfy+12, 10, 4, 0, 0, Math.PI*2); X.fill();
+            X.fillStyle = '#ecf0f1'; X.beginPath(); X.ellipse(cfx+8, cfy+8, 8, 3, 0, 0, Math.PI*2); X.fill();
+            X.fillRect(cfx+7, cfy+8, 2, 6);
+            X.fillStyle = '#c0392b'; X.beginPath(); X.arc(cfx+8, cfy-4, 12, Math.PI, 0); X.fill();
+            X.fillStyle = '#ecf0f1'; X.beginPath(); X.arc(cfx+8, cfy-4, 12, Math.PI, 0); X.fill();
+            X.fillStyle = '#c0392b'; X.beginPath(); X.arc(cfx+8, cfy-4, 8, Math.PI, 0); X.fill();
+            X.fillStyle = '#ecf0f1'; X.beginPath(); X.arc(cfx+8, cfy-4, 4, Math.PI, 0); X.fill();
+        };
+
+        const [cf1x, cf1y] = cpx(30, 32); renderList.push({ y: 32*TS + 16, draw: () => drawCafeTable(cf1x, cf1y) });
+        const [cf2x, cf2y] = cpx(34, 33); renderList.push({ y: 33*TS + 16, draw: () => drawCafeTable(cf2x, cf2y) });
+
+        const [crX, crY] = cpx(15, 40);
+        renderList.push({ y: 40*TS + 30, draw: () => {
+            drawCrate(crX+18, crY+20); drawCrate(crX+4, crY+26); drawCrate(crX+14, crY+8);
+        }});
+
+        const [cr2X, cr2Y] = cpx(13, 38);
+        renderList.push({ y: 38*TS + 30, draw: () => {
+            drawCrate(cr2X+4, cr2Y+10); drawCrate(cr2X+18, cr2Y+14);
+        }});
+
+        const [gymX, gymY] = cpx(28, 8); renderList.push({ y: 8*TS + 5*TS, draw: () => drawGymBuilding(gymX, gymY, 7, 5) });
+        const [cenX, cenY] = cpx(22, 15); renderList.push({ y: 15*TS + 4*TS, draw: () => drawMarineBuilding(cenX, cenY, 5, 4, '#e74c3c', 'center', '#c0392b') });
+        const [shpX, shpY] = cpx(34, 15); renderList.push({ y: 15*TS + 4*TS, draw: () => drawMarineBuilding(shpX, shpY, 5, 4, '#3498db', 'shop', '#2980b9') });
+        const [h1X, h1Y] = cpx(12, 24); renderList.push({ y: 24*TS + 4*TS, draw: () => drawMarineBuilding(h1X, h1Y, 5, 4, '#27ae60', 'house', '#1e8449') });
+        const [h2X, h2Y] = cpx(42, 24); renderList.push({ y: 24*TS + 4*TS, draw: () => drawMarineBuilding(h2X, h2Y, 5, 4, '#2ecc71', 'house', '#f1c40f') });
+        const [h3X, h3Y] = cpx(32, 28); renderList.push({ y: 28*TS + 4*TS, draw: () => drawMarineBuilding(h3X, h3Y, 5, 4, '#8e44ad', 'cafe', '#f39c12') });
+
+        const [rv1X, rv1Y] = cpx(8, 15); renderList.push({ y: 15*TS + 5*TS, draw: () => drawResortVilla(rv1X, rv1Y, 6, 5) });
+        const [rv2X, rv2Y] = cpx(46, 15); renderList.push({ y: 15*TS + 5*TS, draw: () => drawResortVilla(rv2X, rv2Y, 6, 5) });
+
+        const [st1X, st1Y] = cpx(20, 26); renderList.push({ y: 26*TS + 20, draw: () => drawMarketStall(st1X, st1Y, '#e67e22', '#d35400') });
+        const [st2X, st2Y] = cpx(26, 26); renderList.push({ y: 26*TS + 20, draw: () => drawMarketStall(st2X, st2Y, '#3498db', '#ecf0f1') });
+
+        const [bp1X, bp1Y] = cpx(6, 38); renderList.push({ y: 38*TS + 24, draw: () => drawBeachParasol(bp1X, bp1Y, '#e74c3c', '#f1c40f') });
+        const [bp2X, bp2Y] = cpx(28, 38); renderList.push({ y: 38*TS + 24, draw: () => drawBeachParasol(bp2X, bp2Y, '#9b59b6', '#3498db') });
+        const [bp3X, bp3Y] = cpx(48, 36); renderList.push({ y: 36*TS + 24, draw: () => drawBeachParasol(bp3X, bp3Y, '#1abc9c', '#f1c40f') });
+
+        const [bt1X, bt1Y] = cpx(8, 39); renderList.push({ y: 39*TS + 1, draw: () => drawBeachTowel(bt1X, bt1Y, '#3498db') });
+        const [bt2X, bt2Y] = cpx(30, 39); renderList.push({ y: 39*TS + 1, draw: () => drawBeachTowel(bt2X, bt2Y, '#e74c3c') });
+        const [bt3X, bt3Y] = cpx(50, 37); renderList.push({ y: 37*TS + 1, draw: () => drawBeachTowel(bt3X, bt3Y, '#2ecc71') });
+
+        const [sb1X, sb1Y] = cpx(36, 40); renderList.push({ y: 40*TS + 16, draw: () => drawSmallBoat(sb1X, sb1Y) });
+        const [sb2X, sb2Y] = cpx(45, 41); renderList.push({ y: 41*TS + 16, draw: () => drawSmallBoat(sb2X, sb2Y) });
+        const [sx, sy] = cpx(4, 42); renderList.push({ y: 42*TS + 40, draw: () => drawShip(sx, sy) });
+
+        const [lx, ly] = cpx(54, 30); renderList.push({ y: 30*TS + 45, draw: () => drawLighthouse(lx, ly) });
+    }
+
+    if(currentMap === 'ship') {
+        [[3,1],[9,1],[15,1]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 8, draw: () => drawWallLamp(px, py, true) });
+        });
+        [[0,3],[18,3],[0,7],[18,7],[0,11],[18,11]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 8, draw: () => drawPorthole(px, py) });
+        });
+        [[2,12],[15,12],[4,2],[14,2]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 14, draw: () => drawCrate(px+1, py+2) });
+        });
+    }
+
+    if(currentMap === 'r3') {
+        [[5,11],[7,8],[10,4],[12,2]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 18, draw: () => drawSnowLantern(px, py) });
+        });
+        [[1,11],[3,11],[5,11]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 18, draw: () => drawDockPost(px, py) });
+        });
+        [[14,0],[16,1]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 26, draw: () => drawSnowCabin(px-8, py-4, 36, 28, '#6a4a7e') });
+        });
+        [[13,6],[15,5],[16,9],[4,4]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 20, draw: () => drawSnowPine(px, py-4) });
+        });
+        const [sgx, sgy] = cpx(12, 1);
+        renderList.push({ y: 1 * TS + 20, draw: () => drawSignpost(sgx+6, sgy+2) });
+    }
+
+    if(currentMap === 'snow') {
+        [[4,4],[12,3],[13,9]].forEach(([tx, ty], idx) => {
+            const [px, py] = cpx(tx, ty);
+            const roofs = ['#8a465d', '#5b6c94', '#7d5b38'];
+            renderList.push({ y: ty * TS + 34, draw: () => drawSnowCabin(px-8, py-12, 52, 36, roofs[idx]) });
+        });
+        [[3,10],[6,2],[16,4],[17,11],[9,3]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 20, draw: () => drawSnowPine(px, py-2) });
+        });
+        [[9,9],[12,8],[7,6]].forEach(([tx, ty]) => {
+            const [px, py] = cpx(tx, ty);
+            renderList.push({ y: ty * TS + 18, draw: () => drawSnowLantern(px, py) });
+        });
+    }
+
+    for(const n of npcs) {
+        if(n.map !== currentMap) continue;
+        const nx = ~~(n.x * TS - cx), ny = ~~(n.y * TS - cy);
+        const nbob = Math.sin(TK * 0.06 + n.x + n.y) * 0.5 > 0 ? 1 : 0;
+        renderList.push({ y: n.y * TS + 16, draw: () => {
+            X.fillStyle = 'rgba(0,0,0,0.3)'; X.beginPath(); X.ellipse(nx+8, ny+14, 6, 2, 0, 0, Math.PI*2); X.fill();
+            drawSpr(n.sn, nx+2, ny+2-nbob, n.flip);
+        }});
+    }
+
+    const cdx = ~~(dpx * TS - cx), cdy = ~~(dpy * TS - cy);
+    renderList.push({ y: dpy * TS + 14, draw: () => {
+        X.fillStyle='rgba(0,0,0,0.3)'; X.beginPath(); X.ellipse(cdx+8, cdy+14, 6, 2, 0, 0, Math.PI*2); X.fill();
+        drawSpr('pl_' + face, cdx+2, cdy+2);
+    }});
+
+    renderList.sort((a, b) => a.y - b.y);
+
+    X.save();
+    for(let item of renderList) item.draw();
+    X.restore();
+}
+
+function drawLighting(cx, cy, dpx, dpy) {
+    const t2 = mvT > 0 ? Math.max(0, 1 - mvT / 140) : 1;
+    const ptx = (opx + (px - opx) * t2) * TS - cx + 8;
+    const pty = (opy + (py - opy) * t2) * TS - cy + 8;
+
+    X.save();
+
+    if(currentMap === 'ship') {
+        let ao = X.createRadialGradient(GW/2, GH/2, 40, GW/2, GH/2, GW*0.85);
+        ao.addColorStop(0, 'rgba(0,0,0,0)');
+        ao.addColorStop(1, 'rgba(6, 12, 22, 0.76)');
+        X.fillStyle = ao; X.fillRect(0,0,GW,GH);
+        X.globalCompositeOperation = 'screen';
+
+        let beam = X.createLinearGradient(0, 0, GW, GH);
+        beam.addColorStop(0, 'rgba(255, 160, 90, 0.22)');
+        beam.addColorStop(1, 'rgba(120, 190, 255, 0)');
+        X.fillStyle = beam;
+        X.beginPath(); X.moveTo(GW*0.1,0); X.lineTo(GW*0.85,0); X.lineTo(GW,GH*0.65); X.lineTo(0,GH); X.fill();
+
+        for(const l of lightSources) {
+            let g = X.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+            g.addColorStop(0, l.c); g.addColorStop(1, 'rgba(0,0,0,0)');
+            X.fillStyle = g; X.beginPath(); X.arc(l.x, l.y, l.r, 0, Math.PI*2); X.fill();
+        }
+
+        let pGrd = X.createRadialGradient(ptx, pty, 0, ptx, pty, 74);
+        pGrd.addColorStop(0, 'rgba(255, 214, 140, 0.24)'); pGrd.addColorStop(1, 'rgba(0,0,0,0)');
+        X.fillStyle = pGrd; X.beginPath(); X.arc(ptx, pty, 74, 0, Math.PI*2); X.fill();
+        X.restore();
+        return;
+    }
+
+    if(currentMap === 'r3' || currentMap === 'snow') {
+        let dusk = X.createLinearGradient(0, 0, 0, GH);
+        dusk.addColorStop(0, 'rgba(68, 92, 136, 0.20)');
+        dusk.addColorStop(0.45, 'rgba(126, 170, 225, 0.12)');
+        dusk.addColorStop(1, 'rgba(18, 34, 62, 0.28)');
+        X.fillStyle = dusk; X.fillRect(0,0,GW,GH);
+        X.globalCompositeOperation = 'screen';
+
+        for(const l of lightSources) {
+            let g = X.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+            g.addColorStop(0, l.c); g.addColorStop(1, 'rgba(0,0,0,0)');
+            X.fillStyle = g; X.beginPath(); X.arc(l.x, l.y, l.r, 0, Math.PI*2); X.fill();
+        }
+
+        let cold = X.createLinearGradient(0,0,GW,GH);
+        cold.addColorStop(0, 'rgba(210, 236, 255, 0.10)');
+        cold.addColorStop(1, 'rgba(130, 175, 240, 0)');
+        X.fillStyle = cold; X.fillRect(0,0,GW,GH);
+
+        let pGrd = X.createRadialGradient(ptx, pty, 0, ptx, pty, 82);
+        pGrd.addColorStop(0, 'rgba(255,255,255,0.12)'); pGrd.addColorStop(1, 'rgba(0,0,0,0)');
+        X.fillStyle = pGrd; X.beginPath(); X.arc(ptx, pty, 82, 0, Math.PI*2); X.fill();
+        X.restore();
+        return;
+    }
+
+    if(currentMap !== 'city') {
+        let ao = X.createRadialGradient(GW/2, GH/2, 50, GW/2, GH/2, GW*0.8);
+        ao.addColorStop(0, 'rgba(0,0,0,0)');
+        if (currentMap === 'cafe') ao.addColorStop(1, 'rgba(30, 15, 10, 0.8)');
+        else if (currentMap === 'gym') ao.addColorStop(1, 'rgba(5, 10, 20, 0.9)');
+        else ao.addColorStop(1, 'rgba(10, 15, 30, 0.7)');
+
+        X.globalCompositeOperation = 'source-over';
+        X.fillStyle = ao; X.fillRect(0,0,GW,GH);
+        X.globalCompositeOperation = 'screen';
+
+        let rayGrad = X.createLinearGradient(0, 0, GW, GH);
+        if (currentMap !== 'gym') {
+            rayGrad.addColorStop(0, 'rgba(255, 140, 60, 0.2)');
+            rayGrad.addColorStop(1, 'rgba(200, 50, 150, 0)');
+            X.fillStyle = rayGrad;
+            X.beginPath();
+            X.moveTo(GW*0.1, 0); X.lineTo(GW*0.8, 0);
+            X.lineTo(GW, GH*0.9); X.lineTo(0, GH);
+            X.fill();
+        } else {
+            rayGrad.addColorStop(0, 'rgba(50, 200, 255, 0.15)');
+            rayGrad.addColorStop(1, 'rgba(0, 50, 150, 0)');
+            X.fillStyle = rayGrad; X.fillRect(0,0,GW,GH);
+        }
+
+        for(const l of lightSources) {
+            let g = X.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+            g.addColorStop(0, l.c); g.addColorStop(1, 'rgba(0,0,0,0)');
+            X.fillStyle = g; X.beginPath(); X.arc(l.x, l.y, l.r, 0, Math.PI*2); X.fill();
+        }
+
+        let pGrd = X.createRadialGradient(ptx, pty, 0, ptx, pty, 60);
+        pGrd.addColorStop(0, 'rgba(255, 255, 255, 0.15)'); pGrd.addColorStop(1, 'rgba(0,0,0,0)');
+        X.fillStyle = pGrd; X.beginPath(); X.arc(ptx, pty, 60, 0, Math.PI*2); X.fill();
+
+        X.restore();
+        return;
+    }
+
+    let dusk = X.createLinearGradient(0, 0, 0, GH);
+    dusk.addColorStop(0, 'rgba(70, 30, 90, 0.5)');
+    dusk.addColorStop(0.5, 'rgba(220, 90, 60, 0.35)');
+    dusk.addColorStop(1, 'rgba(20, 30, 70, 0.55)');
+    X.globalCompositeOperation = 'source-over';
+    X.fillStyle = dusk; X.fillRect(0, 0, GW, GH);
+    X.globalCompositeOperation = 'screen';
+
+    const lhX = 54 * TS - cx + 32;
+    const lhY = 30 * TS - cy - 160;
+    const ang = TK * 0.018;
+    for (let i = 0; i < 2; i++) {
+        const a = ang + i * Math.PI;
+        let beamGrd = X.createLinearGradient(lhX, lhY, lhX + Math.cos(a)*700, lhY + Math.sin(a)*700);
+        beamGrd.addColorStop(0, 'rgba(255, 240, 180, 0.85)');
+        beamGrd.addColorStop(0.15, 'rgba(255, 160, 50, 0.4)');
+        beamGrd.addColorStop(1, 'rgba(255, 80, 20, 0)');
+        X.fillStyle = beamGrd;
+        X.beginPath(); X.moveTo(lhX, lhY);
+        X.lineTo(lhX + Math.cos(a - 0.15) * 700, lhY + Math.sin(a - 0.15) * 700);
+        X.arc(lhX, lhY, 700, a - 0.15, a + 0.15);
+        X.fill();
+    }
+    let coreGrd = X.createRadialGradient(lhX, lhY, 0, lhX, lhY, 150);
+    coreGrd.addColorStop(0, 'rgba(255, 250, 200, 0.9)');
+    coreGrd.addColorStop(1, 'rgba(0,0,0,0)');
+    X.fillStyle = coreGrd; X.beginPath(); X.arc(lhX, lhY, 150, 0, Math.PI*2); X.fill();
+
+    for(const l of lightSources) {
+        if(l.x < -l.r || l.x > GW+l.r || l.y < -l.r || l.y > GH+l.r) continue;
+        let g = X.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+        g.addColorStop(0, l.c); g.addColorStop(1, 'rgba(0,0,0,0)');
+        X.fillStyle = g; X.beginPath(); X.arc(l.x, l.y, l.r, 0, Math.PI*2); X.fill();
+    }
+
+    let pGrd = X.createRadialGradient(ptx, pty, 0, ptx, pty, 80);
+    pGrd.addColorStop(0, 'rgba(255, 180, 100, 0.35)'); pGrd.addColorStop(1, 'rgba(0,0,0,0)');
+    X.fillStyle = pGrd; X.beginPath(); X.arc(ptx, pty, 80, 0, Math.PI*2); X.fill();
+    X.restore();
+}
+
+function drawFootprints(cx, cy) {
+    if(currentMap !== 'city') return;
+    X.save();
+    for(let i = footprints.length - 1; i >= 0; i--) {
+        const fp = footprints[i];
+        let dx = fp.x * TS - cx, dy = fp.y * TS - cy;
+        X.fillStyle = `rgba(160, 130, 100, ${(fp.life / 600) * 0.6})`;
+        X.beginPath(); X.ellipse(dx+8, dy+12, 4, 2, 0, 0, Math.PI*2); X.fill();
+
+        fp.life--;
+        if(fp.life <= 0) footprints.splice(i, 1);
+    }
+    X.restore();
+}
+
+function updateDrawParticles(dpx, dpy, cx, cy) {
+    if (currentMap === 'city' && particles.length < 50 && Math.random() < 0.06) {
+        particles.push({
+            type: 'seagull', x: Math.random() > 0.5 ? -20 : GW + 20, y: Math.random() * (GH * 0.5),
+            vx: (Math.random() * 0.8 + 0.4) * (Math.random() > 0.5 ? 1 : -1), vy: (Math.random() - 0.5) * 0.3, frame: Math.random() * 10
+        });
+    }
+
+    if (Math.random() < (currentMap === 'city' ? 0.3 : 0.15)) {
+        particles.push({ 
+            type: 'dust', 
+            x: Math.random() * GW, 
+            y: Math.random() * GH, 
+            vx: currentMap === 'city' ? (Math.random() * 0.6 + 0.2) : (Math.random() * 0.2 - 0.1), 
+            vy: currentMap === 'city' ? (-Math.random() * 0.2) : (-Math.random() * 0.1 - 0.05), 
+            a: Math.random() * 0.6 + 0.2, 
+            life: Math.random() * 60 + 30 
+        });
+    }
+
+    X.save();
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        if (p.type === 'seagull') {
+            p.x += p.vx; p.y += p.vy; p.frame += 0.15;
+            if (p.x < -30 || p.x > GW + 30 || p.y < -30) { particles.splice(i, 1); continue; }
+
+            X.fillStyle = 'rgba(0,0,0,0.15)';
+            X.beginPath(); X.ellipse(p.x, p.y + 25, 6, 2, 0, 0, Math.PI*2); X.fill();
+
+            X.strokeStyle = 'rgba(255, 220, 180, 0.9)'; X.lineWidth = 1.5; X.lineCap = "round";
+            X.beginPath(); const wy = Math.sin(p.frame) * 4;
+            X.moveTo(p.x - 6, p.y - wy); X.quadraticCurveTo(p.x - 3, p.y, p.x, p.y + 2); X.quadraticCurveTo(p.x + 3, p.y, p.x + 6, p.y - wy); X.stroke();
+        } else {
+            p.x += p.vx; p.y += p.vy; p.a -= 0.01; p.life--;
+            if (p.a <= 0 || p.life <= 0) { particles.splice(i, 1); continue; }
+            X.globalAlpha = p.a; X.fillStyle = currentMap === 'city' ? '#ffb347' : '#ffffff'; X.fillRect(p.x, p.y, 1.5, 1.5);
+        }
+    }
+
+    for(let i = ripples.length - 1; i >= 0; i--) {
+        let r = ripples[i];
+        X.strokeStyle = `rgba(255,255,255, ${1 - r.life})`;
+        X.lineWidth = 2;
+        X.beginPath(); X.ellipse(r.x - cx, r.y - cy, r.r, r.r*0.5, 0, 0, Math.PI*2); X.stroke();
+        r.r += 0.8; r.life += 0.02;
+        if(r.life >= 1) ripples.splice(i, 1);
+    }
+    X.restore();
+}
+
+// --- メインループ ---
+function loop() {
+    TK++;
+
+    JX.clearRect(0,0,120,120); JX.fillStyle="rgba(25,25,55,.45)"; JX.strokeStyle="rgba(80,100,180,.25)"; JX.lineWidth=2;
+    JX.beginPath(); JX.arc(60,60,48,0,Math.PI*2); JX.fill(); JX.stroke();
+    JX.fillStyle=jAct?"rgba(255,160,80,.6)":"rgba(200,120,60,.4)"; JX.strokeStyle=jAct?"rgba(255,180,100,.6)":"rgba(255,150,80,.3)";
+    JX.beginPath(); JX.arc(60+jx, 60+jy, 18, 0, Math.PI*2); JX.fill(); JX.stroke();
+
+    let dir = null;
+    if(Math.abs(jx)>12 || Math.abs(jy)>12) dir = Math.abs(jx)>Math.abs(jy) ? (jx>0?'r':'l') : (jy>0?'d':'u');
+    if(keys.ArrowUp||keys.w) dir="u"; if(keys.ArrowDown||keys.s) dir="d";
+    if(keys.ArrowLeft||keys.a) dir="l"; if(keys.ArrowRight||keys.d) dir="r";
+
+    const prevMvT = mvT;
+    if(mvT <= 0) {
+        if(dir) {
+            face = dir;
+            let nx = px, ny = py;
+            if(dir === "u") ny--; if(dir === "d") ny++;
+            if(dir === "l") nx--; if(dir === "r") nx++;
+            if(canW(nx, ny)) { opx = px; opy = py; px = nx; py = ny; mvT = 140; }
+        }
+    } else {
+        mvT -= 16;
+        if(mvT <= 0) {
+            mvT = 0;
+            const portal = portals.find(p => p.from === currentMap && p.x === px && p.y === py);
+            if(portal) {
+                currentMap = portal.to;
+                px = portal.tx; py = portal.ty;
+                opx = px; opy = py;
+                particles = [];
+                if(currentMap !== 'city') ripples = [];
+            }
+        }
+    }
+
+    if(currentMap === 'city' && prevMvT > 0 && mvT <= 0 && getT(opx, opy) === 11) {
+        footprints.push({x: opx, y: opy, life: 600});
+    }
+
+    const t2 = mvT > 0 ? Math.max(0, 1 - mvT / 140) : 1;
+    const dpx = opx + (px - opx) * t2;
+    const dpy = opy + (py - opy) * t2;
+    const rawCx = dpx * TS - GW / 2 + TS / 2;
+    const rawCy = dpy * TS - GH / 2 + TS / 2;
+
+    const m = MAPS[currentMap];
+    const mw = m.w * TS, mh = m.h * TS;
+    const cx = (mw <= GW) ? -((GW - mw) / 2) : Math.max(0, Math.min(rawCx, mw - GW));
+    const cy = (mh <= GH) ? -((GH - mh) / 2) : Math.max(0, Math.min(rawCy, mh - GH));
+
+    window.currentCamX = cx; window.currentCamY = cy;
+
+    X.fillStyle = currentMap === 'city' ? "#0c1622" : ((currentMap === 'r3' || currentMap === 'snow') ? "#dfeaf7" : "#0d131f"); X.fillRect(0, 0, GW, GH);
+    lightSources = [];
+
+    for(let y = Math.max(0, ~~(cy/TS)-1); y < Math.min(m.h, ~~(cy/TS)+GH/TS+2); y++){
+        for(let x = Math.max(0, ~~(cx/TS)-1); x < Math.min(m.w, ~~(cx/TS)+GW/TS+2); x++){
+            drawTile(~~(x*TS-cx), ~~(y*TS-cy), getT(x,y), x, y);
+        }
+    }
+
+    drawBackgroundEffects(cx, cy);
+    drawFootprints(cx, cy);
+
+    drawObjects(cx, cy, dpx, dpy);
+
+    drawLighting(cx, cy, dpx, dpy);
+    updateDrawParticles(dpx, dpy, cx, cy);
+
+    // 画面全体のオーバーレイUI
+    if(currentMap === 'ship' || currentMap === 'r3' || currentMap === 'snow') {
+        const labels = { ship: 'しらゆき号 船内ロビー', r3: 'しらゆき桟橋 → ゆきみち', snow: 'スノーヴィレッジ 入口広場' };
+        X.fillStyle = 'rgba(0, 0, 0, 0.22)'; X.fillRect(12, 12, 150, 28);
+        X.fillStyle = currentMap === 'ship' ? '#ffd9a3' : '#eef6ff'; X.font = "12px sans-serif"; X.textAlign = "left";
+        X.fillText(labels[currentMap], 22, 30);
+        const vig=X.createRadialGradient(GW/2,GH/2,GW*.48,GW/2,GH/2,GW);
+        vig.addColorStop(0,"rgba(0,0,0,0)");
+        vig.addColorStop(1, currentMap === 'ship' ? "rgba(0,0,0,.72)" : "rgba(70,95,130,.22)");
+        X.fillStyle=vig; X.fillRect(0,0,GW,GH);
+    } else {
+        const vig=X.createRadialGradient(GW/2,GH/2,GW*.4,GW/2,GH/2,GW);
+        vig.addColorStop(0,"rgba(0,0,0,0)"); 
+        vig.addColorStop(1, currentMap === 'city' ? "rgba(0,0,0,.6)" : "rgba(0,0,0,.85)");
+        X.fillStyle=vig; X.fillRect(0,0,GW,GH);
+    }
+
+    requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
