@@ -249,8 +249,7 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
  const st=spotState();S.notice=(st==='first'||st==='revisit')&&S.eventAnim===0&&!S.dialog;
  if(S.map==='path'&&!S.battleDone&&!S.threatSeen&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){
    S.threatSeen=true;S.threatReactTimer=120;S.detour.active=false;threatFacePlayer();
-   const h=S.history[S.bond==='close'?0:2]||S.history[0]||{x:S.px-1,y:S.py};S.comp.tx=h.x;S.comp.ty=h.y;
-   const line=S.buddyKey==='penta'?'ぺんたが ぶるっと震えた。':S.buddyKey==='puwawa'?'ぷわわが 低く降りた。':'ヤミウサが 足を止めた。';toast(line);
+   const h=S.history[S.bond==='close'?0:2]||S.history[0]||{x:S.px-1,y:S.py};setCompGoal(h.x,h.y,true);S.comp.react='!';S.comp.reactTimer=36;
  }
  if(S.map==='path'&&S.battleRevisit&&!S.battleRevisitDone&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.battle.x,maps.path.battle.y)<=4){triggerBattleRevisit()}
  if(S.threatReactTimer>0)S.threatReactTimer--;
@@ -258,32 +257,38 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
  if(!busy&&S.map==='village'){
    if(S.detour.cooldown>0)S.detour.cooldown--;
    if(S.detour.active){
-     const d=S.detour;const leash=S.bond==='close'?11:7;
-     if(d.phase==='going'&&d.target&&Math.hypot(S.comp.x-d.target.x,S.comp.y-d.target.y)<.45){
-       d.phase='engrossed';d.timer=S.bond==='close'?680:360;d.stepTimer=20;pickDetourStep();
+     const d=S.detour,leash=S.bond==='close'?12:8;
+     if(d.phase==='notice'){
+       d.lookTimer--;
+       if(d.lookTimer<=0){d.phase='going';setCompGoal(d.anchor.x,d.anchor.y,true)}
+     }else if(d.phase==='going'){
+       if(S.comp.route.length===0&&Math.hypot(S.comp.x-d.anchor.x,S.comp.y-d.anchor.y)<.7){d.phase='engrossed';d.timer=S.bond==='close'?720:390;d.stepTimer=24;pickDetourStep()}
      }else if(d.phase==='engrossed'){
        d.timer--;d.stepTimer--;
-       if(d.stepTimer<=0||!d.target||Math.hypot(S.comp.x-d.target.x,S.comp.y-d.target.y)<.35)pickDetourStep();
+       if(d.stepTimer<=0&&S.comp.route.length===0)pickDetourStep();
+       if(d.timer<=0||dist(S.px,S.py,S.comp.x,S.comp.y)>leash){d.phase='returning';d.stepTimer=0}
+     }else if(d.phase==='returning'){
+       d.stepTimer--;
+       if(d.stepTimer<=0){const t=compFollowPoint();setCompGoal(t.x,t.y,true);d.stepTimer=16}
+       if(dist(S.px,S.py,S.comp.x,S.comp.y)<=1.5){d.active=false;d.cooldown=S.bond==='close'?180:230}
      }
-     if(dist(S.px,S.py,S.comp.x,S.comp.y)>leash||d.timer<=0){d.active=false;d.cooldown=S.bond==='close'?170:210}
-   }
-   else if(S.detour.cooldown<=0){
-     const ds=maps.village.detours[S.buddyKey]||[];const noticeRange=S.bond==='close'?9:6;
-     const candidates=ds.filter(d=>dist(S.px,S.py,d.x,d.y)<=noticeRange);
+   }else if(S.detour.cooldown<=0){
+     const ds=maps.village.detours[S.buddyKey]||[],noticeRange=S.bond==='close'?9:6,candidates=ds.filter(d=>dist(S.px,S.py,d.x,d.y)<=noticeRange);
      if(candidates.length){
        const d=candidates[Math.floor(Math.random()*candidates.length)];
-       S.detour={active:true,kind:d.kind,phase:'going',timer:S.bond==='close'?900:520,cooldown:0,target:{x:d.x,y:d.y},anchor:{x:d.x,y:d.y},stepTimer:0};
-       toast(detourText(d.kind));
+       S.detour={active:true,kind:d.kind,phase:'notice',timer:0,cooldown:0,target:null,anchor:{x:d.x,y:d.y},stepTimer:0,lookTimer:S.bond==='close'?24:34};
+       S.comp.route=[];S.comp.routeGoal=null;
      }
    }
  }
  if(!busy){
-   if(S.map==='village'&&S.notice){const sp=maps.village.spot;S.detour.active=false;S.comp.tx=sp.x;S.comp.ty=sp.y+1}
-   else if(S.detour.active&&S.detour.target){S.comp.tx=S.detour.target.x;S.comp.ty=S.detour.target.y}
-   else{const idx=S.bond==='close'?0:Math.min(2,S.history.length-1);const h=S.history[idx]||{x:S.px-1,y:S.py};S.comp.tx=h.x;S.comp.ty=h.y}
+   if(S.map==='village'&&S.notice){const sp=maps.village.spot;S.detour.active=false;setCompGoal(sp.x,sp.y+1)}
+   else if(!S.detour.active&&S.comp.returnDelay===0&&S.frame%10===0){const t=compFollowPoint();setCompGoal(t.x,t.y)}
  }
- const followSpeed=S.bond==='close'?.30:.13;S.comp.x+=(S.comp.tx-S.comp.x)*followSpeed;S.comp.y+=(S.comp.ty-S.comp.y)*followSpeed;
+ if(S.comp.reactTimer>0)S.comp.reactTimer--;
+ const compSpeed=S.detour.active&&S.detour.phase==='engrossed'?.075:S.bond==='close'?.12:.09;advanceComp(compSpeed);
  for(const f of S.footprints)f.life--;S.footprints=S.footprints.filter(f=>f.life>0);
+ for(const f of S.cprints)f.life--;S.cprints=S.cprints.filter(f=>f.life>0);
  for(const p of S.snow){p.y+=p.v;p.x+=p.drift;if(p.y>GH){p.y=-3;p.x=Math.random()*GW}if(p.x<0)p.x=GW;if(p.x>GW)p.x=0}
 }
 function draw(){X.clearRect(0,0,GW,GH);drawWorld();drawSnow();requestAnimationFrame(loop)}
