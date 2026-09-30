@@ -1,4 +1,5 @@
         
+<!-- REDESIGN CANDIDATE / NOT CANON: Highland Start Village 01 -->
 <!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>ルミナリア伝説：絆の光</title><style>
@@ -43,7 +44,7 @@ function safeToTitle(reason){
   }catch(e){ console.error(e); }
 }
 
-const VER="v30-snow-audit",C=document.getElementById("gc"),X=C.getContext("2d");
+const VER="v30-highland-start-candidate-01",C=document.getElementById("gc"),X=C.getContext("2d");
 
 const DEMO_PAL={'.':null,'X':'#181425','x':'#262b44','S':'#ffcd75','s':'#cb815e','H':'#ff8933','K':'#262b44','W':'#ffffff','w':'#8b9bb4','R':'#e43b44','r':'#a22633','B':'#0099db','b':'#2ce8f4','Y':'#fee761','y':'#e4a672','P':'#e2e8f0','p':'#94a3b8','V':'#8b5cf6','v':'#5b21b6','D':'#3a4466','d':'#262b44','L':'#e879f9','l':'#be185d','T':'#78350f','t':'#451a03','M':'#10b981','m':'#047857','C':'#06b6d4','c':'#0369a1','O':'#f97316','o':'#c2410c'};
 const DEMO_SPRITES={
@@ -303,8 +304,7 @@ const STARTER_MOMENT={
 const SK={"たいあたり":{ty:"ノーマル",pw:8,ac:100},"リーフタップ":{ty:"くさ",pw:12,ac:95},"つるのムチ":{ty:"くさ",pw:18,ac:90,se:"para",sp:10},"はなびらの舞":{ty:"くさ",pw:24,ac:85},"ソーラーラッシュ":{ty:"くさ",pw:32,ac:78},"みずでっぽう":{ty:"みず",pw:12,ac:95},"バブルヒット":{ty:"みず",pw:18,ac:90},"うずしおクラッシュ":{ty:"みず",pw:28,ac:80},"ひのこアタック":{ty:"ほのお",pw:13,ac:95,se:"burn",sp:10},"フレアショット":{ty:"ほのお",pw:19,ac:88,se:"burn",sp:15},"ソーラーブレイズ":{ty:"ほのお",pw:30,ac:78,se:"burn",sp:20},"かぜのつっぱり":{ty:"かぜ",pw:10,ac:100},"エアスラッシュ":{ty:"かぜ",pw:17,ac:90},"テンペスト":{ty:"かぜ",pw:28,ac:78},"フェザーダンス":{ty:"かぜ",pw:0,ac:100,ef:"dfUp"},"いわおとし":{ty:"いわ",pw:14,ac:92},"クリスタルバンプ":{ty:"いわ",pw:17,ac:90,se:"para",sp:10},"じしんアタック":{ty:"いわ",pw:26,ac:82},"シャドースワイプ":{ty:"やみ",pw:12,ac:95,se:"poison",sp:10},"やみのはどう":{ty:"やみ",pw:19,ac:88,se:"para",sp:12},"ムーンスラップ":{ty:"やみ",pw:14,ac:92,se:"sleep",sp:10},"プリズムビーム":{ty:"ひかり",pw:22,ac:85,se:"freeze",sp:8},"ひかりのはどう":{ty:"ひかり",pw:16,ac:92},"てんくうのひかり":{ty:"ひかり",pw:34,ac:75},"ひかりのバリア":{ty:"ひかり",pw:0,ac:100,ef:"dfUp2"},"しぶきアタック":{ty:"みず",pw:10,ac:100},"ミストベール":{ty:"みず",pw:0,ac:100,ef:"dfUp"},"つるタップ":{ty:"くさ",pw:9,ac:100},"たねマシンガン":{ty:"くさ",pw:15,ac:90,se:"para",sp:8},"スパークジャブ":{ty:"ほのお",pw:11,ac:95,se:"burn",sp:10},"ほのおのかぜ":{ty:"ほのお",pw:17,ac:88,se:"burn",sp:12},"きずなバースト":{ty:"ノーマル",pw:40,ac:88}};
 const ITEMS={"スモールシャード":{t:"cap",ball:"ふつう",ds:"基本の捕獲結晶",pr:60},"ルミシャード":{t:"cap",ball:"いい",ds:"捕獲用の光結晶",pr:120},"グレアシャード":{t:"cap",ball:"すごい",ds:"強めの捕獲結晶",pr:260},"ブライトシャード":{t:"cap",ball:"とくか",ds:"高性能な捕獲結晶",pr:420},"きのみ":{t:"hp",v:30,ds:"HP30回復",pr:60},"おおきなきのみ":{t:"hp",v:80,ds:"HP80回復",pr:180},"まんたんのくすり":{t:"hp",v:999,ds:"HP全回復",pr:500},"まひなおし":{t:"cure",cu:"para",ds:"まひを治す",pr:100},"やけどなおし":{t:"cure",cu:"burn",ds:"やけどを治す",pr:100},"どくなおし":{t:"cure",cu:"poison",ds:"どくを治す",pr:120},"ねむけざまし":{t:"cure",cu:"sleep",ds:"ねむりを治す",pr:120},"こおりなおし":{t:"cure",cu:"freeze",ds:"こおりを治す",pr:120},"むしよけミスト":{t:"repel",st:120,ds:"しばらく野生に会いにくい",pr:220},"わざましん10":{t:"tm",mv:"ソーラーブレイズ",ds:"ほのおの強わざを おぼえさせる",pr:800},"わざましん20":{t:"tm",mv:"テンペスト",ds:"かぜの強わざを おぼえさせる",pr:800},"ひかりのいし":{t:"stone",ds:"光の進化石",pr:700}};
 const MW=15,MAPS={
-start:{nm:"はじまりの村",w:23,h:17,enc:[],t:[8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,15,15,15,0,0,0,0,0,16,16,16,0,0,0,0,0,16,16,16,0,8,8,0,9,10,9,0,0,0,0,0,27,28,27,0,0,0,0,0,27,28,27,0,8,8,0,9,5,9,0,0,0,0,0,27,6,27,0,0,0,0,0,27,6,27,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0,8,8,0,0,0,0,0,0,0,0,0,18,0,18,0,0,0,0,0,0,0,0,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,23,23,23,0,0,0,8,8,0,0,0,0,0,15,15,15,0,0,0,0,0,0,0,24,25,24,0,0,0,8,8,0,0,0,0,0,9,10,9,0,0,0,0,0,0,0,24,26,24,0,0,0,8,8,0,0,0,0,0,9,5,9,0,0,0,0,0,0,0,0,0,0,11,0,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,18,0,0,0,8,8,0,0,0,0,0,18,0,18,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,0,0,0,0,18,0,0,0,0,0,0,18,0,0,0,0,0,18,0,0,0,8,8,0,0,0,0,0,0,0,0,18,0,0,0,18,0,0,0,0,0,0,0,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,8,8,8,8,8,8,8,8,8,3,3,3,3,3,3,3,3,3,0,0,0,0,0,3,3,3,3,3,3,3,3,3],signs:[{x:13,y:4,msg:"『ルミモンセンター』\nルミモンを かいふくします"},{x:19,y:9,msg:"『ツバキけんきゅうじょ』\nルミモンと きずなの ひみつを\nけんきゅう しています"}],ex:[{x:9,y:16,to:"r1",tx:7,ty:0},{x:10,y:16,to:"r1",tx:7,ty:0},{x:11,y:16,to:"r1",tx:7,ty:0},{x:12,y:16,to:"r1",tx:7,ty:0},{x:13,y:16,to:"r1",tx:7,ty:0}],npcs:[{x:5,y:5,d:0,sn:"villagerf",nm:"ミキおばさん",msg:"きょうは むらの くうきが\nいつもより すこしだけ きらきらしてみえるね",cl:"#dd5577"},{x:3,y:13,d:0,sn:"oldman",nm:"ゲンじいさん",msg:"わしも むかしは トレーナーでのう…\n最初の相棒は コノハじゃった\nいまでも わすれとらん",cl:"#8888aa"},{x:6,y:12,d:3,sn:"villagerf",nm:"シオリ",msg:"ゲンじいさんの はなし\nなんだか すきなんだ。\nさいしょの 1ぴきって とくべつだよね",cl:"#c87ac8"},{x:12,y:6,d:2,sn:"villagerf",nm:"ナナ",msg:"けんきゅうじょの まえって\nしんこきゅう したくなるよね。\nだいじなことが はじまりそうで",cl:"#66aadd"},{x:15,y:6,d:3,sn:"villagerf",nm:"ユイ",msg:"センターが できてから\nたびの はじまりも すこし\nこころづよく なったんだって",cl:"#ff9a66"},{x:3,y:9,d:1,sn:"villagerf",nm:"そだてや タミ",act:"daycare",msg:"むらは ちいさくても\nルミモンを みる めは\nだれにも まけないよ",cl:"#cc8844"},{x:11,y:13,d:3,sn:"villagerm",nm:"ショウ",msg:"みなみへ でると もう たびだ。\nでも そのまえに むらを\nぐるっと みていくのも いいよな",cl:"#55aa77"},{x:2,y:5,d:2,sn:"granny",nm:"フユばあ",msg:"この むらは しずかじゃが…\nしずかすぎる ときほど いやな ことが おきるもんじゃ。",cl:"#b79ac8"},{x:19,y:5,d:2,sn:"villagerm",nm:"リク",msg:"みぎの いえは いつも\nまどあかりが きれいで すきなんだ",cl:"#6aa2c8"}]},
-center1:{nm:"ルミモンセンター",w:15,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,10,0,0,0,0,0,0,0,10,0,0,2,2,0,0,0,0,20,0,0,0,20,0,0,0,0,2,2,0,0,0,0,0,22,22,22,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,21,0,0,0,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,18,0,0,0,0,0,0,0,0,0,18,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2],ex:[{x:7,y:10,to:"start",tx:11,ty:5}],npcs:[{x:7,y:2,d:2,sn:"nurse",nm:"センターのおねえさん マナ",msg:"いってらっしゃい！\nルミモンを かいふくしますね！",act:"heal",cl:"#ff7aa2"}]},
+start:{nm:"はじまりの村",w:23,h:17,enc:[],t:[8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,15,15,15,0,0,0,0,0,16,16,16,0,0,0,0,0,16,16,16,0,8,8,0,9,10,9,0,0,0,0,0,27,28,27,0,0,0,0,0,27,28,27,0,8,8,0,9,5,9,0,0,0,0,0,27,6,27,0,0,0,0,0,27,6,27,0,8,8,0,18,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,0,8,8,36,36,36,36,37,0,0,0,0,38,38,38,38,38,38,38,38,38,38,0,0,8,8,39,39,39,39,37,0,0,0,0,38,38,38,23,23,23,0,0,0,38,40,0,8,8,39,39,39,39,37,15,15,15,0,38,38,38,24,25,24,0,0,0,38,0,0,8,8,39,39,39,39,37,9,10,9,0,38,38,38,24,26,24,0,0,0,0,0,0,8,8,0,0,0,0,37,9,5,9,0,38,38,38,38,38,38,38,38,0,0,18,0,8,8,36,36,36,36,38,38,38,38,38,38,38,38,38,0,18,36,36,36,36,36,37,8,8,39,39,39,39,37,0,0,0,0,38,38,38,0,0,0,39,39,39,39,39,37,8,8,39,39,39,39,37,0,0,0,18,38,38,38,0,0,0,39,39,39,39,39,37,8,8,39,39,39,39,37,0,0,0,0,38,38,38,0,18,0,39,39,39,39,39,37,8,8,36,36,36,36,38,0,0,0,38,38,38,38,38,0,0,0,0,0,0,0,0,8,8,36,36,36,36,36,36,36,36,38,38,38,38,38,36,36,36,36,36,36,36,36,8,8,36,36,36,36,36,36,36,36,38,38,38,38,38,36,36,36,36,36,36,36,36,8],signs:[],ex:[{x:9,y:16,to:"r1",tx:7,ty:0},{x:10,y:16,to:"r1",tx:7,ty:0},{x:11,y:16,to:"r1",tx:7,ty:0},{x:12,y:16,to:"r1",tx:7,ty:0},{x:13,y:16,to:"r1",tx:7,ty:0}],npcs:[{x:6,y:11,d:0,sn:"villagerf",nm:"ミキおばさん",msg:"きょうは むらの くうきが\nいつもより すこしだけ きらきらしてみえるね",cl:"#dd5577"},{x:6,y:13,d:0,sn:"oldman",nm:"ゲンじいさん",msg:"わしも むかしは トレーナーでのう…\n最初の相棒は コノハじゃった\nいまでも わすれとらん",cl:"#8888aa"},{x:7,y:13,d:3,sn:"villagerf",nm:"シオリ",msg:"ゲンじいさんの はなし\nなんだか すきなんだ。\nさいしょの 1ぴきって とくべつだよね",cl:"#c87ac8"},{x:12,y:9,d:2,sn:"villagerf",nm:"ナナ",msg:"けんきゅうじょの まえって\nしんこきゅう したくなるよね。\nだいじなことが はじまりそうで",cl:"#66aadd"},{x:9,y:4,d:3,sn:"villagerf",nm:"ユイ",msg:"センターが できてから\nたびの はじまりも すこし\nこころづよく なったんだって",cl:"#ff9a66"},{x:2,y:9,d:1,sn:"villagerf",nm:"そだてや タミ",act:"daycare",msg:"みずろの みずを みながら\nはたけと ルミモンを\nいっしょに みてるんだよ",cl:"#cc8844"},{x:11,y:14,d:3,sn:"villagerm",nm:"ショウ",msg:"みなみへ でると もう たびだ。\nでも そのまえに むらを\nぐるっと みていくのも いいよな",cl:"#55aa77"},{x:2,y:4,d:2,sn:"granny",nm:"フユばあ",msg:"あさは たかいところから\nかぜが いっきに おりてくるんじゃ。\nはたけが ゆれると きれいでのう",cl:"#b79ac8"},{x:19,y:6,d:2,sn:"villagerm",nm:"リク",msg:"ここから とおくを みるのが\nすきなんだ。",cl:"#6aa2c8"}]},center1:{nm:"ルミモンセンター",w:15,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,10,0,0,0,0,0,0,0,10,0,0,2,2,0,0,0,0,20,0,0,0,20,0,0,0,0,2,2,0,0,0,0,0,22,22,22,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,21,0,0,0,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,18,0,0,0,0,0,0,0,0,0,18,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2],ex:[{x:7,y:10,to:"start",tx:11,ty:5}],npcs:[{x:7,y:2,d:2,sn:"nurse",nm:"センターのおねえさん マナ",msg:"いってらっしゃい！\nルミモンを かいふくしますね！",act:"heal",cl:"#ff7aa2"}]},
 center2:{nm:"みどりの町 ルミモンセンター",w:15,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,10,0,0,0,0,0,0,0,10,0,0,2,2,0,0,0,0,20,0,0,0,20,0,0,0,0,2,2,0,0,0,0,0,22,22,22,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,21,0,0,0,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,18,0,0,0,0,0,0,0,0,0,18,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2],ex:[{x:7,y:10,to:"t1",tx:3,ty:5}],npcs:[{x:7,y:2,d:2,sn:"nurse",nm:"センターのおねえさん マナ",msg:"みどりの町の センターへ ようこそ！\nルミモンを げんきに しますね。",act:"heal",cl:"#ff7aa2"},{x:3,y:7,d:1,sn:"oldman",nm:"おじいさん",msg:"ジムの まえで あせるより\nまずは ここで ひといき つくんじゃ。",cl:"#8888aa"},{x:11,y:6,d:3,sn:"villagerf",nm:"ハル",msg:"ルミモンを なおしてもらうと\nまた あるきだせる きがするの",cl:"#7ac7ff"}]},
 shop1:{nm:"みどりの町 フレンドリィショップ",w:9,h:7,enc:[],t:[2,2,2,2,2,2,2,2,2,2,0,0,10,10,10,0,0,2,2,0,21,21,22,21,21,0,2,2,0,0,0,0,0,0,0,2,2,0,18,0,0,0,18,0,2,2,0,0,0,0,0,0,0,2,2,2,2,2,19,2,2,2,2],ex:[{x:4,y:6,to:"t1",tx:11,ty:5}],npcs:[{x:4,y:2,d:2,sn:"clerk",nm:"てんいん リリ",msg:"いらっしゃいませ！\nたびの じゅんびを していってね。",act:"shop",cl:"#ff9a66"},{x:2,y:4,d:1,sn:"villagerm",nm:"トモ",msg:"きずぐすりは つい かいすぎるけど\nあると あんしん なんだよな",cl:"#5aa0ff"}]},
 center3:{nm:"しおかぜシティ ルミモンセンター",w:15,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,10,0,0,0,0,0,0,0,10,0,0,2,2,0,0,0,0,20,0,0,0,20,0,0,0,0,2,2,0,0,0,0,0,22,22,22,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,21,0,0,0,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,18,0,0,0,0,0,0,0,0,0,18,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2],ex:[{x:7,y:10,to:"t2",tx:3,ty:5}],npcs:[{x:7,y:2,d:2,sn:"nurse",nm:"センターのおねえさん ナギ",msg:"しおかぜシティの センターです！\nうみの たびは つかれるから\nしっかり やすんでね。",act:"heal",cl:"#7ad0ff"},{x:11,y:7,d:3,sn:"sailor",nm:"ふなのり",msg:"うみべの まちじゃ\nセンターの ひかりが いちばん たよりになるな。",cl:"#aa8855"},{x:3,y:6,d:1,sn:"villagerf",nm:"ルナ",msg:"うみかぜに あたった あとは\nセンターで ひといき つくのが すき",cl:"#7ac7ff"}]},
@@ -368,7 +368,7 @@ caveSanctum:{nm:"ルミドラグーンの神域",w:16,h:12,enc:[],t:[32,32,32,32
 houseL:{nm:"ひだりの民家",w:11,h:8,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,0,20,20,0,0,0,20,20,0,2,2,0,0,0,0,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,2,2,0,21,0,0,0,0,0,20,0,2,2,0,0,0,18,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,19,2,2,2,2,2],ex:[{x:5,y:7,to:"start",tx:3,ty:4}],npcs:[{x:7,y:4,d:2,sn:"granny",nm:"フユばあ",msg:"この むらは しずかじゃが…\nしずかすぎる ときほど いやな ことが おきるもんじゃ。",cl:"#c79ad8"}]},
 houseR:{nm:"みぎの民家",w:11,h:8,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,0,0,20,20,0,0,20,0,0,2,2,0,0,0,0,0,21,0,0,0,2,2,0,0,0,0,0,0,0,20,0,2,2,0,0,20,0,0,0,21,0,0,2,2,0,0,0,0,18,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,19,2,2,2,2,2],ex:[{x:5,y:7,to:"start",tx:19,ty:4}],npcs:[{x:3,y:4,d:2,sn:"villagerm",nm:"リク",msg:"むらって ちいさいけど\nいえの あかりが みえると\nちゃんと かえってきたって かんじが するよな",cl:"#74a9d8"}]},
 home1:{nm:"あなたのいえ",w:17,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,10,0,0,0,0,0,0,0,0,0,10,0,0,2,2,0,20,20,0,0,0,0,0,0,0,0,20,20,0,0,2,2,0,0,0,0,21,21,0,0,0,0,0,0,0,0,0,2,2,0,18,0,0,21,21,0,0,20,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,2,2,0,0,0,0,0,0,0,0,0,21,21,0,0,0,0,2,2,0,20,0,0,0,0,0,18,0,21,21,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2,2],ex:[{x:8,y:10,to:"start",tx:7,ty:10}],npcs:[{x:12,y:7,d:3,sn:"mom",nm:"ママ",act:"home",msg:"おかえり。\nルミモンと ちゃんと なかよく するんだよ",cl:"#dd5577"}]},
-lab1:{nm:"ツバキけんきゅうじょ",w:19,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,10,0,0,0,0,0,0,0,0,0,10,0,0,0,2,2,0,20,20,0,0,0,0,0,0,0,0,0,0,0,20,20,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,22,0,22,0,22,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,18,0,18,0,18,0,18,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2,2,2],ex:[{x:9,y:10,to:"start",tx:17,ty:9}],npcs:[{x:9,y:2,d:2,sn:"prof",nm:"ツバキはかせ",act:"lab",msg:"けっしょうと ルミモンの きずな…\nまだまだ しらないこと だらけじゃ",cl:"#88bbff"},{x:15,y:7,d:3,sn:"rival",nm:"ライバル ソラ",msg:"まだ きめてないの？\nぼくは はやく えらびたいなあ",cl:"#4466cc"},{x:3,y:7,d:1,sn:"assistant",nm:"助手 ミナ",msg:"きょうは 3びきとも\nなんだか そわそわ してるの",cl:"#66bbaa"}]}
+lab1:{nm:"ツバキけんきゅうじょ",w:19,h:11,enc:[],t:[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,10,0,0,0,0,0,0,0,0,0,10,0,0,0,2,2,0,20,20,0,0,0,0,0,0,0,0,0,0,0,20,20,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,22,0,22,0,22,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,18,0,18,0,18,0,18,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,19,2,2,2,2,2,2,2,2,2],ex:[{x:9,y:10,to:"start",tx:14,ty:9}],npcs:[{x:9,y:2,d:2,sn:"prof",nm:"ツバキはかせ",act:"lab",msg:"けっしょうと ルミモンの きずな…\nまだまだ しらないこと だらけじゃ",cl:"#88bbff"},{x:15,y:7,d:3,sn:"rival",nm:"ライバル ソラ",msg:"まだ きめてないの？\nぼくは はやく えらびたいなあ",cl:"#4466cc"},{x:3,y:7,d:1,sn:"assistant",nm:"助手 ミナ",msg:"きょうは 3びきとも\nなんだか そわそわ してるの",cl:"#66bbaa"}]}
 };
 const SIO_ROOM_KIND={
   center3:"center",shop2:"shop",sioGym:"gym",sioHouseA:"house",sioHouseB:"house",
@@ -436,10 +436,6 @@ MAPS.sioVilla2=sgmRoom("しおかぜシティ リゾートヴィラ","villa",[
 function gT(mid,x,y){const m=MAPS[mid];if(!m||x<0||y<0||x>=m.w||y>=m.h)return 2;return m.t[y*m.w+x];}
 function canW(mid,x,y){
   const t=gT(mid,x,y);
-  if(mid==='start'){
-    if(START_REDESIGN_BLOCKED.has(x+','+y)) return false;
-    if(t===4) return true;
-  }
   if(sioRoomKind(mid)) return t===100||t===103;
   const inRect=(x0,y0,w,h)=>x>=x0&&x<x0+w&&y>=y0&&y<y0+h;
   if(mid==='t3'||mid==='snowPath'){
@@ -465,6 +461,7 @@ function canW(mid,x,y){
     }
     return true;
   }
+  if(mid==='start'&&t===38)return true;
   const base=t===0||t===1||t===5||t===6||t===7||t===18||t===19||t===31||t===34||t===35;
   if(!base)return false;
   if(mid==='t2'){
@@ -476,8 +473,8 @@ function canW(mid,x,y){
 }
 
 const MAP_MOOD={
-  start:"あさの ひかりが やさしい むらだ。",
-  start_pre:"まだ いつもの むらなのに\nきょうは どこか そわそわする。\nけんきゅうじょの ほうが ちょっとだけ きになる。",
+  start:"たかい ところを かぜが ぬけて、 はたけの みずが さらさら ながれている。",
+  start_pre:"いえを でると、 けんきゅうじょの やねと\nとおい ゆきやまが いっしょに みえる。\nきょうは そこから たびが はじまる。",
   t1:"はなと くさの においが ふわっと ただよう。",
   t2:"しおかぜと あかりが ひらける みなとまち。",
   r3:"ふねの ぬくもりが うしろに のこって、 3ばんどうろの しろい くうきが まえから やってくる。",
@@ -510,7 +507,7 @@ const WORLD_PORTALS={
     {fx:3,fy:3,to:"houseL",tx:5,ty:6,label:"ひだりの民家",front:{x:3,y:4}},
     {fx:7,fy:9,to:"home1",tx:8,ty:8,label:"ママの いえ",front:{x:7,y:10}},
     {fx:11,fy:3,to:"center1",tx:7,ty:9,label:"ルミモンセンター",front:{x:11,y:4}},
-    {fx:17,fy:8,to:"lab1",tx:9,ty:9,label:"ツバキけんきゅうじょ",front:{x:17,y:9}},
+    {fx:14,fy:8,to:"lab1",tx:9,ty:9,label:"ツバキけんきゅうじょ",front:{x:14,y:9}},
     {fx:19,fy:3,to:"houseR",tx:5,ty:6,label:"みぎの民家",front:{x:19,y:4}}
   ],
   t1:[
@@ -545,6 +542,10 @@ const WORLD_PORTALS={
   ]
 };
 const WORLD_SPOTS={
+  start:[
+    {fx:20,fy:6,fl:"start_telescope",msg:["とおくの ゆきやまに、 おおきな しろい かげが みえる。","ここからだと、 まだ なんなのか よく わからない。"]},
+    {fx:5,fy:9,fl:"start_channel",msg:["うえの はたけから みずが ながれてくる。","この みずろが、 したの はたけまで つながっている。"]}
+  ],
   t1:[
     {fx:13,fy:10,fl:"t1rest",msg:["ジムの ちかくで かぜが ぬける。","すこし きもちが ほどけた。"],friend:4},
     {fx:3,fy:9,fl:"t1hint",msg:["おじいさん「この町は みんな ジムだけじゃなくて\nはなを みて ひとやすみ するんじゃ」"]}
@@ -578,109 +579,6 @@ const WORLD_SPOTS={
     {fx:7,fy:10,fl:"snowPath_snowman",msg:["ゆきみちの わきに、 ちいさな みおくりの ゆきだるまが ならんでいる。","むらの こどもたちが ここまで つくりに きたらしい。"]}
   ]
 };
-
-// START VILLAGE REDESIGN 01 — TEMP / NOT CANON.
-// Q-003 is still OPEN. This override exists only on the task branch so the real renderer can be reviewed.
-const START_REDESIGN_BLOCKED=new Set();
-for(const y of [8,17]){
-  for(let x=1;x<=29;x++) if(x<14||x>16) START_REDESIGN_BLOCKED.add(x+','+y);
-}
-for(let x=1;x<=10;x++) START_REDESIGN_BLOCKED.add(x+',24');
-START_REDESIGN_BLOCKED.add('5,22');
-
-function buildStartVillageRedesignMap(){
-  const w=31,h=27,t=new Array(w*h).fill(0);
-  const set=(x,y,v)=>{if(x>=0&&y>=0&&x<w&&y<h)t[y*w+x]=v;};
-  const fill=(x0,y0,x1,y1,v)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)set(x,y,v);};
-
-  // Natural border, with the south travel lane left open.
-  for(let x=0;x<w;x++){set(x,0,8);set(x,h-1,8);}
-  for(let y=0;y<h;y++){set(0,y,8);set(w-1,y,8);}
-  for(let x=14;x<=16;x++) set(x,h-1,0);
-
-  // Loose tree groups shape the village without turning the edges into a perfect hedge.
-  for(const [x,y] of [[2,2],[3,1],[7,2],[27,2],[28,3],[2,10],[28,9],[1,15],[29,15],[2,19],[28,18],[12,2],[24,6],[26,7]]) set(x,y,8);
-
-  // Central walking spine and short household branches.
-  for(let y=5;y<=26;y++){set(14,y,4);set(15,y,4);set(16,y,4);}
-  for(let x=9;x<=15;x++) set(x,14,4);
-  for(let x=15;x<=18;x++) set(x,6,4);
-  for(let x=16;x<=23;x++) set(x,23,4);
-  for(let x=4;x<=9;x++) set(x,6,4);
-  for(let x=4;x<=14;x++) set(x,21,4);
-
-  // Terrace fields and an actual irrigation channel.
-  fill(18,10,22,15,4);
-  for(let y=9;y<=16;y++) set(17,y,3);
-  set(17,13,0); // bridge tile
-
-  // A few flower patches used as lived-in edges, not density filler.
-  for(const [x,y] of [[6,12],[7,15],[12,11],[23,15],[20,16],[4,20],[9,19]]) set(x,y,18);
-
-  const house3=(cx,top,roof,wall,win,door)=>{
-    for(let x=cx-1;x<=cx+1;x++) set(x,top,roof);
-    set(cx-1,top+1,wall);set(cx,top+1,win);set(cx+1,top+1,wall);
-    set(cx-1,top+2,wall);set(cx,top+2,door);set(cx+1,top+2,wall);
-  };
-  const house5=(cx,top,roof,wall,win,door)=>{
-    for(let x=cx-2;x<=cx+2;x++) set(x,top,roof);
-    set(cx-2,top+1,wall);set(cx-1,top+1,win);set(cx,top+1,wall);set(cx+1,top+1,win);set(cx+2,top+1,wall);
-    set(cx-2,top+2,wall);set(cx-1,top+2,wall);set(cx,top+2,door);set(cx+1,top+2,wall);set(cx+2,top+2,wall);
-  };
-
-  // Upper terrace: one home and the lab.
-  house3(4,3,17,29,30,7);
-  house5(18,3,23,24,25,26);
-
-  // Middle terrace: protagonist home and another small house.
-  house5(9,11,15,9,10,5);
-  house3(26,11,17,29,30,7);
-
-  // Lower terrace: Center supports departure/recovery, but does not own the village center.
-  house5(23,20,16,27,28,6);
-
-  // Lab plaque sits beside, not in front of, the entrance.
-  set(22,6,11);
-
-  return {
-    nm:"はじまりの村",
-    w,h,enc:[],t,
-    signs:[{x:22,y:6,msg:"『ツバキけんきゅうじょ』\nルミモンと ひかりの ことを\nしらべている。"}],
-    ex:[
-      {x:14,y:26,to:"r1",tx:7,ty:0},
-      {x:15,y:26,to:"r1",tx:7,ty:0},
-      {x:16,y:26,to:"r1",tx:7,ty:0}
-    ],
-    npcs:[
-      {x:6,y:14,d:3,sn:"villagerf",nm:"ミキおばさん",msg:"あさから みずの おとが よく きこえるね。\nきょうは あんたも いつもより はやいじゃない。",cl:"#dd5577"},
-      {x:3,y:21,d:3,sn:"oldman",nm:"ゲンじいさん",msg:"わしも むかしは トレーナーでのう…\nさいしょの あいぼうのことは\nいまでも よく おぼえとる。",cl:"#8888aa"},
-      {x:8,y:20,d:1,sn:"villagerf",nm:"シオリ",msg:"ゲンじいさん、また とおくを みてる。\nあそこに たつと かぜが きもちいいんだ。",cl:"#c87ac8"},
-      {x:17,y:7,d:2,sn:"villagerf",nm:"ナナ",msg:"はかせ、あさから なんども\nそとを のぞいてたよ。\nきょうを たのしみに してたのかも。",cl:"#66aadd"},
-      {x:20,y:14,d:1,sn:"villagerf",nm:"そだてや タミ",act:"daycare",msg:"みずが ちゃんと まわると\nはたけも ルミモンも\nごきげんなんだよ。",cl:"#cc8844"},
-      {x:18,y:23,d:2,sn:"villagerm",nm:"ショウ",msg:"ここまで くると かぜが かわるだろ。\nむらを でるって、たぶん こういう かんじなんだ。",cl:"#55aa77"}
-    ]
-  };
-}
-
-MAPS.start=buildStartVillageRedesignMap();
-WORLD_PORTALS.start=[
-  {fx:4,fy:5,to:"houseL",tx:5,ty:6,label:"民家",front:{x:4,y:6}},
-  {fx:18,fy:5,to:"lab1",tx:9,ty:9,label:"ツバキけんきゅうじょ",front:{x:18,y:6}},
-  {fx:9,fy:13,to:"home1",tx:8,ty:8,label:"ママの いえ",front:{x:9,y:14}},
-  {fx:26,fy:13,to:"houseR",tx:5,ty:6,label:"民家",front:{x:26,y:14}},
-  {fx:23,fy:22,to:"center1",tx:7,ty:9,label:"ルミモンセンター",front:{x:23,y:23}}
-];
-MAPS.home1.ex=[{x:8,y:10,to:"start",tx:9,ty:14}];
-MAPS.lab1.ex=[{x:9,y:10,to:"start",tx:18,ty:6}];
-MAPS.center1.ex=[{x:7,y:10,to:"start",tx:23,ty:23}];
-MAPS.houseL.ex=[{x:5,y:7,to:"start",tx:4,ty:6}];
-MAPS.houseR.ex=[{x:5,y:7,to:"start",tx:26,ty:14}];
-
-WORLD_SPOTS.start=[
-  {fx:5,fy:22,msg:["ぼうえんきょうを のぞいた。","ずっと とおくに しろい やま。\nその てまえに、まるい しろい かげが\nみえたような きがした。"]},
-  {fx:17,fy:13,msg:["みずが ほそい みぞを とおって\nだんだんばたけへ わかれていく。","むらの せいかつは、この みずと\nいっしょに うごいているみたいだ。"]}
-];
-
 function mapLabel(mid){
   return MAPS[mid]?.nm||mid;
 }
@@ -740,9 +638,9 @@ function tryWorldSpot(fx,fy){
 }
 let G={st:"TITLE",nm:"",pty:[],box:[],inv:{"スモールシャード":5,"ルミシャード":3,"きのみ":5},gold:500,dex:{},map:"home1",px:8,py:8,opx:8,opy:8,face:"d",badges:[],fl:{},tb:{},align:0,quest:"",dbgEnc:false,_rs:4,hid:{},mute:false,repel:0,swarm:null,log:[],playS:0};
 function syncDynamicNames(){ if(typeof MAPS!=="undefined"&&MAPS.home1){ MAPS.home1.nm=((G.nm&&G.nm.trim())?`${G.nm}のいえ`:"あなたのいえ"); }}
-function sv(){try{localStorage.setItem("ls",JSON.stringify({...G,v:VER}));}catch(e){}}
-function ld(){try{const d=JSON.parse(localStorage.getItem("ls"));if(!d||d.v!==VER)return false;Object.assign(G,d);if(!G.hid)G.hid={};if(G.align==null)G.align=0;if(G.quest==null)G.quest="";if(!G.fl)G.fl={};if(!G.tb)G.tb={};if(G.repel==null)G.repel=0;if(!("swarm" in G))G.swarm=null;if(!Array.isArray(G.log))G.log=[];if(G.playS==null)G.playS=0;G.opx=G.px;G.opy=G.py;syncDynamicNames();G.st="WORLD";return true;}catch(e){return false;}}
-function hasSv(){try{const d=JSON.parse(localStorage.getItem("ls"));return d&&d.v===VER;}catch(e){return false;}}
+function sv(){try{localStorage.setItem("ls_highland_candidate_01",JSON.stringify({...G,v:VER}));}catch(e){}}
+function ld(){try{const d=JSON.parse(localStorage.getItem("ls_highland_candidate_01"));if(!d||d.v!==VER)return false;Object.assign(G,d);if(!G.hid)G.hid={};if(G.align==null)G.align=0;if(G.quest==null)G.quest="";if(!G.fl)G.fl={};if(!G.tb)G.tb={};if(G.repel==null)G.repel=0;if(!("swarm" in G))G.swarm=null;if(!Array.isArray(G.log))G.log=[];if(G.playS==null)G.playS=0;G.opx=G.px;G.opy=G.py;syncDynamicNames();G.st="WORLD";return true;}catch(e){return false;}}
+function hasSv(){try{const d=JSON.parse(localStorage.getItem("ls_highland_candidate_01"));return d&&d.v===VER;}catch(e){return false;}}
 
 function autoSave(reason){
   try{ sv(); }catch(e){}
@@ -1588,6 +1486,57 @@ if(G.map==='t3'||G.map==='snowPath'){
   if(t===33){X.fillStyle='#131a28';X.fillRect(dx,dy,T,T);X.fillStyle='#5eead4';X.beginPath();X.moveTo(dx+8,dy+2);X.lineTo(dx+12,dy+7);X.lineTo(dx+9,dy+13);X.lineTo(dx+5,dy+13);X.lineTo(dx+3,dy+7);X.closePath();X.fill();X.fillStyle='rgba(255,255,255,.7)';X.fillRect(dx+7,dy+4,2,5);return;}
   X.fillStyle='#111';X.fillRect(dx,dy,T,T);return;
 }
+if(G.map==='start'){
+  if(t===0){
+    X.fillStyle='#79b96b';X.fillRect(dx,dy,T,T);
+    if((txx+ty2)%3===0){X.fillStyle='#a9d98f';X.fillRect(dx+3,dy+4,3,1);}
+    if((txx*3+ty2)%5===0){X.fillStyle='#5d9859';X.fillRect(dx+10,dy+9,2,2);}
+    return;
+  }
+  if(t===36){
+    X.fillStyle='#75ad67';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#a8d184';X.fillRect(dx,dy+4,T,3);
+    X.fillStyle='#777268';X.fillRect(dx,dy+8,T,8);
+    X.fillStyle='#928b7b';X.fillRect(dx,dy+8,T,2);
+    X.fillStyle='#5f5d56';X.fillRect(dx+1,dy+13,5,2);X.fillRect(dx+9,dy+11,6,2);
+    X.fillStyle='#aaa18d';X.fillRect(dx+4,dy+9,5,2);X.fillRect(dx+11,dy+14,4,1);
+    return;
+  }
+  if(t===37){
+    X.fillStyle='#76ad68';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#8c826c';X.fillRect(dx+3,dy,2,T);X.fillRect(dx+11,dy,2,T);
+    X.fillStyle='#4e9fb6';X.fillRect(dx+5,dy,6,T);
+    X.fillStyle='#78cad8';X.fillRect(dx+6,dy,4,T);
+    X.globalAlpha=.55;X.fillStyle='#dffcff';X.fillRect(dx+6,dy+((Math.floor(TK/36)+ty2*4)%13),4,1);X.globalAlpha=1;
+    X.fillStyle='#a4d184';X.fillRect(dx+1,dy,2,T);X.fillRect(dx+13,dy,2,T);
+    return;
+  }
+  if(t===38){
+    X.fillStyle='#cfc197';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#b6a67d';X.fillRect(dx,dy+13,T,3);
+    if((txx+ty2)%3===0){X.fillStyle='#e3d6ae';X.fillRect(dx+3,dy+4,4,1);}
+    if((txx*3+ty2)%4===0){X.fillStyle='#9e946f';X.fillRect(dx+11,dy+10,2,1);}
+    return;
+  }
+  if(t===39){
+    X.fillStyle='#806044';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#9a7955';X.fillRect(dx,dy,16,2);
+    X.fillStyle='#654a36';X.fillRect(dx,dy+6,T,1);X.fillRect(dx,dy+13,T,1);
+    for(let i=2;i<15;i+=5){
+      X.fillStyle='#5f954c';X.fillRect(dx+i,dy+2,2,12);
+      X.fillStyle='#9dcc70';X.fillRect(dx+i-1,dy+4,4,2);X.fillRect(dx+i,dy+9,3,2);
+    }
+    return;
+  }
+  if(t===40){
+    X.fillStyle='#7db86e';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#7c7468';X.fillRect(dx+7,dy+8,2,7);X.fillRect(dx+3,dy+14,10,2);
+    X.strokeStyle='#48515b';X.lineWidth=2;X.beginPath();X.moveTo(dx+8,dy+9);X.lineTo(dx+4,dy+15);X.moveTo(dx+8,dy+9);X.lineTo(dx+12,dy+15);X.stroke();
+    X.fillStyle='#39444f';X.fillRect(dx+5,dy+4,8,4);X.fillStyle='#b9dded';X.fillRect(dx+11,dy+5,3,2);
+    X.fillStyle='#f3d56c';X.fillRect(dx+3,dy+5,2,2);
+    return;
+  }
+}
 if(t===0){X.fillStyle=pGrass.b;X.fillRect(dx,dy,T,T); if((txx*7+ty2)%2===0){X.fillStyle=pGrass.h;X.fillRect(dx+3,dy+3,2,2);} if((txx*3+ty2*5)%3===0){X.fillStyle=pGrass.s;X.fillRect(dx+7,dy+7,2,2);} return;}
 if(t===1){X.fillStyle=pGrass.b;X.fillRect(dx,dy,T,T); X.fillStyle=pGrass.s; for(let g=0;g<4;g++){const gx=((txx*5+g*3+ty2)%11)+2; const gy=((ty2*7+g*2+txx)%8)+3; X.fillRect(dx+gx,dy+gy,1,4);} X.fillStyle=pGrass.h; X.fillRect(dx+((txx*7)%10)+1,dy+((ty2*5)%8)+1,2,2); return;}
 if(t===3){X.fillStyle=pWater.b;X.fillRect(dx,dy,T,T); const wave=Math.floor((Math.sin(TK*0.04+txx*0.6)+1)*2.5); X.globalAlpha=.75; X.fillStyle='#ffffff'; X.fillRect(dx,dy+8-wave,T,8+wave); X.globalAlpha=1; X.fillStyle=pWater.h; X.fillRect(dx,dy+9-wave,T,7+wave); X.fillStyle=pWater.b; X.fillRect(dx,dy+11-wave,T,5+wave); return;}
@@ -2306,91 +2255,7 @@ function drawShiokazeGmLighting(cx,cy,dpx,dpy){
   X.restore();
 }
 
-function drawStartVillageRedesignFlavor(cx,cy){
-  const sx=(x)=>~~(x*TS-cx), sy=(y)=>~~(y*TS-cy);
-
-  // Stone terrace edges. Collision uses the same rows, with a central stair opening.
-  for(const y of [8,17]){
-    for(let x=1;x<=29;x++){
-      if(x>=14&&x<=16) continue;
-      const dx=sx(x),dy=sy(y);
-      X.fillStyle='#8d9188'; X.fillRect(dx,dy+9,TS,7);
-      X.fillStyle='#b8b6a8'; X.fillRect(dx,dy+7,TS,3);
-      X.fillStyle='rgba(255,255,255,.20)'; X.fillRect(dx+1,dy+7,TS-2,1);
-      X.fillStyle='rgba(0,0,0,.12)'; X.fillRect(dx,dy+15,TS,1);
-      if((x+y)%3===0){X.fillStyle='#777d75';X.fillRect(dx+3,dy+10,5,2);}
-    }
-    for(let x=14;x<=16;x++){
-      const dx=sx(x),dy=sy(y);
-      X.fillStyle='#c7b99a';X.fillRect(dx,dy+6,TS,10);
-      X.fillStyle='#eee1bd';
-      X.fillRect(dx+2,dy+7,12,2);X.fillRect(dx+2,dy+11,12,2);X.fillRect(dx+2,dy+15,12,1);
-    }
-  }
-
-  // Terrace fields: visible rows rather than decorative clutter.
-  for(let y=10;y<=15;y++){
-    for(let x=18;x<=22;x++){
-      const dx=sx(x),dy=sy(y);
-      X.fillStyle='rgba(111,82,48,.22)';
-      X.fillRect(dx+2,dy+3,12,2);
-      if((x+y)%2===0){
-        X.fillStyle='#4d9b59';X.fillRect(dx+5,dy+5,2,5);X.fillRect(dx+9,dy+4,2,6);
-        X.fillStyle='#82cf75';X.fillRect(dx+4,dy+4,3,2);X.fillRect(dx+9,dy+3,3,2);
-      }
-    }
-  }
-
-  // Small irrigation bridge over the vertical channel.
-  {
-    const dx=sx(17),dy=sy(13);
-    X.fillStyle='#78543b';X.fillRect(dx+1,dy+5,14,8);
-    X.fillStyle='#a57952';
-    for(let i=2;i<14;i+=4)X.fillRect(dx+i,dy+5,2,8);
-    X.fillStyle='rgba(255,255,255,.18)';X.fillRect(dx+1,dy+5,14,1);
-  }
-
-  // Overlook haze below the railing. This is a top-down hint of the basin beyond.
-  {
-    const left=sx(1), top=sy(24), right=sx(11);
-    const g=X.createLinearGradient(0,top,0,top+TS*3);
-    g.addColorStop(0,'rgba(178,215,226,.52)');
-    g.addColorStop(1,'rgba(221,238,242,.12)');
-    X.fillStyle=g;X.fillRect(left,top,right-left,TS*3);
-    X.fillStyle='#8f8776';X.fillRect(left,top, right-left,3);
-    X.fillStyle='#c4bba7';X.fillRect(left,top-2,right-left,2);
-
-    // tiny distant white shape: a promise, not a readable answer yet.
-    const mx=sx(6)+8,my=sy(25)+5;
-    X.fillStyle='rgba(246,251,255,.86)';
-    X.beginPath();X.arc(mx,my,5,0,Math.PI*2);X.fill();
-    X.beginPath();X.arc(mx,my-7,3.5,0,Math.PI*2);X.fill();
-    X.fillStyle='rgba(132,171,190,.38)';X.fillRect(mx-7,my+6,14,2);
-  }
-
-  // Telescope: a real object placed at the memory point.
-  {
-    const dx=sx(5),dy=sy(22);
-    X.strokeStyle='#59616c';X.lineWidth=2;X.lineCap='round';
-    X.beginPath();X.moveTo(dx+8,dy+8);X.lineTo(dx+4,dy+15);X.moveTo(dx+8,dy+8);X.lineTo(dx+12,dy+15);X.stroke();
-    X.fillStyle='#374151';X.fillRect(dx+5,dy+4,9,4);
-    X.fillStyle='#9bc8da';X.fillRect(dx+12,dy+4,3,4);
-    X.fillStyle='#c6a66f';X.fillRect(dx+7,dy+8,2,4);
-  }
-
-  // Small crystal glow on the lab terrace; readable without turning the lab into sci-fi.
-  {
-    const dx=sx(21)+8,dy=sy(5)+8;
-    const g=X.createRadialGradient(dx,dy,0,dx,dy,18);
-    g.addColorStop(0,'rgba(154,226,255,.26)');g.addColorStop(1,'rgba(154,226,255,0)');
-    X.fillStyle=g;X.beginPath();X.arc(dx,dy,18,0,Math.PI*2);X.fill();
-    X.fillStyle='rgba(178,236,255,.75)';X.fillRect(dx-1,dy-4,3,8);
-    X.fillStyle='rgba(255,255,255,.8)';X.fillRect(dx,dy-2,1,3);
-  }
-}
-
 function drawLocalFlavor(mapId,cx,cy){
-  if(mapId==='start') drawStartVillageRedesignFlavor(cx,cy);
   const px=(tx,ty)=>[~~(tx*TS-cx),~~(ty*TS-cy)];
   const drawWarmGlow=(x,y,r,a=.16)=>{ X.fillStyle=`rgba(255,210,130,${a})`; X.beginPath(); X.arc(x,y,r,0,Math.PI*2); X.fill(); };
 
@@ -2413,6 +2278,34 @@ function drawLocalFlavor(mapId,cx,cy){
   const s3Sign=(x,y)=>{X.fillStyle='#674b33';X.fillRect(x+7,y+10,2,14);X.fillStyle='#d7c39f';X.fillRect(x,y,16,10);X.fillStyle='#7a6248';X.fillRect(x+2,y+3,12,1);X.fillRect(x+2,y+6,8,1);};
   const snowyTrees=(coords)=>{ for(const [tx,ty] of coords){ const [x,y]=px(tx,ty); X.fillStyle='rgba(0,0,0,.18)'; X.beginPath(); X.ellipse(x+8,y+14,8,3,0,0,Math.PI*2); X.fill(); X.fillStyle='rgba(255,255,255,.98)'; X.fillRect(x+2,y+1,12,4); X.fillRect(x+3,y+5,10,3); X.fillStyle='rgba(210,231,245,.92)'; X.fillRect(x+4,y+8,8,2); X.fillStyle='#346356'; X.fillRect(x+6,y+10,4,6);} };
 
+  if(mapId==='start'){
+    // Lab identity: the existing building stays, but the crystal mark makes it readable at a glance.
+    {
+      const [x,y]=px(14,6);
+      X.save();
+      X.globalAlpha=.9;
+      X.fillStyle='rgba(80,210,220,.18)';X.beginPath();X.arc(x+8,y-4,12,0,Math.PI*2);X.fill();
+      X.fillStyle='#54c9c7';X.beginPath();X.moveTo(x+8,y-10);X.lineTo(x+13,y-3);X.lineTo(x+8,y+3);X.lineTo(x+3,y-3);X.closePath();X.fill();
+      X.fillStyle='rgba(255,255,255,.8)';X.fillRect(x+7,y-7,2,5);
+      X.restore();
+    }
+    // Lookout edge: a low rail frames the telescope as a place to stop, not another prop.
+    {
+      const [x,y]=px(19,6);
+      X.fillStyle='rgba(0,0,0,.14)';X.fillRect(x-2,y+14,34,3);
+      X.fillStyle='#70543b';X.fillRect(x,y+10,32,2);
+      X.fillRect(x+2,y+8,2,8);X.fillRect(x+27,y+8,2,8);
+      X.fillStyle='#9c7954';X.fillRect(x,y+9,32,1);
+    }
+    // A tiny footbridge visually explains how village life crosses the irrigation channel.
+    {
+      const [x,y]=px(5,9);
+      X.fillStyle='#795b3d';X.fillRect(x+1,y+5,14,7);
+      X.fillStyle='#a98258';X.fillRect(x+1,y+5,14,2);X.fillRect(x+1,y+10,14,2);
+      X.fillStyle='rgba(255,235,190,.25)';X.fillRect(x+3,y+6,10,1);
+    }
+    return;
+  }
   if(mapId==='t2'){
     X.save();
     const sky=X.createLinearGradient(0,0,0,GH);sky.addColorStop(0,'rgba(41,82,122,.20)');sky.addColorStop(.56,'rgba(255,160,110,.10)');sky.addColorStop(1,'rgba(14,24,40,.18)');
@@ -2649,6 +2542,10 @@ function npcTalk(n){
     if(!G.fl.rv1) return "その子が きみの\nさいしょの 1ぴきなんだね。\nあとで ずっと おぼえてそう";
     return "ゲンじいさん うれしそうだったよ\nさいしょの 1ぴきって\nたびの かおになるんだって";
   }
+  if(n.nm==="リク"){
+    if(!G.fl["seen_t3"]) return "ぼうえんきょうで みると\nゆきやまの ほうに\nおおきな しろい かげが あるんだ";
+    return "あれ、ほんとに あの ゆきのむらだったんだな。\nここから みえてた ばしょまで\nいってきたんだな";
+  }
   if(n.nm==="助手 ミナ"){
     if(G.pty.length===0) return "ゲンじいさん さっきも\n『最初の相棒は コノハじゃった』って\nうれしそうに はなしてたよ";
     if(!G.fl.rv1) return "さいしょの 1ぴきって\nえらんだ あとで もっと すきに なるの。\nふしぎ だよね";
@@ -2796,6 +2693,18 @@ else if(t===7&&map?.gym){if(G.fl[map.gym.fl])showMsg("ジムは いま しずま
 else if(map?.npcs)for(const n of map.npcs)if(fx===n.x&&fy===n.y){handleNpcAction(n);break;}}}
 function dM(){const map=MAPS[G.map];if(!map)return;const t2=mvT>0?cl(1-mvT/140,0,1):1;const dpx=G.opx+(G.px-G.opx)*t2,dpy=G.opy+(G.py-G.opy)*t2;const rawCx=dpx*TS-GW/2+TS/2,rawCy=dpy*TS-GH/2+TS/2;const mw=map.w*TS,mh=map.h*TS;const cx=(mw<=GW)?-((GW-mw)/2):cl(rawCx,0,mw-GW),cy=(mh<=GH)?-((GH-mh)/2):cl(rawCy,0,mh-GH);
 X.fillStyle="#0a1610";X.fillRect(0,0,GW,GH);
+if(G.map==='start'){
+  const sky=X.createLinearGradient(0,0,0,GH);
+  sky.addColorStop(0,'#a9deed');sky.addColorStop(.32,'#dff2eb');sky.addColorStop(.72,'#8ab89a');sky.addColorStop(1,'#5f846b');
+  X.fillStyle=sky;X.fillRect(0,0,GW,GH);
+  X.fillStyle='rgba(120,158,157,.55)';
+  X.beginPath();X.moveTo(0,62);X.lineTo(30,35);X.lineTo(54,58);X.lineTo(92,25);X.lineTo(122,61);X.lineTo(158,38);X.lineTo(195,63);X.lineTo(230,30);X.lineTo(256,57);X.lineTo(256,100);X.lineTo(0,100);X.closePath();X.fill();
+  X.fillStyle='rgba(240,248,247,.78)';
+  X.beginPath();X.moveTo(72,44);X.lineTo(92,25);X.lineTo(106,43);X.lineTo(98,39);X.lineTo(92,33);X.lineTo(86,40);X.closePath();X.fill();
+  X.beginPath();X.moveTo(216,44);X.lineTo(230,30);X.lineTo(242,45);X.lineTo(233,40);X.lineTo(229,36);X.lineTo(224,41);X.closePath();X.fill();
+  X.fillStyle='rgba(111,158,145,.28)';X.fillRect(0,52,GW,18);
+  const valley=X.createLinearGradient(0,GH-70,0,GH);valley.addColorStop(0,'rgba(126,167,143,.10)');valley.addColorStop(1,'rgba(56,90,70,.52)');X.fillStyle=valley;X.fillRect(0,GH-70,GW,70);
+}
 const useShiokazeGm=(G.map==='t2');
 SIO_ROOM_LIGHTS.length=0;
 if(useShiokazeGm) drawShiokazeGmBase(cx,cy);
