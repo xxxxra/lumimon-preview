@@ -358,17 +358,21 @@ function drawFootprints(){X.fillStyle='rgba(74,108,137,.22)';for(const f of S.fo
 function interpPos(){const t=S.moveT/8;return{x:S.px+(S.opx-S.px)*t,y:S.py+(S.opy-S.py)*t}}
 function drawPlayer(){const p=interpPos(),x=Math.round(p.x*TS+8),y=Math.round(p.y*TS+11),face=(S.playerReactTimer>0&&S.playerLookDir&&S.moveT===0)?S.playerLookDir:S.face;X.fillStyle='rgba(10,20,40,.22)';X.beginPath();X.ellipse(x,y+2,6,2,0,0,Math.PI*2);X.fill();drawMainPlayerSprite(X,'pl_'+face,x-6,y-10,1)}
 function drawEmotionPixel(ctx,symbol,x,y){
+ ctx.save();ctx.globalAlpha=S.comp.reactTimer<8?Math.max(.2,S.comp.reactTimer/8):1;
+ if(symbol==='♪'){
+   ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+   ctx.fillStyle='#ffd65a';ctx.fillText('♪',Math.round(x),Math.round(y));
+   ctx.restore();return;
+ }
  const patterns={
   '♥':[".##.##.","#######","#######",".#####.","..###..","...#..."],
-  '♪':["...##","....#","....#","..###",".##.#",".##.."],
   '!':["##","##","##","##","..","##"],
   '…':["##.##.##","##.##.##"]
  };
- const pat=patterns[symbol];if(!pat)return;
+ const pat=patterns[symbol];if(!pat){ctx.restore();return}
  const sc=1,w=Math.max(...pat.map(r=>r.length))*sc,h=pat.length*sc;
- const col=symbol==='♥'?'#ff739f':symbol==='♪'?'#facc15':symbol==='…'?'#7ea5c5':'#fff2a8';
+ const col=symbol==='♥'?'#ff739f':symbol==='…'?'#7ea5c5':'#fff2a8';
  const ox=Math.round(x-w/2),oy=Math.round(y-h);
- ctx.save();ctx.globalAlpha=S.comp.reactTimer<8?Math.max(.2,S.comp.reactTimer/8):1;
  for(let r=0;r<pat.length;r++)for(let q=0;q<pat[r].length;q++)if(pat[r][q]==='#'){
    ctx.fillStyle=col;ctx.fillRect(ox+q*sc,oy+r*sc,sc,sc);
  }
