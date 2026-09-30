@@ -359,8 +359,8 @@ function interpPos(){const t=S.moveT/8;return{x:S.px+(S.opx-S.px)*t,y:S.py+(S.op
 function drawPlayer(){const p=interpPos(),x=Math.round(p.x*TS+8),y=Math.round(p.y*TS+11),face=(S.playerReactTimer>0&&S.playerLookDir&&S.moveT===0)?S.playerLookDir:S.face;X.fillStyle='rgba(10,20,40,.22)';X.beginPath();X.ellipse(x,y+2,6,2,0,0,Math.PI*2);X.fill();drawMainPlayerSprite(X,'pl_'+face,x-6,y-10,1)}
 function drawEmotionPixel(ctx,symbol,x,y){
  const spec={
-  '!':{size:11,color:'#fff2a8',weight:'bold'},
-  '♪':{size:11,color:'#38bdf8',weight:'bold'},
+  '!':{size:12,color:'#fff2a8',weight:'bold'},
+  '♪':{size:12,color:'#38bdf8',weight:'bold'},
   '♥':{size:10,color:'#ff7fa5',weight:'bold'},
   '…':{size:10,color:'#8eabc2',weight:'bold'}
  }[symbol];
