@@ -96,7 +96,7 @@ const BUDDIES={
  puwawa:{name:'ぷわわ',type:'かぜ',note:'ふわっと様子見',token:'◌',cols:['#7dd3fc','#bae6fd','#fff','#a5f3fc'],first:'ぷわわが 雪に そっとふれた。',after:'くるっと回って、雪へ降りた。',memory1:'白い雪に、ぷわわがそっと触れた。',memory2:'戻ってくると、雪の上を一周してから同じ場所へ降りた。'},
  yamiusa:{name:'ヤミウサ',type:'やみ',note:'気になるけど慎重',token:'☾',cols:['#27234f','#4f46e5','#f3e8ff','#ef4444'],first:'ヤミウサが 前足で 雪をさわった。',after:'通りすぎて――戻ってきた。\nもう一度、前足でさわった。',memory1:'ヤミウサは雪を見て、前足で一度だけ触った。',memory2:'再び通ると一度は通りすぎた。でも戻ってきて、また触った。'}
 };
-const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],cprints:[],snow:[],idle:0,detour:{active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
+const S={mode:'select',map:'village',buddyKey:'penta',pendingBuddy:'penta',bond:'new',px:4,py:13,opx:4,opy:13,face:'r',moveT:0,history:[{x:3,y:13},{x:2,y:13}],comp:{x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,callArrive:'',callWatch:false,react:'',reactTimer:0,idleKind:'',idleTimer:0},dialog:null,dialogName:'',dialogDone:null,msgI:0,firstDone:false,leftAfterMemory:false,revisitReady:false,revisitDone:false,notice:false,eventAnim:0,eventPhase:0,memoryOpen:false,frame:0,footprints:[],cprints:[],snow:[],idle:0,idleNext:240,playerReactTimer:0,playerLookDir:null,detour:{active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0},npcMet:false,npcRemembered:false,npcDir:'d',restDone:false,restAnim:0,battleDone:false,battleRevisit:false,battleRevisitDone:false,battleRevisitCue:false,battleAnim:0,threatSeen:false,threatReactTimer:0,threatComforted:false,threatDir:'l',bossStandoff:false};
 const maps={
  village:{name:'スノーヴィレッジ',spawn:{x:4,y:13},exit:{x:16,y:11,to:'path',tx:1,ty:11},spot:{x:11,y:9},rest:{x:4,y:10},npc:{x:6,y:9},detours:{
  penta:[{x:6,y:12,kind:'snowman'},{x:10,y:16,kind:'icepond'},{x:5,y:16,kind:'snowtree'}],
@@ -126,14 +126,35 @@ function setCompGoal(x,y,force=false){
  const key=g.x+','+g.y;if(!force&&S.comp.routeGoal===key&&S.comp.route.length)return;
  const p=findPath(S.map,S.comp.x,S.comp.y,g.x,g.y);S.comp.route=p.slice(1);S.comp.routeGoal=key;S.comp.tx=g.x;S.comp.ty=g.y;
 }
+function setCompEmotion(symbol,timer=56){S.comp.react=symbol;S.comp.reactTimer=Math.max(S.comp.reactTimer,timer)}
+function dirToward(ax,ay,bx,by){const dx=bx-ax,dy=by-ay;if(Math.abs(dx)>Math.abs(dy))return dx<0?'l':'r';return dy<0?'u':'d'}
+function playerWatchComp(timer=46){if(S.moveT>0||S.mode!=='world')return;S.playerLookDir=dirToward(S.px,S.py,S.comp.x,S.comp.y);S.playerReactTimer=timer}
+function finishCallArrival(){
+ if(!S.comp.callWatch)return;
+ S.comp.callWatch=false;playerWatchComp(54);
+ if(S.comp.callArrive)setCompEmotion(S.comp.callArrive,66);
+ S.comp.callArrive='';
+}
+function startCompIdle(){
+ const k=S.buddyKey,roll=Math.random();
+ S.comp.idleKind=k==='penta'?(roll<.58?'peck':'look'):k==='puwawa'?(roll<.62?'float':'circle'):(roll<.62?'watch':'sit');
+ S.comp.idleTimer=105+Math.floor(Math.random()*75);
+ if(S.comp.idleKind==='float'&&Math.random()<.45)setCompEmotion('♪',52);
+ if(S.comp.idleKind==='watch'&&Math.random()<.45){setCompEmotion('…',46);playerWatchComp(54)}
+ if(S.comp.idleKind==='peck'&&Math.random()<.22)setCompEmotion('♪',44);
+}
 function compFollowPoint(){
  const idx=S.bond==='close'?0:Math.min(2,S.history.length-1);const h=S.history[idx]||{x:S.px-1,y:S.py};
  return openGoal(S.map,h.x,h.y)||{x:S.px,y:S.py};
 }
 function advanceComp(speed){
- if(S.comp.returnDelay>0){S.comp.returnDelay--;if(S.comp.returnDelay===0&&S.comp.callGoal){setCompGoal(S.comp.callGoal.x,S.comp.callGoal.y,true);S.comp.callGoal=null}return}
+ if(S.comp.returnDelay>0){S.comp.returnDelay--;if(S.comp.returnDelay===0&&S.comp.callGoal){setCompGoal(S.comp.callGoal.x,S.comp.callGoal.y,true);S.comp.callGoal=null;if(S.comp.route.length===0)finishCallArrival()}return}
  const n=S.comp.route[0];if(!n)return;const dx=n.x-S.comp.x,dy=n.y-S.comp.y,d=Math.hypot(dx,dy);
- if(d<=speed+.03){S.comp.x=n.x;S.comp.y=n.y;S.comp.route.shift();if(S.map==='village'||S.map==='path')S.cprints.push({map:S.map,x:n.x,y:n.y,life:210});return}
+ if(d<=speed+.03){
+   S.comp.x=n.x;S.comp.y=n.y;S.comp.route.shift();if(S.map==='village'||S.map==='path')S.cprints.push({map:S.map,x:n.x,y:n.y,life:210});
+   if(S.comp.route.length===0&&S.comp.callWatch)finishCallArrival()
+   return;
+ }
  S.comp.x+=dx/d*speed;S.comp.y+=dy/d*speed;
 }
 function initSnow(){S.snow=[];for(let i=0;i<120;i++)S.snow.push({x:Math.random()*GW,y:Math.random()*GH,s:.4+Math.random()*1.4,v:.25+Math.random()*.65,a:.18+Math.random()*.55,drift:(Math.random()-.5)*.25})}
@@ -148,7 +169,7 @@ function openSelect(first=false){
  render();
 }
 function drawMiniAll(){ui.panel.querySelectorAll('[data-mini]').forEach(c=>{const q=c.getContext('2d');q.clearRect(0,0,64,64);q.imageSmoothingEnabled=false;drawBuddySprite(q,c.dataset.mini,32,36,2)})}
-function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,react:'',reactTimer:0};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.cprints=[];S.idle=0;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
+function resetMemory(keepBuddy=true){S.map='village';S.px=4;S.py=13;S.opx=4;S.opy=13;S.face='r';S.moveT=0;S.history=[{x:3,y:13},{x:2,y:13}];S.comp={x:3,y:13,tx:3,ty:13,route:[],routeGoal:null,returnDelay:0,callGoal:null,callArrive:'',callWatch:false,react:'',reactTimer:0,idleKind:'',idleTimer:0};S.firstDone=false;S.leftAfterMemory=false;S.revisitReady=false;S.revisitDone=false;S.notice=false;S.eventAnim=0;S.eventPhase=0;S.dialog=null;S.dialogDone=null;S.footprints=[];S.cprints=[];S.idle=0;S.idleNext=240;S.playerReactTimer=0;S.playerLookDir=null;S.detour={active:false,kind:'',phase:'',timer:0,cooldown:240,target:null,anchor:null,stepTimer:0,lookTimer:0};S.npcMet=false;S.npcRemembered=false;S.npcDir='d';S.restDone=false;S.restAnim=0;S.battleDone=false;S.battleRevisit=false;S.battleRevisitDone=false;S.battleRevisitCue=false;S.battleAnim=0;S.threatSeen=false;S.threatReactTimer=0;S.threatComforted=false;S.threatDir='l';S.bossStandoff=false;updateHud()}
 function bondLabel(){return S.bond==='close'?'かなり仲良し':'まだ慣れてない'}
 function updateHud(){ui.place.textContent=maps[S.map].name;ui.buddy.textContent='相棒：'+BUDDIES[S.buddyKey].name}
 function toast(t){ui.toast.textContent=t;ui.toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>ui.toast.classList.remove('show'),1700)}
@@ -180,17 +201,17 @@ function positionBuddyNearPlayer(){const t=compFollowPoint();setCompGoal(t.x,t.y
 document.getElementById('menuBtn').onclick=openMenu;
 let selectNavAt=0;
 function selectBuddyStep(dir){if(S.mode!=='select'||(dir!=='l'&&dir!=='r'))return false;const now=Date.now();if(now-selectNavAt<240)return true;selectNavAt=now;const ks=Object.keys(BUDDIES),i=Math.max(0,ks.indexOf(S.pendingBuddy)),ni=(i+(dir==='r'?1:-1)+ks.length)%ks.length;S.pendingBuddy=ks[ni];ui.panel.querySelectorAll('.choice').forEach(x=>x.classList.toggle('active',x.dataset.buddy===S.pendingBuddy));const start=ui.panel.querySelector('#startBtn');if(start)start.textContent=S.pendingBuddy===S.buddyKey?'このまま もどる':'この相棒で 最初から';const active=ui.panel.querySelector('.choice.active');if(active)active.scrollIntoView({block:'nearest',inline:'center'});return true}
-function tryMove(dir){if(S.mode==='select'){selectBuddyStep(dir);return}if(S.moveT>0||S.eventAnim>0||S.dialog||S.mode!=='world')return;const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[dir];S.face=dir;let nx=S.px+d[0],ny=S.py+d[1];const ex=maps[S.map].exit;if(nx===ex.x&&ny===ex.y){transfer(ex);return}if(!blocked(S.map,nx,ny)){S.opx=S.px;S.opy=S.py;S.px=nx;S.py=ny;S.moveT=8;S.history.unshift({x:S.opx,y:S.opy});S.history=S.history.slice(0,4);S.footprints.push({map:S.map,x:S.opx,y:S.opy,life:250});}}
-function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.comp.route=[];S.comp.routeGoal=null;S.comp.callGoal=null;S.comp.returnDelay=0;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true}else if(from==='village'&&S.map==='path'&&S.battleDone&&!S.battleRevisitDone){S.battleRevisit=true;S.battleRevisitCue=false}updateHud()}
+function tryMove(dir){if(S.mode==='select'){selectBuddyStep(dir);return}if(S.moveT>0||S.eventAnim>0||S.dialog||S.mode!=='world')return;const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[dir];S.face=dir;let nx=S.px+d[0],ny=S.py+d[1];const ex=maps[S.map].exit;if(nx===ex.x&&ny===ex.y){transfer(ex);return}if(!blocked(S.map,nx,ny)){S.opx=S.px;S.opy=S.py;S.px=nx;S.py=ny;S.moveT=8;S.idle=0;S.idleNext=210+Math.floor(Math.random()*150);S.comp.idleKind='';S.comp.idleTimer=0;S.playerReactTimer=0;S.history.unshift({x:S.opx,y:S.opy});S.history=S.history.slice(0,4);S.footprints.push({map:S.map,x:S.opx,y:S.opy,life:250});}}
+function transfer(ex){if(S.map==='village'&&S.firstDone)S.leftAfterMemory=true;const from=S.map;S.map=ex.to;S.px=S.opx=ex.tx;S.py=S.opy=ex.ty;S.moveT=12;S.history=[{x:S.px-1,y:S.py},{x:S.px-2,y:S.py}];S.comp.x=S.px-1;S.comp.y=S.py;S.comp.tx=S.comp.x;S.comp.ty=S.comp.y;S.comp.route=[];S.comp.routeGoal=null;S.comp.callGoal=null;S.comp.callArrive='';S.comp.callWatch=false;S.comp.returnDelay=0;S.comp.idleKind='';S.comp.idleTimer=0;S.playerReactTimer=0;S.playerLookDir=null;S.detour.active=false;S.detour.cooldown=90;if(from==='path'&&S.map==='village'&&S.leftAfterMemory&&!S.revisitDone){S.revisitReady=true}else if(from==='village'&&S.map==='path'&&S.battleDone&&!S.battleRevisitDone){S.battleRevisit=true;S.battleRevisitCue=false}updateHud()}
 function dist(a,b,c,d){return Math.abs(a-c)+Math.abs(b-d)}
 function spotState(){if(S.map!=='village')return null;const sp=maps.village.spot;const near=dist(S.px,S.py,sp.x,sp.y)<=2;if(!near)return null;if(!S.firstDone)return 'first';if(S.revisitReady&&!S.revisitDone)return 'revisit';return 'done'}
 function frontCoord(){const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[S.face];return{x:S.px+d[0],y:S.py+d[1]}}
 function nearPoint(p,r=1){return p&&dist(S.px,S.py,p.x,p.y)<=r}
 function callBuddy(){
  if(S.mode!=='world'||S.dialog||S.eventAnim>0||S.restAnim>0||S.battleAnim>0)return;
- const close=S.bond==='close',t=compFollowPoint();S.detour.active=false;S.detour.cooldown=210;S.comp.route=[];S.comp.routeGoal=null;
- S.comp.react='!';S.comp.reactTimer=32;S.comp.callGoal=t;S.comp.returnDelay=close?0:22;
- if(close){setCompGoal(t.x,t.y,true);S.comp.callGoal=null}
+ const close=S.bond==='close',t=compFollowPoint();S.detour.active=false;S.detour.cooldown=210;S.comp.route=[];S.comp.routeGoal=null;S.comp.idleKind='';S.comp.idleTimer=0;
+ setCompEmotion(close?'!':'…',close?30:42);S.comp.callGoal=t;S.comp.callArrive=close?'♥':'';S.comp.callWatch=true;S.comp.returnDelay=close?0:22;
+ if(close){setCompGoal(t.x,t.y,true);S.comp.callGoal=null;if(S.comp.route.length===0)finishCallArrival()}
  if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65)}
 }
 function talkNpc(){const b=BUDDIES[S.buddyKey];S.npcDir={u:'d',d:'u',l:'r',r:'l'}[S.face]||'d';if(!S.npcMet){S.npcMet=true;showMsg(`あ、その子 はじめて見る。\n${b.name}っていうの？`,'ゆきあそびの こ');return}if(S.leftAfterMemory&&!S.npcRemembered){S.npcRemembered=true;showMsg(`あ、${b.name}。\nまた来たんだ。`,'ゆきあそびの こ');return}showMsg(`${b.name}、また雪のとこ行ってた？`,'ゆきあそびの こ')}
@@ -262,7 +283,7 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
        d.lookTimer--;
        if(d.lookTimer<=0){d.phase='going';setCompGoal(d.anchor.x,d.anchor.y,true)}
      }else if(d.phase==='going'){
-       if(S.comp.route.length===0&&Math.hypot(S.comp.x-d.anchor.x,S.comp.y-d.anchor.y)<.7){d.phase='engrossed';d.timer=S.bond==='close'?900:520;d.stepTimer=24;pickDetourStep()}
+       if(S.comp.route.length===0&&Math.hypot(S.comp.x-d.anchor.x,S.comp.y-d.anchor.y)<.7){d.phase='engrossed';d.timer=S.bond==='close'?900:520;d.stepTimer=24;setCompEmotion('♪',72);pickDetourStep()}
      }else if(d.phase==='engrossed'){
        d.timer--;d.stepTimer--;
        if(d.stepTimer<=0&&S.comp.route.length===0)pickDetourStep();
@@ -270,14 +291,14 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
      }else if(d.phase==='returning'){
        d.stepTimer--;
        if(d.stepTimer<=0){d.target=compFollowPoint();setCompGoal(d.target.x,d.target.y,true);d.stepTimer=16}
-       if(S.comp.route.length===0&&d.target&&Math.hypot(S.comp.x-d.target.x,S.comp.y-d.target.y)<.45){d.active=false;d.cooldown=S.bond==='close'?220:280}
+       if(S.comp.route.length===0&&d.target&&Math.hypot(S.comp.x-d.target.x,S.comp.y-d.target.y)<.45){d.active=false;d.cooldown=S.bond==='close'?220:280;playerWatchComp(48);if(S.bond==='close'&&Math.random()<.32)setCompEmotion('♥',58)}
      }
    }else if(S.detour.cooldown<=0){
      const ds=maps.village.detours[S.buddyKey]||[],noticeRange=S.bond==='close'?9:6,candidates=ds.filter(d=>dist(S.px,S.py,d.x,d.y)<=noticeRange);
      if(candidates.length){
        const d=candidates[Math.floor(Math.random()*candidates.length)];
        S.detour={active:true,kind:d.kind,phase:'notice',timer:0,cooldown:0,target:null,anchor:{x:d.x,y:d.y},stepTimer:0,lookTimer:S.bond==='close'?24:34};
-       S.comp.route=[];S.comp.routeGoal=null;
+       S.comp.route=[];S.comp.routeGoal=null;S.comp.idleKind='';S.comp.idleTimer=0;setCompEmotion('!',36);
      }
    }
  }
@@ -285,7 +306,12 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
    if(S.map==='village'&&S.notice){const sp=maps.village.spot;S.detour.active=false;setCompGoal(sp.x,sp.y+1)}
    else if(!S.detour.active&&S.comp.returnDelay===0&&S.frame%10===0){const t=compFollowPoint();setCompGoal(t.x,t.y)}
  }
- if(S.comp.reactTimer>0)S.comp.reactTimer--;
+ if(S.comp.reactTimer>0)S.comp.reactTimer--;else S.comp.react='';
+ if(S.playerReactTimer>0)S.playerReactTimer--;else S.playerLookDir=null;
+ if(!busy&&S.map==='village'&&!S.detour.active&&S.comp.route.length===0&&S.comp.returnDelay===0){
+   if(S.comp.idleTimer>0)S.comp.idleTimer--;
+   else{S.idle++;if(S.idle>=S.idleNext){startCompIdle();S.idle=0;S.idleNext=230+Math.floor(Math.random()*170)}}
+ }else if(S.moveT>0||S.detour.active||S.comp.route.length>0){S.idle=0;if(S.comp.idleTimer>0&&S.detour.active){S.comp.idleTimer=0;S.comp.idleKind=''}}
  const compSpeed=S.detour.active&&S.detour.phase==='engrossed'?.075:S.bond==='close'?.12:.09;advanceComp(compSpeed);
  for(const f of S.footprints)f.life--;S.footprints=S.footprints.filter(f=>f.life>0);
  for(const f of S.cprints)f.life--;S.cprints=S.cprints.filter(f=>f.life>0);
@@ -330,7 +356,7 @@ function drawSnowman(x,y,s){X.save();X.translate(x*TS,y*TS);X.scale(s,s);X.fillS
 function drawSnowdrift(x,y){const px=x*TS+8,py=y*TS+12;X.fillStyle='rgba(102,140,174,.18)';X.beginPath();X.ellipse(px,py+5,22,7,0,0,Math.PI*2);X.fill();X.fillStyle='#f8fdff';X.beginPath();X.ellipse(px,py,18,8,0,0,Math.PI*2);X.fill();X.fillStyle='#d7e9f5';X.beginPath();X.ellipse(px-4,py+2,11,4,0,0,Math.PI*2);X.fill();}
 function drawFootprints(){X.fillStyle='rgba(74,108,137,.22)';for(const f of S.footprints){if(f.map!==S.map)continue;const a=Math.max(0,Math.min(.25,f.life/250*.25));X.globalAlpha=a/.25;X.fillRect(f.x*TS+5,f.y*TS+10,3,5);X.fillRect(f.x*TS+10,f.y*TS+8,3,5);X.globalAlpha=1}for(const f of S.cprints){if(f.map!==S.map)continue;X.globalAlpha=Math.min(.18,f.life/210*.18)/.18;X.fillStyle='rgba(63,96,124,.18)';X.fillRect(f.x*TS+7,f.y*TS+10,2,3);X.fillRect(f.x*TS+10,f.y*TS+8,2,3);X.globalAlpha=1}}
 function interpPos(){const t=S.moveT/8;return{x:S.px+(S.opx-S.px)*t,y:S.py+(S.opy-S.py)*t}}
-function drawPlayer(){const p=interpPos(),x=Math.round(p.x*TS+8),y=Math.round(p.y*TS+11);X.fillStyle='rgba(10,20,40,.22)';X.beginPath();X.ellipse(x,y+2,6,2,0,0,Math.PI*2);X.fill();drawMainPlayerSprite(X,'pl_'+S.face,x-6,y-10,1)}
+function drawPlayer(){const p=interpPos(),x=Math.round(p.x*TS+8),y=Math.round(p.y*TS+11),face=(S.playerReactTimer>0&&S.playerLookDir&&S.moveT===0)?S.playerLookDir:S.face;X.fillStyle='rgba(10,20,40,.22)';X.beginPath();X.ellipse(x,y+2,6,2,0,0,Math.PI*2);X.fill();drawMainPlayerSprite(X,'pl_'+face,x-6,y-10,1)}
 function drawCompanion(){let x=S.comp.x*TS+8,y=S.comp.y*TS+11;
  if(S.detour.active&&S.detour.phase==='notice'&&S.detour.anchor){x+=Math.sign(S.detour.anchor.x-S.comp.x)*1.5;y-=Math.abs(Math.sin(S.frame*.16))*1.2}
  if(S.detour.active&&S.detour.phase==='engrossed'){
@@ -338,8 +364,16 @@ function drawCompanion(){let x=S.comp.x*TS+8,y=S.comp.y*TS+11;
    else if(S.buddyKey==='puwawa'){y-=4+Math.sin(S.frame*.12)*2;x+=Math.cos(S.frame*.08)*1.4}
    else{x+=Math.sin(S.frame*.055)*1.0}
  }
+ if(S.comp.idleTimer>0){
+   if(S.comp.idleKind==='peck'){y+=Math.abs(Math.sin(S.frame*.32))*1.8;x+=Math.sin(S.frame*.16)*.5}
+   else if(S.comp.idleKind==='look'){x+=Math.sin(S.frame*.09)*.8}
+   else if(S.comp.idleKind==='float'){y-=3+Math.sin(S.frame*.12)*2;x+=Math.cos(S.frame*.08)*1.2}
+   else if(S.comp.idleKind==='circle'){x+=Math.sin(S.frame*.08)*2.0;y-=2+Math.cos(S.frame*.08)*1.3}
+   else if(S.comp.idleKind==='watch'){x+=Math.sin(S.frame*.055)*.45}
+   else if(S.comp.idleKind==='sit'){y+=1.4}
+ }
  if(S.comp.reactTimer>0)y-=Math.abs(Math.sin(S.frame*.32))*2.2;
- if(S.eventAnim>0){const t=1-S.eventAnim/90;const bounce=Math.sin(t*Math.PI*3)*Math.max(0,1-t)*5;if(S.buddyKey==='penta')y+=bounce;else if(S.buddyKey==='puwawa')y-=5+Math.sin(t*Math.PI*4)*3;else x+=Math.sin(t*Math.PI*2)*2}if(S.restAnim>0){if(S.buddyKey==='puwawa')y-=4+Math.sin(S.frame*.12)*2;else y+=2}if(S.threatReactTimer>0&&!S.battleDone){if(S.buddyKey==='penta'){x+=Math.sin(S.frame*.9)*1.4}else if(S.buddyKey==='puwawa'){x+=Math.sin(S.frame*.42)*1.2;y+=Math.sin(S.frame*.55)*1.5}else{x+=Math.sin(S.frame*.72)*.9}}if(S.battleAnim>0){x+=Math.sin(S.frame*.45)*2;y+=Math.sin(S.frame*.22)}drawBuddySprite(X,S.buddyKey,x,y,1);if(S.comp.reactTimer>0){X.save();X.font='bold 9px sans-serif';X.textAlign='center';X.fillStyle='#fff2a8';X.fillText('!',x,y-12);X.restore()}}
+ if(S.eventAnim>0){const t=1-S.eventAnim/90;const bounce=Math.sin(t*Math.PI*3)*Math.max(0,1-t)*5;if(S.buddyKey==='penta')y+=bounce;else if(S.buddyKey==='puwawa')y-=5+Math.sin(t*Math.PI*4)*3;else x+=Math.sin(t*Math.PI*2)*2}if(S.restAnim>0){if(S.buddyKey==='puwawa')y-=4+Math.sin(S.frame*.12)*2;else y+=2}if(S.threatReactTimer>0&&!S.battleDone){if(S.buddyKey==='penta'){x+=Math.sin(S.frame*.9)*1.4}else if(S.buddyKey==='puwawa'){x+=Math.sin(S.frame*.42)*1.2;y+=Math.sin(S.frame*.55)*1.5}else{x+=Math.sin(S.frame*.72)*.9}}if(S.battleAnim>0){x+=Math.sin(S.frame*.45)*2;y+=Math.sin(S.frame*.22)}drawBuddySprite(X,S.buddyKey,x,y,1);if(S.comp.reactTimer>0&&S.comp.react){X.save();X.font=S.comp.react==='♥'?'bold 11px sans-serif':'bold 10px sans-serif';X.textAlign='center';X.fillStyle=S.comp.react==='♥'?'#ff9ab8':S.comp.react==='♪'?'#ffe38a':S.comp.react==='…'?'#d9e7f4':'#fff2a8';X.fillText(S.comp.react,x,y-12);X.restore()}}
 function drawBuddySprite(ctx,key,x,y,sc=1){
  // TRANSPLANT: exact pixel motifs from the current LUMINARIA MONSTER LIST.
  ctx.save();ctx.translate(Math.round(x),Math.round(y));
