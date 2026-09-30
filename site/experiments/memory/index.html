@@ -360,13 +360,13 @@ function drawPlayer(){const p=interpPos(),x=Math.round(p.x*TS+8),y=Math.round(p.
 function drawEmotionPixel(ctx,symbol,x,y){
  const patterns={
   '♥':[".##.##.","#######","#######",".#####.","..###..","...#..."],
-  '♪':["...###","....##","....##","....##",".#####","###.##","##...."],
+  '♪':["...##","....#","....#","..###",".##.#",".##.."],
   '!':["##","##","##","##","..","##"],
   '…':["##.##.##","##.##.##"]
  };
  const pat=patterns[symbol];if(!pat)return;
  const sc=1,w=Math.max(...pat.map(r=>r.length))*sc,h=pat.length*sc;
- const col=symbol==='♥'?'#ff739f':symbol==='♪'?'#d99a22':symbol==='…'?'#7ea5c5':'#fff2a8';
+ const col=symbol==='♥'?'#ff739f':symbol==='♪'?'#facc15':symbol==='…'?'#7ea5c5':'#fff2a8';
  const ox=Math.round(x-w/2),oy=Math.round(y-h);
  ctx.save();ctx.globalAlpha=S.comp.reactTimer<8?Math.max(.2,S.comp.reactTimer/8):1;
  for(let r=0;r<pat.length;r++)for(let q=0;q<pat[r].length;q++)if(pat[r][q]==='#'){
@@ -418,7 +418,7 @@ function drawBuddySprite(ctx,key,x,y,sc=1){
  }
  ctx.restore();
 }
-function drawNotice(){const sp=maps.village.spot;let x=S.comp.x*TS+8,y=S.comp.y*TS-4;X.save();X.font='bold 12px sans-serif';X.textAlign='center';X.fillStyle='rgba(7,15,27,.85)';roundRect(X,x-14,y-19,28,16,7);X.fill();X.fillStyle='#ffe38a';X.fillText('!',x,y-7);X.restore();if(dist(S.px,S.py,sp.x,sp.y)<=2){X.save();X.font='bold 9px sans-serif';X.textAlign='center';X.fillStyle='rgba(5,13,25,.72)';roundRect(X,GW/2-46,GH-52,92,22,11);X.fill();X.fillStyle='#dff3ff';X.fillText('A で しらべる',GW/2,GH-38);X.restore()}}
+function drawNotice(){const sp=maps.village.spot;let x=S.comp.x*TS+8,y=S.comp.y*TS-4;X.save();X.fillStyle='#facc15';roundRect(X,x-6,y-14,12,11,3);X.fill();X.font='bold 9px sans-serif';X.textAlign='center';X.fillStyle='#1b2430';X.fillText('!',x,y-5);X.restore();if(dist(S.px,S.py,sp.x,sp.y)<=2){X.save();X.font='bold 9px sans-serif';X.textAlign='center';X.fillStyle='rgba(5,13,25,.72)';roundRect(X,GW/2-46,GH-52,92,22,11);X.fill();X.fillStyle='#dff3ff';X.fillText('A で しらべる',GW/2,GH-38);X.restore()}}
 function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function drawSnow(){X.save();for(const p of S.snow){X.globalAlpha=p.a;X.fillStyle='#fff';X.fillRect(p.x,p.y,p.s,p.s)}X.globalAlpha=1;X.restore()}
 let keys={};document.addEventListener('keydown',e=>{keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Enter'].includes(e.key))e.preventDefault();if(e.key==='Enter'||e.key==='z'||e.key===' ')tryAction();if(e.key==='x')callBuddy();if(e.key==='m'&&S.mode==='world')openMenu();if(e.key==='Escape'){if(S.dialog)advanceMsg();else if(['memory','bond','menu'].includes(S.mode))closeModal()}});document.addEventListener('keyup',e=>keys[e.key]=false);
