@@ -131,23 +131,23 @@ function setCompGoal(x,y,force=false){
 }
 function setCompEmotion(symbol,timer=56){S.comp.react=symbol;S.comp.reactTimer=Math.max(S.comp.reactTimer,timer)}
 const EMOTION_BIAS={
- penta:{'!':1.15,'!!':1.25,'?':.95,'♪':1.55,'♥':1.15,'…':.75,'✦':1.10,'z':.90},
- puwawa:{'!':1.00,'!!':.90,'?':1.20,'♪':1.25,'♥':1.00,'…':1.00,'✦':1.55,'z':.85},
- yamiusa:{'!':1.00,'!!':1.05,'?':1.45,'♪':.85,'♥':.90,'…':1.55,'✦':1.00,'z':1.05}
+ penta:{'!':1.15,'!!':1.25,'?':.95,'♪':1.55,'♥':1.15,'…':.75,'✦':1.10,'z':.90,'sweat':1.00},
+ puwawa:{'!':1.00,'!!':.90,'?':1.20,'♪':1.25,'♥':1.00,'…':1.00,'✦':1.55,'z':.85,'sweat':.90},
+ yamiusa:{'!':1.00,'!!':1.05,'?':1.45,'♪':.85,'♥':.90,'…':1.55,'✦':1.00,'z':1.05,'sweat':1.25}
 };
 const EMOTION_CONTEXTS={
- snowman:[['♪',4],['?',1.8],['✦',1.5],['!!',1.1],],
- icepond:[['?',2.2],['✦',2],['♪',1.3],['!!',1.2],],
+ snowman:[['♪',4],['?',1.8],['✦',1.5],['!!',1.1],['sweat',.35]],
+ icepond:[['?',2.2],['✦',2],['♪',1.3],['!!',1.2],['sweat',.9]],
  snowtree:[['?',1.8],['✦',1.6],['♪',1.5],['…',.8],['!',.7]],
  lamp:[['✦',2.5],['?',1.5],['♪',1.4],['!',.8],['!!',.5]],
  lamp2:[['✦',2.5],['?',1.5],['♪',1.4],['!',.8],['!!',.5]],
  treetop:[['✦',2],['?',1.8],['♪',1.3],['!!',.7],['…',.5]],
- ice:[['?',2.3],['✦',1.7],['!!',1.1],['♪',.9]],
+ ice:[['?',2.3],['✦',1.7],['sweat',1.2],['!!',1.1],['♪',.9]],
  shadowtree:[['?',2],['…',1.7],['✦',1],['♪',.7],['!',.5]],
  quietcorner:[['…',2],['z',1.4],['?',1.2],['✦',.7],['♪',.5]],
  snowspot:[['♪',2],['✦',2],['?',1.6],['!!',.8],['…',.6]],
  rest:[['z',2.2],['♪',1.2],['♥',1.1],['…',.7],['?',.5]],
- threat:[['!!',2.8],['…',1.7],['!',.9],['?',.7]],
+ threat:[['!!',2.8],['…',1.7],['sweat',1.5],['!',.9],['?',.7]],
  reunion:[['♥',2.2],['♪',1.5],['!',1],['?',.6],['…',.5]],
  joinplay:[['♪',2.4],['♥',1.4],['!',1],['?',.9],['✦',.8]],
  peck:[['♪',2.5],['?',1.2],['✦',.7],['!',.5]],
@@ -163,6 +163,7 @@ function chooseEmotion(context){
  for(const [symbol,base] of list){
    let w=base*(bias[symbol]||1);
    if(symbol==='♥')w*=S.bond==='close'?1.8:.45;
+   if(symbol==='sweat')w*=S.bond==='close'?.7:1.15;
    weighted.push([symbol,w]);total+=w;
  }
  let r=Math.random()*total;
@@ -504,6 +505,14 @@ function drawEmotionPixel(ctx,symbol,x,y){
    }
    ctx.restore();return;
  }
+ if(symbol==='sweat'){
+   const big=[".#.","###","###",".#."],small=["#.","##",".#"],bx=Math.round(x+2),by=Math.round(y-7),sx=bx+4,sy=by+1;
+   ctx.fillStyle='#6fd7ff';
+   for(let r=0;r<big.length;r++)for(let q=0;q<big[r].length;q++)if(big[r][q]==='#')ctx.fillRect(bx+q,by+r,1,1);
+   ctx.fillStyle='#a7ebff';
+   for(let r=0;r<small.length;r++)for(let q=0;q<small[r].length;q++)if(small[r][q]==='#')ctx.fillRect(sx+q,sy+r,1,1);
+   ctx.restore();return;
+ }
  if(symbol==='✦'){
    const pat=["..#..","..#..","#####","..#..","..#.."],ox=Math.round(x-2),oy=Math.round(y-5);
    for(let r=0;r<pat.length;r++)for(let q=0;q<pat[r].length;q++)if(pat[r][q]==='#'){
@@ -549,6 +558,7 @@ function drawCompanion(){let x=S.comp.x*TS+8,y=S.comp.y*TS+11;
    else if(r==='♪'){x+=Math.sin(S.frame*.24)*1.5;y-=Math.abs(Math.sin(S.frame*.24))*1.2}
    else if(r==='✦'){y-=1.4+Math.sin(S.frame*.14)*.7}
    else if(r==='z'){y+=1.4}
+   else if(r==='sweat'){x+=Math.sin(S.frame*.78)*.9}
    else if(r==='♥'){y-=Math.abs(Math.sin(S.frame*.20))*.9}
    else y-=Math.abs(Math.sin(S.frame*.32))*.5;
  }
