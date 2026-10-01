@@ -153,9 +153,12 @@ function startCompIdle(){
  const k=S.buddyKey,roll=Math.random();
  S.comp.idleKind=k==='penta'?(roll<.58?'peck':'look'):k==='puwawa'?(roll<.62?'float':'circle'):(roll<.62?'watch':'sit');
  S.comp.idleTimer=105+Math.floor(Math.random()*75);
- if(S.comp.idleKind==='float'&&Math.random()<.45)setCompEmotion('♪',52);
- if(S.comp.idleKind==='watch'&&Math.random()<.45){setCompEmotion('…',46);playerWatchComp(54)}
- if(S.comp.idleKind==='peck'&&Math.random()<.22)setCompEmotion('♪',44);
+ if(S.comp.idleKind==='float'&&Math.random()<.62)setCompEmotion('♪',52);
+ if(S.comp.idleKind==='circle'&&Math.random()<.34)setCompEmotion('✦',48);
+ if(S.comp.idleKind==='watch'&&Math.random()<.52){setCompEmotion(Math.random()<.62?'?':'…',46);playerWatchComp(54)}
+ if(S.comp.idleKind==='sit'&&Math.random()<.26)setCompEmotion('z',58);
+ if(S.comp.idleKind==='peck'&&Math.random()<.46)setCompEmotion('♪',48);
+ if(S.comp.idleKind==='look'&&Math.random()<.30)setCompEmotion('?',44);
 }
 function companionVisitPoint(){
  const sets=S.buddyKey==='penta'?[[S.px-1,S.py],[S.px+1,S.py],[S.px,S.py+1]]
@@ -245,13 +248,13 @@ function frontCoord(){const d={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[S.face];return
 function nearPoint(p,r=1){return p&&dist(S.px,S.py,p.x,p.y)<=r}
 function callBuddy(){
  if(S.mode!=='world'||S.dialog||S.eventAnim>0||S.restAnim>0||S.battleAnim>0)return;
- const close=S.bond==='close',t=compFollowPoint();S.detour.active=false;S.detour.cooldown=210;S.comp.route=[];S.comp.routeGoal=null;S.comp.idleKind='';S.comp.idleTimer=0;
- setCompEmotion(close?'!':'…',close?30:42);S.comp.callGoal=t;S.comp.callArrive=close?'♥':'';S.comp.callWatch=true;S.comp.returnDelay=close?0:22;
+ const close=S.bond==='close',t=compFollowPoint(),far=Math.hypot(S.px-S.comp.x,S.py-S.comp.y)>=5;S.detour.active=false;S.detour.cooldown=210;S.comp.route=[];S.comp.routeGoal=null;S.comp.idleKind='';S.comp.idleTimer=0;
+ setCompEmotion(close?'!':(far?'sweat':'…'),close?30:(far?46:42));S.comp.callGoal=t;S.comp.callArrive=close?'♥':'';S.comp.callWatch=true;S.comp.returnDelay=close?0:22;
  if(close){setCompGoal(t.x,t.y,true);S.comp.callGoal=null;if(S.comp.route.length===0)finishCallArrival()}
  if(S.map==='path'&&S.threatSeen&&!S.battleDone&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){S.threatComforted=true;S.threatReactTimer=Math.max(S.threatReactTimer,65)}
 }
 function talkNpc(){const b=BUDDIES[S.buddyKey];S.npcDir={u:'d',d:'u',l:'r',r:'l'}[S.face]||'d';if(!S.npcMet){S.npcMet=true;showMsg(`あ、その子 はじめて見る。\n${b.name}っていうの？`,'ゆきあそびの こ');return}if(S.leftAfterMemory&&!S.npcRemembered){S.npcRemembered=true;showMsg(`あ、${b.name}。\nまた来たんだ。`,'ゆきあそびの こ');return}showMsg(`${b.name}、また雪のとこ行ってた？`,'ゆきあそびの こ')}
-function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;const t=S.bond==='close'?{x:S.px,y:S.py-1}:{x:S.px+2,y:S.py};setCompGoal(t.x,t.y,true)}
+function startRest(){if(S.restAnim>0)return;S.restAnim=150;S.detour.active=false;const t=S.bond==='close'?{x:S.px,y:S.py-1}:{x:S.px+2,y:S.py};setCompGoal(t.x,t.y,true);if(S.buddyKey==='penta'||S.buddyKey==='yamiusa')setCompEmotion('z',86);else setCompEmotion('♪',58)}
 function finishRest(){if(!S.restDone){S.restDone=true;const close=S.bond==='close';const line=S.buddyKey==='penta'?(close?'ぺんたが 足元で ぺたんと座った。':'ぺんたは 少し離れた雪を つついている。'):S.buddyKey==='puwawa'?(close?'ぷわわが 肩の近くで ふわふわしている。':'ぷわわは 灯りのほうへ ふわっと離れた。'):(close?'ヤミウサが すぐ横に座った。':'ヤミウサは 少し離れて座った。');showMsg(line)}else showMsg(S.bond==='close'?'また となりに来た。':'前と同じ場所に座った。')}
 function threatFacePlayer(){const t=maps.path.threat;const dx=S.px-t.x,dy=S.py-t.y;if(Math.abs(dx)>Math.abs(dy))S.threatDir=dx<0?'l':'r';else S.threatDir=dy<0?'u':'d'}
 function startBossPrelude(){if(S.battleDone||S.battleAnim>0)return;S.detour.active=false;S.bossStandoff=true;threatFacePlayer();
@@ -297,7 +300,7 @@ function pickDetourStep(){
 }
 function tryAction(){if(S.mode==='select'){const start=ui.panel.querySelector('#startBtn');if(start)start.click();return}if(S.dialog){advanceMsg();return}if(S.eventAnim>0||S.restAnim>0||S.battleAnim>0||S.mode!=='world')return;const f=frontCoord();if(S.map==='village'&&f.x===maps.village.npc.x&&f.y===maps.village.npc.y){talkNpc();return}if(S.map==='village'&&nearPoint(maps.village.rest,1)){startRest();return}if(S.map==='path'&&!S.battleDone&&nearPoint(maps.path.threat,2)){startBossPrelude();return}const st=spotState();const sp=maps.village.spot;if((st==='first'||st==='revisit')&&dist(S.px,S.py,sp.x,sp.y)<=2){startEvent(st);return}if(st==='done'&&dist(S.px,S.py,sp.x,sp.y)<=2){showMsg('雪は さっきと同じように\nしんしんと積もっている。');return}if(S.detour.active){toast(S.detour.phase==='engrossed'?detourIdleText(S.detour.kind):detourText(S.detour.kind));return}if(S.map==='path'&&S.px<=2)toast('← 村へ戻れる');else toast('気になるものは なさそう')}
 function startEvent(kind){S.eventAnim=90;S.eventPhase=kind==='first'?1:2;S.notice=false;const sp=maps.village.spot;setCompGoal(sp.x,sp.y+1,true);}
-function finishEvent(){const b=BUDDIES[S.buddyKey];if(S.eventPhase===1){S.firstDone=true;showMsg(b.first,b.name)}else{S.revisitDone=true;S.revisitReady=false;showMsg(b.after,b.name)}S.eventPhase=0}
+function finishEvent(){const b=BUDDIES[S.buddyKey];if(S.eventPhase===1){S.firstDone=true;setCompEmotion(S.buddyKey==='penta'?'♪':S.buddyKey==='puwawa'?'✦':'?',58);showMsg(b.first,b.name)}else{S.revisitDone=true;S.revisitReady=false;setCompEmotion(S.bond==='close'?'♥':(S.buddyKey==='penta'?'♪':'✦'),58);showMsg(b.after,b.name)}S.eventPhase=0}
 function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min(S.dialog.length,S.msgI+.62);ui.dtext.textContent=S.dialog.slice(0,Math.floor(S.msgI))}
  if(S.moveT>0)S.moveT--;
  if(S.eventAnim>0){S.eventAnim--;if(S.eventAnim===1)finishEvent();}
@@ -306,7 +309,7 @@ function update(){S.frame++;if(S.dialog&&S.msgI<S.dialog.length){S.msgI=Math.min
  const st=spotState();S.notice=(st==='first'||st==='revisit')&&S.eventAnim===0&&!S.dialog;
  if(S.map==='path'&&!S.battleDone&&!S.threatSeen&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.threat.x,maps.path.threat.y)<=6){
    S.threatSeen=true;S.threatReactTimer=120;S.detour.active=false;threatFacePlayer();
-   const h=S.history[S.bond==='close'?0:2]||S.history[0]||{x:S.px-1,y:S.py};setCompGoal(h.x,h.y,true);S.comp.react='!';S.comp.reactTimer=36;
+   const h=S.history[S.bond==='close'?0:2]||S.history[0]||{x:S.px-1,y:S.py};setCompGoal(h.x,h.y,true);setCompEmotion('!!',48);
  }
  if(S.map==='path'&&S.battleRevisit&&!S.battleRevisitDone&&S.mode==='world'&&!S.dialog&&dist(S.px,S.py,maps.path.battle.x,maps.path.battle.y)<=4){triggerBattleRevisit()}
  if(S.threatReactTimer>0)S.threatReactTimer--;
@@ -435,9 +438,26 @@ function drawEmotionPixel(ctx,symbol,x,y){
    }
    ctx.restore();return;
  }
+ if(symbol==='sweat'){
+   const pat=["..#..",".###.","####.","####.",".##.."],ox=Math.round(x-2),oy=Math.round(y-5);
+   for(let r=0;r<pat.length;r++)for(let q=0;q<pat[r].length;q++)if(pat[r][q]==='#'){
+     ctx.fillStyle='#62c7f5';ctx.fillRect(ox+q,oy+r,1,1);
+   }
+   ctx.restore();return;
+ }
+ if(symbol==='✦'){
+   const pat=["..#..","..#..","#####","..#..","..#.."],ox=Math.round(x-2),oy=Math.round(y-5);
+   for(let r=0;r<pat.length;r++)for(let q=0;q<pat[r].length;q++)if(pat[r][q]==='#'){
+     ctx.fillStyle='#d9f5ff';ctx.fillRect(ox+q,oy+r,1,1);
+   }
+   ctx.restore();return;
+ }
  const spec={
   '!':{size:12,color:'#fff2a8',weight:'bold'},
+  '!!':{size:11,color:'#ffd47a',weight:'900'},
+  '?':{size:11,color:'#8fdcff',weight:'bold'},
   '♪':{size:12,color:'#38bdf8',weight:'bold'},
+  'z':{size:10,color:'#9eb8d0',weight:'bold'},
   '…':{size:10,color:'#8eabc2',weight:'bold'}
  }[symbol];
  if(!spec){ctx.restore();return}
@@ -462,7 +482,7 @@ function drawCompanion(){let x=S.comp.x*TS+8,y=S.comp.y*TS+11;
    else if(S.comp.idleKind==='sit'){y+=1.4}
  }
  if(S.comp.reactTimer>0)y-=Math.abs(Math.sin(S.frame*.32))*.7;
- if(S.eventAnim>0){const t=1-S.eventAnim/90;const bounce=Math.sin(t*Math.PI*3)*Math.max(0,1-t)*5;if(S.buddyKey==='penta')y+=bounce;else if(S.buddyKey==='puwawa')y-=5+Math.sin(t*Math.PI*4)*3;else x+=Math.sin(t*Math.PI*2)*2}if(S.restAnim>0){if(S.buddyKey==='puwawa')y-=4+Math.sin(S.frame*.12)*2;else y+=2}if(S.threatReactTimer>0&&!S.battleDone){if(S.buddyKey==='penta'){x+=Math.sin(S.frame*.9)*1.4}else if(S.buddyKey==='puwawa'){x+=Math.sin(S.frame*.42)*1.2;y+=Math.sin(S.frame*.55)*1.5}else{x+=Math.sin(S.frame*.72)*.9}}if(S.battleAnim>0){x+=Math.sin(S.frame*.45)*2;y+=Math.sin(S.frame*.22)}drawBuddySprite(X,S.buddyKey,x,y,1);if(S.comp.reactTimer>0&&S.comp.react){const bob=(S.comp.react==='♥'||S.comp.react==='♪')?Math.sin(S.frame*.18)*.2:0;drawEmotionPixel(X,S.comp.react,x,y-11+bob)}}
+ if(S.eventAnim>0){const t=1-S.eventAnim/90;const bounce=Math.sin(t*Math.PI*3)*Math.max(0,1-t)*5;if(S.buddyKey==='penta')y+=bounce;else if(S.buddyKey==='puwawa')y-=5+Math.sin(t*Math.PI*4)*3;else x+=Math.sin(t*Math.PI*2)*2}if(S.restAnim>0){if(S.buddyKey==='puwawa')y-=4+Math.sin(S.frame*.12)*2;else y+=2}if(S.threatReactTimer>0&&!S.battleDone){if(S.buddyKey==='penta'){x+=Math.sin(S.frame*.9)*1.4}else if(S.buddyKey==='puwawa'){x+=Math.sin(S.frame*.42)*1.2;y+=Math.sin(S.frame*.55)*1.5}else{x+=Math.sin(S.frame*.72)*.9}}if(S.battleAnim>0){x+=Math.sin(S.frame*.45)*2;y+=Math.sin(S.frame*.22)}drawBuddySprite(X,S.buddyKey,x,y,1);if(S.comp.reactTimer>0&&S.comp.react){const bob=(S.comp.react==='♥'||S.comp.react==='♪'||S.comp.react==='✦')?Math.sin(S.frame*.18)*.2:0;drawEmotionPixel(X,S.comp.react,x,y-11+bob)}}
 function drawBuddySprite(ctx,key,x,y,sc=1){
  // TRANSPLANT: exact pixel motifs from the current LUMINARIA MONSTER LIST.
  ctx.save();ctx.translate(Math.round(x),Math.round(y));
