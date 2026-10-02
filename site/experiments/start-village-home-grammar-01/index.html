@@ -1647,8 +1647,18 @@ if(G.map==='start'){
   }
   if(t===43){
     if(txx===23 && ty2===20){
+      // FIX: bridge and water share the exact center of the original water tile.
       X.fillStyle='#7fa96e';X.fillRect(dx,dy,T,T);
-      X.fillStyle='#716f67';X.fillRect(dx+3,dy,T-6,T);
+      X.fillStyle='#716f67';X.fillRect(dx+3,dy,10,T);
+      X.fillStyle='#4f858f';X.fillRect(dx+5,dy,6,T);
+      const flow=(Math.floor(TK*.045)+ty2*3)%22;
+      for(const off of [-22,0,22]){
+        const yy=dy+flow+off;
+        X.fillStyle='rgba(220,238,234,.42)';X.fillRect(dx+8,yy,1,4);
+      }
+      X.fillStyle='#aaa59a';X.fillRect(dx,dy+3,T,4);
+      X.fillStyle='#beb9ae';X.fillRect(dx,dy+9,T,4);
+      X.fillStyle='rgba(255,255,255,.14)';X.fillRect(dx+1,dy+3,T-2,1);X.fillRect(dx+1,dy+9,T-2,1);
       return;
     }
     if(txx===23 && [16,24,28].includes(ty2)){
@@ -1680,12 +1690,16 @@ if(G.map==='start'){
   if(t===45){
     const homeWater=(ty2>=16&&ty2<=23);
     if(homeWater){
-      // Only the earth channel lives on the tile layer.
-      // The stream itself is one continuous ribbon in drawStartVillageRedesignFlavor().
+      // FIX: straight, tile-centered stream. Alignment first; no forced meander.
       X.fillStyle='#7fa96e';X.fillRect(dx,dy,T,T);
-      const wobble=Math.round(Math.sin(ty2*1.13)*1.5);
-      X.fillStyle='#716f67';X.fillRect(dx+3+wobble,dy,10,T);
-      if(ty2%3===0){X.fillStyle='#96938b';X.fillRect(dx+4+wobble,dy+10,2,2);}
+      X.fillStyle='#716f67';X.fillRect(dx+3,dy,10,T);
+      X.fillStyle='#4f858f';X.fillRect(dx+5,dy,6,T);
+      const flow=(Math.floor(TK*.045)+ty2*3)%24;
+      for(const off of [-24,0,24]){
+        const yy=dy+flow+off;
+        X.fillStyle='rgba(220,238,234,.42)';X.fillRect(dx+8,yy,1,4);
+      }
+      if(ty2%3===0){X.fillStyle='#96938b';X.fillRect(dx+3,dy+10,2,2);}
       return;
     }
     X.fillStyle='#aaa79f';X.fillRect(dx,dy,T,T);
@@ -2446,31 +2460,6 @@ function drawStartVillageRedesignFlavor(cx,cy){
   const px=(tx,ty)=>[~~(tx*TS-cx),~~(ty*TS-cy)];
   const glow=(x,y,r,a=.10)=>{const g=X.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(255,220,150,${a})`);g.addColorStop(1,'rgba(255,220,150,0)');X.fillStyle=g;X.beginPath();X.arc(x,y,r,0,Math.PI*2);X.fill();};
 
-  const homeGrammarView=(G.px>=8&&G.px<=15&&G.py>=18&&G.py<=24);
-  if(homeGrammarView){
-    // One continuous stream ribbon. Slight horizontal drift reads as water following the ground,
-    // not a glowing pipe trapped inside one tile column.
-    const wy0=16*TS,wy1=24*TS;
-    for(let wy=wy0;wy<wy1;wy+=2){
-      const drift=Math.sin((wy/TS)*1.08)*3;
-      const sx=~~(23*TS+8+drift-cx),sy=~~(wy-cy);
-      X.fillStyle='#4b7f8a';X.fillRect(sx-4,sy,9,2);
-      X.fillStyle='#5a909a';X.fillRect(sx-3,sy,7,2);
-    }
-    const travel=(TK*.045)%(wy1-wy0);
-    for(let k=0;k<3;k++){
-      const wy=wy0+(travel+k*43)%(wy1-wy0);
-      const drift=Math.sin((wy/TS)*1.08)*3;
-      const sx=~~(23*TS+8+drift-cx),sy=~~(wy-cy);
-      X.fillStyle='rgba(218,235,232,.52)';X.fillRect(sx,sy,1,5);
-    }
-    // Two flat stones cross the water at the existing y=20 bridge tile.
-    const by=~~(20*TS-cy),bcx=~~(23*TS+8+Math.sin(20*1.08)*3-cx);
-    X.fillStyle='#a9a59c';X.fillRect(bcx-12,by+3,24,4);
-    X.fillStyle='#beb9ae';X.fillRect(bcx-11,by+9,22,4);
-    X.fillStyle='rgba(255,255,255,.16)';X.fillRect(bcx-10,by+3,18,1);X.fillRect(bcx-9,by+9,16,1);
-  }
-
   // Distant basin / snow mountains stay inside the EXP08 scenic band.
   {
     const [sx,sy]=px(1,1),W=33*TS,bottom=sy+3*TS,top=bottom-98;
@@ -2560,37 +2549,25 @@ function drawStartVillageRedesignFlavor(cx,cy){
     X.fillStyle='#9b9589';X.fillRect(x+8,y+64,W-16,8);
     X.fillStyle='#b7afa1';X.fillRect(x+11,y+63,W-22,2);
 
-    // Hipped roof seen mostly from above. The roof carries the building identity.
-    X.fillStyle='#69727b';
-    X.beginPath();
-    X.moveTo(x+8,y+7);X.lineTo(x+67,y+7);X.lineTo(x+76,y+21);
-    X.lineTo(x+70,y+55);X.lineTo(x+10,y+55);X.lineTo(x+4,y+22);X.closePath();X.fill();
-    X.fillStyle='#747e87';
-    X.beginPath();X.moveTo(x+8,y+7);X.lineTo(x+23,y+19);X.lineTo(x+18,y+48);X.lineTo(x+10,y+55);X.lineTo(x+4,y+22);X.closePath();X.fill();
-    X.fillStyle='#5f6872';
-    X.beginPath();X.moveTo(x+67,y+7);X.lineTo(x+58,y+19);X.lineTo(x+63,y+49);X.lineTo(x+70,y+55);X.lineTo(x+76,y+21);X.closePath();X.fill();
-    X.fillStyle='#818a91';
-    X.beginPath();X.moveTo(x+23,y+19);X.lineTo(x+58,y+19);X.lineTo(x+63,y+49);X.lineTo(x+18,y+48);X.closePath();X.fill();
-    X.fillStyle='#515a63';X.fillRect(x+23,y+18,35,2);
-    X.fillStyle='rgba(255,255,255,.10)';X.fillRect(x+12,y+9,51,1);
-
-    // Small side roof changes the footprint without turning into a front-view annex.
-    X.fillStyle='#616a73';
-    X.beginPath();X.moveTo(x+54,y+39);X.lineTo(x+67,y+31);X.lineTo(x+78,y+39);X.lineTo(x+74,y+58);X.lineTo(x+56,y+58);X.closePath();X.fill();
-
-    X.fillStyle='#756658';X.fillRect(x+15,y+2,6,14);
+    // FIX: simple symmetrical roof. Top-down direction stays; extra bumps / side roof are gone.
+    X.fillStyle='#646d76';X.fillRect(x+6,y+8,68,46);
+    X.fillStyle='#77818a';X.fillRect(x+9,y+11,62,18);
+    X.fillStyle='#6d767f';X.fillRect(x+9,y+29,62,22);
+    X.fillStyle='#515a63';X.fillRect(x+9,y+27,62,3);
+    X.fillStyle='rgba(255,255,255,.10)';X.fillRect(x+11,y+12,58,1);
+    X.fillStyle='#59626b';X.fillRect(x+6,y+51,68,3);
 
     // Only a shallow wall strip is visible below the roof.
-    X.fillStyle='#ddd6c9';X.fillRect(x+11,y+55,W-22,17);
-    X.fillStyle='#c7beaf';X.fillRect(x+11,y+55,W-22,3);
-    X.fillStyle='#83a6aa';X.fillRect(x+18,y+60,8,7);X.fillRect(x+52,y+60,8,7);
-    X.fillStyle='#edf3ef';X.fillRect(x+22,y+60,1,7);X.fillRect(x+56,y+60,1,7);
+    X.fillStyle='#ddd6c9';X.fillRect(x+11,y+54,W-22,18);
+    X.fillStyle='#c7beaf';X.fillRect(x+11,y+54,W-22,3);
+    X.fillStyle='#83a6aa';X.fillRect(x+18,y+59,8,7);X.fillRect(x+52,y+59,8,7);
+    X.fillStyle='#edf3ef';X.fillRect(x+22,y+59,1,7);X.fillRect(x+56,y+59,1,7);
 
     X.fillStyle='#56483d';X.fillRect(dxDoor+4,dyDoor+1,8,15);
     X.fillStyle='#30271f';X.fillRect(dxDoor+6,dyDoor+3,4,13);
     X.fillStyle='#d6bf8d';X.fillRect(dxDoor+10,dyDoor+9,1,1);
 
-    // Door → grass → lane: three loose stepping stones, not a paved forecourt.
+    // Door → grass → lane: three loose stepping stones, unchanged.
     for(const [tx0,ty0,ox,oy,rx,ry] of [[11,22,8,5,4,2],[12,22,7,8,5,2],[13,22,9,5,4,2]]){
       const [sx,sy]=px(tx0,ty0);
       X.fillStyle='#a7a39a';X.beginPath();X.ellipse(sx+ox,sy+oy,rx,ry,0,0,Math.PI*2);X.fill();
@@ -2617,7 +2594,7 @@ function drawStartVillageRedesignFlavor(cx,cy){
   // EXP08 landmark/生活配置。大きい床を物で埋めるのではなく、元の意味を戻す。
   telescope(4,5);banner(8,6);planter(3,8,'#e4b85e');planter(7,8,'#8ec8df');
   planter(25,8,'#8cc8df');planter(28,8,'#d99dbf');
-  if(!homeGrammarView){skyDial(14,13);banner(11,14);banner(22,14);lamp(12,17);lamp(21,17);}
+  skyDial(14,13);banner(11,14);banner(22,14);lamp(12,17);lamp(21,17);
   bench(10,18);bench(20,18);planter(7,17,'#f0c96d');planter(24,17,'#8fc9df');
   planter(5,28,'#d9a1cf');planter(20,28,'#91c976');bench(4,30);bench(20,30);lamp(8,27);lamp(24,27);
 
@@ -3030,7 +3007,7 @@ if(t===5){for(const mon of G.pty){mon.hp=mon.mhp;mon.sts=null;}showMsg("かい�
 else if(t===6){G.st="SHOP";U.shi=0;sfx('sel');}
 else if(t===7&&map?.gym){if(G.fl[map.gym.fl])showMsg("ジムは いま しずまりかえっている。");else showMsg(map.gym.pre,()=>{startBattle(()=>sTrB("ジムリーダー "+map.gym.ld,map.gym.mon,map.gym.win,map.gym.fl),"trainer");});}
 else if(map?.npcs)for(const n of map.npcs)if(fx===n.x&&fy===n.y){handleNpcAction(n);break;}}}
-function dM(){const map=MAPS[G.map];if(!map)return;const t2=mvT>0?cl(1-mvT/140,0,1):1;const dpx=G.opx+(G.px-G.opx)*t2,dpy=G.opy+(G.py-G.opy)*t2;const homeGrammarView=(G.map==='start'&&dpx>=8&&dpx<=15&&dpy>=18&&dpy<=24);const camBiasX=homeGrammarView?80:0,camBiasY=homeGrammarView?8:0;const rawCx=dpx*TS-GW/2+TS/2+camBiasX,rawCy=dpy*TS-GH/2+TS/2+camBiasY;const mw=map.w*TS,mh=map.h*TS;const cx=(mw<=GW)?-((GW-mw)/2):cl(rawCx,0,mw-GW),cy=(mh<=GH)?-((GH-mh)/2):cl(rawCy,0,mh-GH);
+function dM(){const map=MAPS[G.map];if(!map)return;const t2=mvT>0?cl(1-mvT/140,0,1):1;const dpx=G.opx+(G.px-G.opx)*t2,dpy=G.opy+(G.py-G.opy)*t2;const rawCx=dpx*TS-GW/2+TS/2,rawCy=dpy*TS-GH/2+TS/2;const mw=map.w*TS,mh=map.h*TS;const cx=(mw<=GW)?-((GW-mw)/2):cl(rawCx,0,mw-GW),cy=(mh<=GH)?-((GH-mh)/2):cl(rawCy,0,mh-GH);
 X.fillStyle="#0a1610";X.fillRect(0,0,GW,GH);
 const useShiokazeGm=(G.map==='t2');
 SIO_ROOM_LIGHTS.length=0;
@@ -3041,7 +3018,7 @@ if(!useShiokazeGm) drawLocalFlavor(G.map,cx,cy);
 const plist=WORLD_PORTALS[G.map]||[];
 for(const p of plist){
   if(G.map==='t3'||G.map==='t2'||G.map==='shipSea'||sioRoomKind(G.map)) continue;
-  if(homeGrammarView&&G.map==='start'&&p.to==='home1') continue;
+  if(G.map==='start'&&p.to==='home1') continue;
   const dx=~~(p.fx*TS-cx), dy=~~(p.fy*TS-cy);
   X.fillStyle="#f2dfbe";
   X.fillRect(dx,dy,TS,TS);
