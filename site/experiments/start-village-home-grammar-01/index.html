@@ -653,6 +653,12 @@ function buildStartExp08FaithfulMap(){
   hline(28,4,30,46);
   vline(17,24,32,46);
 
+  // WATER CONTINUITY FIX:
+  // The lower-garden writes above overwrite the intended rill tail.
+  // Restore only x=23 / y24-29, keeping the original two lower crossings.
+  vline(23,24,29,45);
+  for(const y of [24,28])put(23,y,43);
+
   // Greenhouse, curated garden, rest niches.
   rect(25,25,30,29,2);
   rect(4,25,7,26,42);
@@ -1646,28 +1652,19 @@ if(G.map==='start'){
     return;
   }
   if(t===43){
-    if(txx===23 && ty2===20){
-      // FIX: bridge and water share the exact center of the original water tile.
+    if(txx===23 && [16,20,24,28].includes(ty2)){
+      // WATER CONTINUITY FIX: every rill bridge keeps the same centered stream underneath.
       X.fillStyle='#7fa96e';X.fillRect(dx,dy,T,T);
       X.fillStyle='#716f67';X.fillRect(dx+3,dy,10,T);
       X.fillStyle='#4f858f';X.fillRect(dx+5,dy,6,T);
-      const flow=(Math.floor(TK*.045)+ty2*3)%22;
-      for(const off of [-22,0,22]){
+      const flow=(Math.floor(TK*.045)+ty2*3)%24;
+      for(const off of [-24,0,24]){
         const yy=dy+flow+off;
         X.fillStyle='rgba(220,238,234,.42)';X.fillRect(dx+8,yy,1,4);
       }
       X.fillStyle='#aaa59a';X.fillRect(dx,dy+3,T,4);
       X.fillStyle='#beb9ae';X.fillRect(dx,dy+9,T,4);
       X.fillStyle='rgba(255,255,255,.14)';X.fillRect(dx+1,dy+3,T-2,1);X.fillRect(dx+1,dy+9,T-2,1);
-      return;
-    }
-    if(txx===23 && [16,24,28].includes(ty2)){
-      X.fillStyle='#8f8b82';X.fillRect(dx,dy,T,T);
-      X.fillStyle='#4b9fbd';X.fillRect(dx+5,dy,T-10,T);
-      X.fillStyle='rgba(221,248,252,.72)';X.fillRect(dx+7,dy+3,2,5);
-      X.fillStyle='#bcb2a1';X.fillRect(dx,dy+4,T,9);
-      X.fillStyle='#ded5c5';X.fillRect(dx,dy+4,T,2);
-      X.fillStyle='#82796d';X.fillRect(dx,dy+12,T,2);
       return;
     }
     X.fillStyle='#b8b0a2';X.fillRect(dx,dy,T,T);
@@ -1688,26 +1685,16 @@ if(G.map==='start'){
     return;
   }
   if(t===45){
-    const homeWater=(ty2>=16&&ty2<=23);
-    if(homeWater){
-      // FIX: straight, tile-centered stream. Alignment first; no forced meander.
-      X.fillStyle='#7fa96e';X.fillRect(dx,dy,T,T);
-      X.fillStyle='#716f67';X.fillRect(dx+3,dy,10,T);
-      X.fillStyle='#4f858f';X.fillRect(dx+5,dy,6,T);
-      const flow=(Math.floor(TK*.045)+ty2*3)%24;
-      for(const off of [-24,0,24]){
-        const yy=dy+flow+off;
-        X.fillStyle='rgba(220,238,234,.42)';X.fillRect(dx+8,yy,1,4);
-      }
-      if(ty2%3===0){X.fillStyle='#96938b';X.fillRect(dx+3,dy+10,2,2);}
-      return;
+    // WATER CONTINUITY FIX: the full EXP08 spring rill uses one visual grammar.
+    X.fillStyle='#7fa96e';X.fillRect(dx,dy,T,T);
+    X.fillStyle='#716f67';X.fillRect(dx+3,dy,10,T);
+    X.fillStyle='#4f858f';X.fillRect(dx+5,dy,6,T);
+    const flow=(Math.floor(TK*.045)+ty2*3)%24;
+    for(const off of [-24,0,24]){
+      const yy=dy+flow+off;
+      X.fillStyle='rgba(220,238,234,.42)';X.fillRect(dx+8,yy,1,4);
     }
-    X.fillStyle='#aaa79f';X.fillRect(dx,dy,T,T);
-    X.fillStyle='#8e8b83';X.fillRect(dx+2,dy,T-4,T);
-    const wobble=((txx+ty2)%3)-1;
-    X.fillStyle='#4a9cbb';X.fillRect(dx+5+wobble,dy,6,T);
-    X.fillStyle='rgba(219,247,251,.72)';X.fillRect(dx+7+wobble,dy+3+((ty2*3)%7),2,6);
-    X.fillStyle='rgba(73,105,75,.28)';if(ty2%4===0)X.fillRect(dx+3,dy+8,2,5);
+    if(ty2%3===0){X.fillStyle='#96938b';X.fillRect(dx+3,dy+10,2,2);}
     return;
   }
   if(t===42){
