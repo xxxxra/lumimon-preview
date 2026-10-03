@@ -2575,13 +2575,13 @@ function drawStartVillageRedesignFlavor(cx,cy){
     X.fillStyle='#435965';X.fillRect(x+20,y+30,92,4);
     X.fillStyle='rgba(255,255,255,.11)';X.fillRect(x+25,y+12,66,1);
 
-    // Integrated roof observatory, read from above rather than as a bolt-on wall tower.
-    const ocx=x+W-35,ocy=y+29;
-    X.fillStyle='#405762';X.beginPath();X.arc(ocx,ocy,22,0,Math.PI*2);X.fill();
-    X.fillStyle='#7899a1';X.beginPath();X.arc(ocx,ocy,17,0,Math.PI*2);X.fill();
-    X.fillStyle='rgba(166,220,225,.72)';X.beginPath();X.arc(ocx,ocy,12,0,Math.PI*2);X.fill();
-    X.strokeStyle='#e1eff0';X.lineWidth=1.5;X.beginPath();X.arc(ocx,ocy,8,0,Math.PI*2);X.stroke();
-    X.strokeStyle='#435965';X.beginPath();X.moveTo(ocx-13,ocy);X.lineTo(ocx+13,ocy);X.moveTo(ocx,ocy-13);X.lineTo(ocx,ocy+13);X.stroke();
+    // Integrated roof observatory stays slightly east, but close enough to the entrance axis to avoid right-heavy drift.
+    const ocx=x+89,ocy=y+29;
+    X.fillStyle='#405762';X.beginPath();X.arc(ocx,ocy,19,0,Math.PI*2);X.fill();
+    X.fillStyle='#7899a1';X.beginPath();X.arc(ocx,ocy,15,0,Math.PI*2);X.fill();
+    X.fillStyle='rgba(166,220,225,.72)';X.beginPath();X.arc(ocx,ocy,10,0,Math.PI*2);X.fill();
+    X.strokeStyle='#e1eff0';X.lineWidth=1.5;X.beginPath();X.arc(ocx,ocy,7,0,Math.PI*2);X.stroke();
+    X.strokeStyle='#435965';X.beginPath();X.moveTo(ocx-11,ocy);X.lineTo(ocx+11,ocy);X.moveTo(ocx,ocy-11);X.lineTo(ocx,ocy+11);X.stroke();
 
     // Roof skylights / light mark make the research function legible at top-down scale.
     X.fillStyle='#80aab5';X.fillRect(x+29,y+39,18,8);X.fillRect(x+53,y+39,18,8);
@@ -2594,6 +2594,9 @@ function drawStartVillageRedesignFlavor(cx,cy){
     X.fillStyle='#83aeb8';X.fillRect(x+31,y+65,12,9);X.fillRect(x+91,y+65,12,9);
     X.fillStyle='#eef5f3';X.fillRect(x+36,y+65,1,9);X.fillRect(x+96,y+65,1,9);
 
+    // Centered entrance eave reinforces the same axis as the stairs and portal.
+    X.fillStyle='#6f716b';X.fillRect(dxDoor-5,y+54,26,6);
+    X.fillStyle='#8b887f';X.fillRect(dxDoor-2,y+58,20,2);
     X.fillStyle='#59483b';X.fillRect(dxDoor+3,dyDoor+1,10,15);
     X.fillStyle='#2c2521';X.fillRect(dxDoor+5,dyDoor+3,6,13);
     X.fillStyle='#d6bf8d';X.fillRect(dxDoor+10,dyDoor+9,1,1);
@@ -2602,36 +2605,43 @@ function drawStartVillageRedesignFlavor(cx,cy){
   };
 
   const playerHomeGrammar=()=>{
-    const [x,y]=px(9,17),W=5*TS,H=5*TS;
-    const [dxDoor,dyDoor]=px(START_EXP08_DOORS.home.x,START_EXP08_DOORS.home.y);
+    const [x,y]=px(9,17),W=5*TS;
+    const door=START_EXP08_DOORS.home;
+    const [dxDoor,dyDoor]=px(door.x,door.y);
+    const [fx,fy]=px(door.front.x,door.front.y);
 
-    X.fillStyle='rgba(34,45,35,.14)';X.fillRect(x+7,y+70,W-14,6);
-    X.fillStyle='#9b9589';X.fillRect(x+8,y+64,W-16,8);
-    X.fillStyle='#b7afa1';X.fillRect(x+11,y+63,W-22,2);
+    X.fillStyle='rgba(34,45,35,.14)';X.fillRect(x+7,y+68,W-14,6);
+    X.fillStyle='#9b9589';X.fillRect(x+9,y+63,W-18,7);
+    X.fillStyle='#b7afa1';X.fillRect(x+12,y+62,W-24,2);
 
-    // FIX: simple symmetrical roof. Top-down direction stays; extra bumps / side roof are gone.
-    X.fillStyle='#646d76';X.fillRect(x+6,y+8,68,46);
-    X.fillStyle='#77818a';X.fillRect(x+9,y+11,62,18);
-    X.fillStyle='#6d767f';X.fillRect(x+9,y+29,62,22);
-    X.fillStyle='#515a63';X.fillRect(x+9,y+27,62,3);
-    X.fillStyle='rgba(255,255,255,.10)';X.fillRect(x+11,y+12,58,1);
-    X.fillStyle='#59626b';X.fillRect(x+6,y+51,68,3);
+    // REFINE: simple centered roof. Top-down direction stays, but the old rectangular slab silhouette is gone.
+    X.fillStyle='#646d76';X.beginPath();
+    X.moveTo(x+6,y+14);X.lineTo(x+14,y+7);X.lineTo(x+66,y+7);X.lineTo(x+74,y+14);
+    X.lineTo(x+70,y+50);X.lineTo(x+10,y+50);X.closePath();X.fill();
+    X.fillStyle='#77818a';X.beginPath();
+    X.moveTo(x+14,y+10);X.lineTo(x+66,y+10);X.lineTo(x+69,y+27);X.lineTo(x+11,y+27);X.closePath();X.fill();
+    X.fillStyle='#6d767f';X.beginPath();
+    X.moveTo(x+11,y+30);X.lineTo(x+69,y+30);X.lineTo(x+67,y+47);X.lineTo(x+13,y+47);X.closePath();X.fill();
+    X.fillStyle='#515a63';X.fillRect(x+11,y+27,58,3);
+    X.fillStyle='rgba(255,255,255,.10)';X.fillRect(x+17,y+11,46,1);
+    X.fillStyle='#59626b';X.fillRect(x+10,y+48,60,3);
 
-    // Only a shallow wall strip is visible below the roof.
-    X.fillStyle='#ddd6c9';X.fillRect(x+11,y+54,W-22,18);
-    X.fillStyle='#c7beaf';X.fillRect(x+11,y+54,W-22,3);
-    X.fillStyle='#83a6aa';X.fillRect(x+18,y+59,8,7);X.fillRect(x+52,y+59,8,7);
-    X.fillStyle='#edf3ef';X.fillRect(x+22,y+59,1,7);X.fillRect(x+56,y+59,1,7);
+    // A shallow wall strip keeps the roof dominant and the facade centered on the portal.
+    X.fillStyle='#ddd6c9';X.fillRect(x+13,y+51,W-26,17);
+    X.fillStyle='#c7beaf';X.fillRect(x+13,y+51,W-26,3);
+    X.fillStyle='#83a6aa';X.fillRect(x+19,y+56,8,7);X.fillRect(x+53,y+56,8,7);
+    X.fillStyle='#edf3ef';X.fillRect(x+23,y+56,1,7);X.fillRect(x+57,y+56,1,7);
 
     X.fillStyle='#56483d';X.fillRect(dxDoor+4,dyDoor+1,8,15);
     X.fillStyle='#30271f';X.fillRect(dxDoor+6,dyDoor+3,4,13);
     X.fillStyle='#d6bf8d';X.fillRect(dxDoor+10,dyDoor+9,1,1);
 
-    // Door → grass → lane: three loose stepping stones, unchanged.
-    for(const [tx0,ty0,ox,oy,rx,ry] of [[11,22,8,5,4,2],[12,22,7,8,5,2],[13,22,9,5,4,2]]){
-      const [sx,sy]=px(tx0,ty0);
-      X.fillStyle='#a7a39a';X.beginPath();X.ellipse(sx+ox,sy+oy,rx,ry,0,0,Math.PI*2);X.fill();
-      X.fillStyle='rgba(255,255,255,.14)';X.fillRect(sx+ox-2,sy+oy-1,4,1);
+    // Door -> lane: a centered threshold and three small stones stay on the entrance axis.
+    X.fillStyle='#a39e95';X.fillRect(dxDoor-3,dyDoor+13,22,4);
+    X.fillStyle='rgba(255,255,255,.13)';X.fillRect(dxDoor+1,dyDoor+13,14,1);
+    for(const [oy,rx] of [[3,4],[8,5],[13,4]]){
+      X.fillStyle='#a7a39a';X.beginPath();X.ellipse(fx+8,fy+oy,rx,2,0,0,Math.PI*2);X.fill();
+      X.fillStyle='rgba(255,255,255,.14)';X.fillRect(fx+6,fy+oy-1,4,1);
     }
   };
 
