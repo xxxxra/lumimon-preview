@@ -3275,6 +3275,12 @@ else if(G.st==="BTRANS"){stopBGM();} else if(G.st!=="LEGEND")stopBGM();}
 let lt=0;
 function loop(ts){const dt=ts-lt;lt=ts;TK++;dJoy();
 G.playS=(G.playS||0)+((dt||16)/1000);
+// Read-only DOM observability for actual renderer QA; no controls or shortcuts.
+C.dataset.qaState=JSON.stringify({st:G.st,map:G.map,x:G.px,y:G.py,face:G.face,
+ msg:U.msg?String(U.msg).slice(0,60):null,rv1:!!G.fl.rv1,wildSeen:!!G.fl.highWildSeen,
+ wildPlaying:!!U.highWild,soraApproaching:!!U.soraCatch,steps:G.fl.highTrailSteps||0,
+ safeMs:U.highDepartureAt?Math.round(performance.now()-U.highDepartureAt):0,
+ vista:!!G.fl.highVista,err:U.err});
 let inp={dir:null,a:false,b:false,m:false};
 if(U.cd<=0){inp=gI();if(inp.dir||inp.a||inp.b||inp.m)U.cd=(U.choice?130:(G.st==="WORLD"?75:130));}else{U.cd-=dt||16;if(tapA){inp.a=tapA==="a";inp.b=tapA==="b";inp.m=tapA==="m";tapA=null;U.cd=130;}}
 try{if(U.msg!=null&&G.st!=="BATTLE"&&G.st!=="LEAGUE"&&G.st!=="BTRANS"){if(U.choice){
