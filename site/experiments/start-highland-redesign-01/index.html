@@ -411,13 +411,14 @@ for(let y=50;y<69;y++)for(let x=1;x<16;x++){
 highLine(trail,[[8,50],[8,68]],4);
 for(let y=57;y<69;y++)for(let x=1;x<=3;x++)highSet(trail,x,y,1);
 trail.enc=[6,8,9,10];
-trail.ex=[{x:7,y:69,to:"r1",tx:7,ty:4},{x:8,y:69,to:"r1",tx:7,ty:4},{x:9,y:69,to:"r1",tx:7,ty:4}];
+trail.ex=[
+  {x:7,y:0,to:"highStart",tx:12,ty:27},{x:8,y:0,to:"highStart",tx:12,ty:27},{x:9,y:0,to:"highStart",tx:12,ty:27},
+  {x:7,y:69,to:"r1",tx:7,ty:4},{x:8,y:69,to:"r1",tx:7,ty:4},{x:9,y:69,to:"r1",tx:7,ty:4}
+];
 MAPS.highTrail=trail;
 // The candidate joins existing interiors/route without editing their mainline files.
 MAPS.home1.ex=[{x:8,y:10,to:"highStart",tx:8,ty:15}];
 MAPS.lab1.ex=[{x:9,y:10,to:"highStart",tx:17,ty:8}];
-MAPS.center1.ex=[{x:7,y:10,to:"highStart",tx:20,ty:15}];
-MAPS.center1.nm="高台のルミモンセンター（TEMP）";
 MAPS.r1.ex=MAPS.r1.ex.map(e=>e.to==="start"?{...e,to:"highTrail",tx:8,ty:67}:e);
 
 const SIO_ROOM_KIND={
@@ -557,8 +558,7 @@ const MAP_MOOD={
 const WORLD_PORTALS={
   highStart:[
     {fx:8,fy:14,to:"home1",tx:8,ty:9,label:"あなたのいえ",front:{x:8,y:15}},
-    {fx:17,fy:7,to:"lab1",tx:9,ty:9,label:"ツバキけんきゅうじょ",front:{x:17,y:8}},
-    {fx:21,fy:14,to:"center1",tx:7,ty:9,label:"ルミモンセンター",front:{x:21,y:15}}
+    {fx:17,fy:7,to:"lab1",tx:9,ty:9,label:"ツバキけんきゅうじょ",front:{x:17,y:8}}
   ],
   start:[
     {fx:3,fy:3,to:"houseL",tx:5,ty:6,label:"ひだりの民家",front:{x:3,y:4}},
@@ -3187,13 +3187,20 @@ let credS=0;
 function dC(){X.fillStyle="#080818";X.fillRect(0,0,GW,GH);credS+=.3;const y0=GH-credS;tx("おめでとう！",GW/2,y0,"#fc4",18,"center");tx(`${G.nm}は チャンピオンに なった！`,GW/2,y0+40,"#ddd",10,"center");ms("lumidra",GW/2,y0+100,64);tx("ルミナリアに ひかりが もどった",GW/2,y0+150,"#4db",10,"center");tx("～ THE END ～",GW/2,y0+190,"#fc4",14,"center");const cn=Object.values(G.dex).filter(v=>v==="caught").length;tx(`バッジ:${G.badges.length} ずかん:${cn}/${MON.length}`,GW/2,y0+240,"#778",9,"center");if(credS>260)tx("タップで つづける",GW/2,GH-20,"#556",8,"center");}
 function defeatRespawnPoint(){
   const mp=G.map||"";
-  if(mp==="highStart"||mp==="highTrail") return {map:"center1",x:7,y:9};
+  if(mp==="highStart") return {map:"highStart",x:8,y:15,highStartSafe:true};
+  if(mp==="highTrail") return {map:"highTrail",x:8,y:16,highTrailRetry:true};
   if(mp==="t3"||mp==="snowPath"||mp==="snowCenter"||mp==="snowShop"||mp==="snowHouseA"||mp==="snowHouseB"||mp==="snowLodge"||mp==="snowIgloo"||mp.startsWith("cave")) return {map:"snowCenter",x:7,y:9};
   if(["t2","center3","shop2","sioGym","sioHouseA","sioHouseB","sioCafe","sioVilla1","sioVilla2","shipSea","r3"].includes(mp)) return {map:"center3",x:7,y:9};
   if(["t1","center2","shop1","r2"].includes(mp)) return {map:"center2",x:7,y:9};
   return {map:"center1",x:7,y:9};
 }
-function dDf(){X.fillStyle="#080818";X.fillRect(0,0,GW,GH);X.fillStyle="rgba(60,0,0,.3)";X.fillRect(0,0,GW,GH);tx("めのまえが まっくらに なった…",GW/2,GH/2-20,"#f66",12,"center");tx("ルミモンセンターに もどされた…",GW/2,GH/2+10,"#aaa",10,"center");tx("タップ",GW/2,GH-40,"#556",8,"center");}
+function defeatReturnText(){
+  const mp=G.map||"";
+  if(mp==="highStart") return "気がつくと 家の近くまで もどっていた…";
+  if(mp==="highTrail") return "気がつくと 高台の外れの\n安全な道まで もどっていた…";
+  return "ルミモンセンターに もどされた…";
+}
+function dDf(){X.fillStyle="#080818";X.fillRect(0,0,GW,GH);X.fillStyle="rgba(60,0,0,.3)";X.fillRect(0,0,GW,GH);tx("めのまえが まっくらに なった…",GW/2,GH/2-20,"#f66",12,"center");tx(defeatReturnText(),GW/2,GH/2+10,"#aaa",10,"center");tx("タップ",GW/2,GH-40,"#556",8,"center");}
 function dLeg(){X.fillStyle="#0a0a18";X.fillRect(0,0,GW,GH);for(let i=0;i<8;i++){const a=TK*.01+i*Math.PI/4;X.strokeStyle=`rgba(255,220,100,${.06+Math.sin(TK*.03+i)*.06})`;X.lineWidth=3;X.beginPath();X.moveTo(GW/2,GH/2-40);X.lineTo(GW/2+Math.cos(a)*200,GH/2-40+Math.sin(a)*200);X.stroke();}ms("lumidra",GW/2,GH/2-40,80);tx("ルミドラグーンが あらわれた！",GW/2,GH/2+30,"#4db",11,"center");tx("タップで バトル！",GW/2,GH-30,"#fa4",10,"center");}
 function dMsg(){
   if(U.msg==null) return;
@@ -3309,7 +3316,7 @@ if(G.st==="BTRANS"){
 }
 switch(G.st){case"TITLE":uT(inp);break;case"STARTER":uSt(inp);break;case"WORLD":uW(inp);break;case"BATTLE":uB(inp);break;
 case"PARTY":uP(inp);break;case"DEX":uD(inp);break;case"SHOP":uS(inp);break;case"BAG":uBag(inp);break;case"CARD":uCard(inp);break;case"LOG":uLog(inp);break;case"OPT":uO(inp);break;
-case"DEFEAT":if(U.dfReady&&inp.a){for(const mon of G.pty){mon.hp=mon.mhp;mon.sts=null;}const rp=defeatRespawnPoint();G.map=rp.map;G.px=rp.x;G.py=rp.y;G.opx=rp.x;G.opy=rp.y;G.face="d";G.st="WORLD";clearPremiumEffects();autoSave("battle_end");}break;
+case"DEFEAT":if(U.dfReady&&inp.a){for(const mon of G.pty){mon.hp=mon.mhp;mon.sts=null;}const rp=defeatRespawnPoint();G.map=rp.map;G.px=rp.x;G.py=rp.y;G.opx=rp.x;G.opy=rp.y;G.face="d";if(rp.highTrailRetry){U.highDepartureAt=performance.now();G.fl.highTrailSteps=0;U.soraCatch=null;}G.st="WORLD";clearPremiumEffects();autoSave("battle_end");}break;
 case"LEGEND":if(inp.a){B={pm:G.pty[0],em:mkM(17,25),wild:true,tnm:"",ph:"cmd",log:["ルミドラグーンが あらわれた！"],bond:50,pDf:0,eDf:0,mi:0,ski:0,iti:0,pti:0,cap:null,at:0,atp:null,esc:false,tWin:"",tFl:"",tMon:null,tIdx:0,_pSts:false,_ws:false,turn:"p",shake:0,hitFx:null,capFx:null,dmgFx:null};G.st="BATTLE";G.dex[17]="seen";}break;
 case"LEAGUE":uL(inp);break;case"CREDITS":if(inp.a&&credS>260){credS=0;G.st="WORLD";autoSave("battle_end");}break;}
 X.clearRect(0,0,GW,GH);
