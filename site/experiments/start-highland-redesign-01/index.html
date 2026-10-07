@@ -642,6 +642,7 @@ function moveToMap(to,tx,ty,reason){
   }
   G.opx=G.px; G.opy=G.py;
   G.map=to; G.px=tx; G.py=ty; G.opx=G.px; G.opy=G.py;
+  if(to==="highStart"||to==="highTrail")U.highFollowTrail=[{map:to,x:tx,y:ty}];
   mvT=150;
   clearPremiumEffects();
   if(from!==to){
@@ -1570,6 +1571,22 @@ function drawHighTile(dx,dy,t,x,y){
 }
 function drawHighFlavor(mid,cx,cy){
   const at=(x,y)=>[Math.floor(x*TS-cx),Math.floor(y*TS-cy)];
+  // Give the highland a visible world beyond the walkable tile grid.
+  // This is scenery, not collision: distant basin -> ridges -> sky, so the starting
+  // place reads as one small inhabited shelf in a much larger journey.
+  if(mid==='highStart' || mid==='highTrail'){
+    const horizonY=Math.max(24,Math.min(GH-70,Math.floor((mid==='highStart'?30:54)*TS-cy)));
+    if(horizonY<GH){
+      const sky=X.createLinearGradient(0,horizonY,0,GH);
+      sky.addColorStop(0,'rgba(192,220,194,.22)');sky.addColorStop(.55,'rgba(91,143,118,.18)');sky.addColorStop(1,'rgba(27,72,65,.10)');
+      X.fillStyle=sky;X.fillRect(0,horizonY,GW,GH-horizonY);
+      X.fillStyle='rgba(54,103,91,.26)';X.beginPath();X.moveTo(0,horizonY+46);X.lineTo(GW*.14,horizonY+24);X.lineTo(GW*.30,horizonY+38);X.lineTo(GW*.47,horizonY+14);X.lineTo(GW*.62,horizonY+35);X.lineTo(GW*.78,horizonY+18);X.lineTo(GW,horizonY+42);X.lineTo(GW,GH);X.lineTo(0,GH);X.closePath();X.fill();
+      X.fillStyle='rgba(35,82,75,.22)';X.beginPath();X.moveTo(0,horizonY+70);X.lineTo(GW*.20,horizonY+50);X.lineTo(GW*.36,horizonY+63);X.lineTo(GW*.55,horizonY+39);X.lineTo(GW*.73,horizonY+61);X.lineTo(GW,horizonY+45);X.lineTo(GW,GH);X.lineTo(0,GH);X.closePath();X.fill();
+      // A thin river and tiny far settlement imply destinations beyond this map.
+      X.fillStyle='rgba(128,203,198,.30)';X.beginPath();X.moveTo(GW*.49,horizonY+43);X.lineTo(GW*.55,GH);X.lineTo(GW*.61,GH);X.lineTo(GW*.53,horizonY+43);X.closePath();X.fill();
+      for(const [rx,ry] of [[.18,82],[.23,78],[.77,91],[.82,87]]){X.fillStyle='rgba(221,207,164,.28)';X.fillRect(Math.floor(GW*rx),horizonY+ry,5,3);X.fillStyle='rgba(74,83,72,.25)';X.fillRect(Math.floor(GW*rx)+1,horizonY+ry-2,3,2);}
+    }
+  }
   const cabin=(tx,ty,w,roof,door)=>{
     const [x,y]=at(tx,ty),ww=w*16;
     X.fillStyle='rgba(26,54,44,.26)';X.fillRect(x+7,y+46,ww,8);
@@ -1594,15 +1611,22 @@ function drawHighFlavor(mid,cx,cy){
       X.fillStyle='rgba(51,108,105,.40)';X.beginPath();X.moveTo(0,y+68);X.lineTo(49,y+33);X.lineTo(103,y+55);X.lineTo(180,y+23);X.lineTo(GW,y+49);X.lineTo(GW,y+112);X.lineTo(0,y+112);X.fill();
     }
     if(U.soraCatch){
-      const elapsed=Math.min(1,(performance.now()-U.soraCatch.at)/1300);
-      const sx=at(U.soraCatch.x,0)[0]+2, sy=at(0,U.soraCatch.y-3+elapsed*2)[1]+2;
+      // Sora advances in readable tile steps from behind instead of gliding into the player.
+      const elapsed=Math.min(1,(performance.now()-U.soraCatch.at)/1800);
+      const step=Math.min(3,Math.floor(elapsed*4));
+      const sx=at(U.soraCatch.x,0)[0]+2, sy=at(0,U.soraCatch.y-4+step)[1]+2;
       drawDemoSprite('boy',sx,sy,1);
     }
   }
-  // A companion stays beside the player through both areas and the silent exit.
+  // START-HIGHLAND companion: follow the player's actual footsteps, one tile behind.
+  // Never hover beside the player; turns should read as "following", not orbiting.
   if(G.pty.length){
-    const [x,y]=at(G.px+(G.face==='l'?1:-1),G.py+1);
-    const id=G.pty[0].mid;ms(MON[id].sn,x+8,y+6+Math.sin(TK*.08)*1.5,15);
+    const hist=Array.isArray(U.highFollowTrail)?U.highFollowTrail:[];
+    const fp=hist.length>=2?hist[hist.length-2]:hist[0];
+    if(fp&&fp.map===mid){
+      const [x,y]=at(fp.x,fp.y);
+      const id=G.pty[0].mid;ms(MON[id].sn,x+8,y+6+Math.sin(TK*.08)*.6,15);
+    }
   }
   if(mid==='highStart'&&!G.fl.highWildSeen&&G.pty.length&&G.py>=19){
     const [x,y]=at(7,22);drawHighWild(x,y,0);
@@ -2704,7 +2728,7 @@ if(U.highWild){
   return;
 }
 if(U.soraCatch){
-  if(performance.now()-U.soraCatch.at>=1300){
+  if(performance.now()-U.soraCatch.at>=1800){
     U.soraCatch=null;
     showMsgs(["ソラ「追いついた！ ぼくも 相棒をもらったんだ」","ソラ「うれしくて しょうぶしたくなっちゃった。やろう！」"],startHighSoraBattle);
   }
@@ -2782,7 +2806,14 @@ if(!bl&&canW(G.map,nx,ny)){
  if(G.map==="highTrail"&&(!G.fl.rv1||ny<50)){
    // No random encounter, NPC, item or sign before Sora.
  }
- G.opx=G.px;G.opy=G.py;G.px=nx;G.py=ny;mvT=140;playStep();
+ G.opx=G.px;G.opy=G.py;G.px=nx;G.py=ny;
+ if((G.map==="highStart"||G.map==="highTrail")&&G.pty.length){
+   U.highFollowTrail=Array.isArray(U.highFollowTrail)?U.highFollowTrail:[];
+   const last=U.highFollowTrail[U.highFollowTrail.length-1];
+   if(!last||last.map!==G.map||last.x!==G.opx||last.y!==G.opy)U.highFollowTrail.push({map:G.map,x:G.opx,y:G.opy});
+   if(U.highFollowTrail.length>8)U.highFollowTrail.splice(0,U.highFollowTrail.length-8);
+ }
+ mvT=140;playStep();
 if(G.repel>0){G.repel=Math.max(0,G.repel-1); if(G.repel===0) pushLog("むしよけミストの こうかが きれた");}
 if(G.swarm && G.swarm.left>0){G.swarm.left=Math.max(0,G.swarm.left-1); if(G.swarm.left===0) pushLog("たいりょうはっせいが おさまった");}
 maybeStartSwarm();
