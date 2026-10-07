@@ -1575,7 +1575,8 @@ function drawHighFlavor(mid,cx,cy){
   // This is scenery, not collision: distant basin -> ridges -> sky, so the starting
   // place reads as one small inhabited shelf in a much larger journey.
   if(mid==='highStart' || mid==='highTrail'){
-    const horizonY=Math.max(24,Math.min(GH-70,Math.floor((mid==='highStart'?30:54)*TS-cy)));
+    const worldEdgeY=mid==='highStart'?19:50;
+    const horizonY=Math.max(24,Math.min(GH-70,Math.floor(worldEdgeY*TS-cy)));
     if(horizonY<GH){
       const sky=X.createLinearGradient(0,horizonY,0,GH);
       sky.addColorStop(0,'rgba(192,220,194,.22)');sky.addColorStop(.55,'rgba(91,143,118,.18)');sky.addColorStop(1,'rgba(27,72,65,.10)');
@@ -1622,7 +1623,7 @@ function drawHighFlavor(mid,cx,cy){
   // Never hover beside the player; turns should read as "following", not orbiting.
   if(G.pty.length){
     const hist=Array.isArray(U.highFollowTrail)?U.highFollowTrail:[];
-    const fp=hist.length>=2?hist[hist.length-2]:hist[0];
+    const fp=hist.length?hist[hist.length-1]:null;
     if(fp&&fp.map===mid){
       const [x,y]=at(fp.x,fp.y);
       const id=G.pty[0].mid;ms(MON[id].sn,x+8,y+6+Math.sin(TK*.08)*.6,15);
