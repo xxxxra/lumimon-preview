@@ -37,15 +37,20 @@ class Catalog(HTMLParser):
         super().__init__()
         self.details_depth = 0
         self.visible_hrefs = set()
+        self.vault_ids = []
+        self.vault_summaries = set()
         self.playable = {}
         self.problems = []
 
     def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
         if tag == "details":
             self.details_depth += 1
-        attrs = dict(attrs)
+            self.vault_ids.append(attrs.get("id"))
+        if tag == "summary" and self.vault_ids:
+            self.vault_summaries.add(self.vault_ids[-1])
         href = attrs.get("href")
-        if tag == "a" and self.details_depth == 0 and href:
+        if tag == "a" and href:
             self.visible_hrefs.add(page_path(href))
         if attrs.get("data-access") != "playable":
             return
@@ -53,8 +58,6 @@ class Catalog(HTMLParser):
         if tag != "a" or not href:
             self.problems.append(f"Playable entry without a link: {file}")
             return
-        if self.details_depth:
-            self.problems.append(f"Playable entry is hidden in details: {file}")
         if not file or file in self.playable:
             self.problems.append(f"Missing or duplicate data-file: {file}")
             return
@@ -63,11 +66,16 @@ class Catalog(HTMLParser):
             "blob": attrs.get("data-blob"),
             "review": attrs.get("data-status"),
             "hidden": "hidden" in attrs,
+            "vault": self.vault_ids[-1] if self.vault_ids else None,
         }
 
     def handle_endtag(self, tag):
         if tag == "details":
             self.details_depth = max(0, self.details_depth - 1)
+            if self.vault_ids:
+                vault_id = self.vault_ids.pop()
+                if vault_id not in self.vault_summaries:
+                    self.problems.append(f"Archive without accessible summary: {vault_id}")
 
 
 if not HUB.is_file():
@@ -115,11 +123,27 @@ for rel in (
 ):
     if catalog.playable.get(rel, {}).get("review") != "rejected":
         catalog.problems.append(f"Rejected variant not labeled rejected: {rel}")
+    if catalog.playable.get(rel, {}).get("vault") != "archive-rejected":
+        catalog.problems.append(f"Rejected variant not inside rejected archive: {rel}")
 
 # The reviewed comparison is NOT an accepted Golden Master.
 reviewed = "experiments/start-village/index.html"
 if catalog.playable.get(reviewed, {}).get("review") != "reviewed":
     catalog.problems.append(f"User-reviewed working baseline mislabeled: {reviewed}")
+if catalog.playable.get(reviewed, {}).get("vault") is not None:
+    catalog.problems.append("User-reviewed baseline must remain visible on the hub")
+
+for rel in ("index.html", "experiments/memory/index.html",
+            "reference/golden-master/shiokaze/sio3-4.html",
+            "reference/golden-master/snow/luminaria_snow_village_premium.html"):
+    if catalog.playable.get(rel, {}).get("vault") is not None:
+        catalog.problems.append(f"Important version must remain visible: {rel}")
+
+if set(catalog.vault_summaries) != {
+    "archive-proposals", "archive-rejected", "archive-history", "archive-source"
+}:
+    catalog.problems.append("Expected 4 independently accessible archive summaries")
+
 
 if catalog.problems:
     raise SystemExit("Preview catalog validation FAILED:\n" + "\n".join(
@@ -129,5 +153,5 @@ if catalog.problems:
 print(
     f"Review hub PASS: {len(experiments)} experimental saves, "
     f"{len(references)} Golden Masters, {len(candidates)} older candidates, "
-    "and current main; all visible, uniquely linked, blob-verified, and status-labeled."
+    "and current main; all accessible via visible cards or labeled archive summaries, uniquely linked, blob-verified, and status-labeled."
 )
