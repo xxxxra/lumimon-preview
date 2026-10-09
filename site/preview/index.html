@@ -267,6 +267,17 @@ details[open] summary::after{content:"−"}
   color:var(--sub);
   font-size:11px;
 }
+.archive{position:relative;z-index:6;margin-top:25px;padding:17px 15px 14px;background:rgba(255,255,255,.61);border:1px solid rgba(74,123,150,.17);border-radius:18px}
+.archive h2{font-size:19px;letter-spacing:.015em;margin:0 0 7px}
+.archive-intro{font-size:12px;line-height:1.7;color:var(--sub);margin:0 0 12px}
+.archive-group{margin-top:17px}
+.archive-group h3{margin:0 0 6px;font-size:12px;color:#55788b;font-weight:800;letter-spacing:.02em}
+.archive-link{display:flex;justify-content:space-between;gap:12px;align-items:center;text-decoration:none;padding:12px 3px;border-bottom:1px solid var(--line);min-height:58px}
+.archive-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.archive-copy strong{font-size:14px;line-height:1.5;font-weight:800}
+.archive-copy small{font-size:11px;color:var(--sub);line-height:1.5}
+.archive-arrow{flex:none;font-size:23px;color:var(--blue-deep)}
+.archive-pending{opacity:.74}
 @media (hover:hover){
   .main-action:hover{transform:translateX(-50%) translateY(-1px)}
   .memory-link:hover .memory-arrow{transform:translateX(2px)}
@@ -328,7 +339,7 @@ details[open] summary::after{content:"−"}
   </section>
 
   <section class="memory">
-    <div class="memory-label">おためし</div>
+    <div class="memory-label">すぐに開く</div>
     <a class="memory-link" href="../experiments/start-highland-redesign-01/">
       <div class="memory-copy">
         <strong>新しいはじまりエリア</strong>
@@ -338,7 +349,7 @@ details[open] summary::after{content:"−"}
     </a>
     <a class="memory-link" href="../experiments/start-village/">
       <div class="memory-copy">
-        <strong>高台のはじまり村</strong>
+        <strong>以前のはじまり村</strong>
         <span>過去の比較用・旧31×27版</span>
       </div>
       <span class="memory-arrow" aria-hidden="true">›</span>
@@ -352,20 +363,65 @@ details[open] summary::after{content:"−"}
     </a>
   </section>
 
-  <details>
-    <summary>過去のはじまりエリア・没案をすべて見る</summary>
-    <div class="compare">
-      <a href="../experiments/start-village-exp08-faithful-02/"><strong>EXP08 忠実移植</strong><span>過去候補</span></a>
-      <a href="../experiments/start-village-exp08-hybrid/"><strong>EXP08 ハイブリッド</strong><span>過去候補</span></a>
-      <a href="../experiments/start-village-living-water-03/"><strong>水辺・暮らし</strong><span>過去候補</span></a>
-      <a href="../experiments/start-village-home-grammar-01/"><strong>家の構成</strong><span>実験</span></a>
-      <a href="../experiments/start-village-building-polish-01/"><strong>建物 POLISH</strong><span>実験</span></a>
-      <a href="../experiments/start-village-building-grammar-01/"><strong>建物構成</strong><span>実験</span></a>
-      <a href="../experiments/start-village-building-grammar-entrance-fix-01/"><strong>建物入口修正</strong><span>実験</span></a>
-      <a href="../experiments/start-highland-redesign-01/checkpoints/e773b76/"><strong>高台 REDESIGN 過去版</strong><span>不採用・履歴</span></a>
-      <a href="../experiments/"><strong>全実験版の一覧</strong><span>履歴も含めて見る</span></a>
+  <section class="archive" aria-label="はじまりエリアの全候補">
+    <h2>はじまりエリアの全候補</h2>
+    <p class="archive-intro">昔の版も、没になった版もここから開けるよ。<br>古い候補も消さずに残してあるよ。</p>
+    <div class="archive-group">
+      <h3>以前のはじまり村・世界の検討</h3>
+      <a class="archive-link" href="../experiments/start-village/">
+        <span class="archive-copy"><strong>以前のはじまり村（31×27）</strong><small>比較用・旧版</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-exp08-faithful-02/">
+        <span class="archive-copy"><strong>EXP08 忠実移植版</strong><small>過去候補</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-exp08-hybrid/">
+        <span class="archive-copy"><strong>EXP08 ハイブリッド版</strong><small>過去候補</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-living-water-03/">
+        <span class="archive-copy"><strong>水辺・暮らし版</strong><small>過去候補</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
     </div>
-  </details>
+    <div class="archive-group">
+      <h3>家・建物の検討</h3>
+      <a class="archive-link" href="../experiments/start-village-home-grammar-01/">
+        <span class="archive-copy"><strong>家の構成検討版</strong><small>実験</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-building-polish-01/">
+        <span class="archive-copy"><strong>建物 POLISH 版</strong><small>実験</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-building-grammar-01/">
+        <span class="archive-copy"><strong>建物構成版</strong><small>実験</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-village-building-grammar-entrance-fix-01/">
+        <span class="archive-copy"><strong>建物入口修正版</strong><small>実験</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+    </div>
+    <div class="archive-group">
+      <h3>不採用・履歴</h3>
+      <a class="archive-link" href="../experiments/start-highland-redesign-01/">
+        <span class="archive-copy"><strong>高台 REDESIGN（最終候補）</strong><small>不採用</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+      <a class="archive-link" href="../experiments/start-highland-redesign-01/checkpoints/e773b76/">
+        <span class="archive-copy"><strong>高台 REDESIGN（保存された過去版）</strong><small>不採用・履歴</small></span>
+        <span class="archive-arrow" aria-hidden="true">›</span>
+      </a>
+    </div>
+    <div class="archive-group">
+      <h3>制作中</h3>
+      <div class="archive-link archive-pending">
+        <span class="archive-copy"><strong>新しいはじまりエリア REDESIGN #46</strong><small>設計・実装準備中／まだゲーム画面なし</small></span>
+      </div>
+    </div>
+  </section>
 
   <details>
     <summary>見くらべる</summary>
