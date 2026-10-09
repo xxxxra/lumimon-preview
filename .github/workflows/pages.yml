@@ -6,6 +6,7 @@ on:
     paths:
       - 'site/**'
       - '.github/scripts/check_preview_catalog.py'
+      - 'tests/preview-hub/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -35,12 +36,36 @@ jobs:
         with:
           path: site
 
+  preview-hub-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser tools
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test mobile and desktop hub
+        run: node tests/preview-hub/mobile-qa.mjs
+      - name: Upload hub screenshots and QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumimon-preview-hub-visual-qa
+          path: qa-artifacts/preview-hub/
+          if-no-files-found: warn
+
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, preview-hub-qa]
     steps:
       - name: Deploy
         id: deployment
