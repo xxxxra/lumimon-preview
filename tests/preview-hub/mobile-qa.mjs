@@ -30,6 +30,8 @@ try {
   assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
   assert.equal(await page.locator('#archive-rejected').count(), 0);
   assert.equal(await page.locator('[data-status="rejected"]').count(), 0);
+  assert.equal(await page.locator('[data-access="source-only"]').count(), 3);
+  assert.equal(await page.getByText("高台 REDESIGN・最初の公開版").count(), 0);
   assert.equal(await page.locator('#now [data-status="reviewed"]').count(), 1);
   assert.equal(await page.locator('#standards [data-status="golden"]').count(), 2);
   await page.screenshot({ path: OUT + "/01-mobile-cover.png" });
