@@ -23,16 +23,17 @@ try {
   await page.goto(TARGET, { waitUntil: "load" });
   assert.equal(await page.title(), "るみもん");
   assert.equal(await page.locator('a.main-action').count(), 1);
-  assert.equal(await page.locator('[data-access="playable"]').count(), 31);
-  assert.equal(await page.locator('[data-vault]').count(), 4);
+  assert.equal(await page.locator('[data-access="playable"]').count(), 26);
+  assert.equal(await page.locator('[data-vault]').count(), 3);
   assert.equal(await page.locator('[data-vault][open]').count(), 0);
-  assert.equal(await page.locator('[data-vault] [data-access="playable"]').count(), 26);
+  assert.equal(await page.locator('[data-vault] [data-access="playable"]').count(), 21);
   assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
-  assert.equal(await page.locator('#archive-rejected [data-status="rejected"]').count(), 2);
+  assert.equal(await page.locator('#archive-rejected').count(), 0);
+  assert.equal(await page.locator('[data-status="rejected"]').count(), 0);
   assert.equal(await page.locator('#now [data-status="reviewed"]').count(), 1);
   assert.equal(await page.locator('#standards [data-status="golden"]').count(), 2);
   await page.screenshot({ path: OUT + "/01-mobile-cover.png" });
-  pass("first-glance-has-five-playables-plus-work", { visible: 5, archived: 26 });
+  pass("first-glance-has-five-playables-plus-work", { visible: 5, archived: 21, excludedFromHub: 5 });
 
   const bounds = await page.evaluate(() => {
     const vw = innerWidth;
@@ -65,7 +66,7 @@ try {
   assert.equal(await page.locator('#archive-proposals').evaluate(x => x.open), true);
   assert.equal(await page.locator('[data-access="playable"]:visible').count(), 1);
   assert.equal(await page.locator('#archive-proposals [data-access="playable"]:visible strong').first().textContent(), "水辺・暮らし版");
-  assert.equal(await page.locator('#archive-rejected').isVisible(), false);
+  assert.equal(await page.locator('#archive-rejected').count(), 0);
   await page.screenshot({ path: OUT + "/03-mobile-search.png" });
   pass("search-opens-matching-past-proposal", { text: await page.locator("#catalog-count").textContent() });
 
@@ -74,19 +75,16 @@ try {
   assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
   pass("search-clear-restores-closed-archives");
 
-  await page.locator('#archive-rejected summary').click();
-  assert.equal(await page.locator('#archive-rejected').evaluate(x => x.open), true);
-  assert.equal(await page.locator('#archive-rejected [data-access="playable"]:visible').count(), 5);
-  await page.screenshot({ path: OUT + "/04-mobile-rejected-archive.png" });
-  await page.locator('#archive-rejected summary').click();
-  assert.equal(await page.locator('#archive-rejected').evaluate(x => x.open), false);
+
   await page.locator("#catalog-search").fill("23×17");
-  assert.equal(await page.locator('#archive-rejected').evaluate(x => x.open), true);
-  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 1);
+  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 0);
+  assert.equal(await page.locator("#archive-rejected").count(), 0);
+  assert.equal(await page.locator("#catalog-count").textContent(), "一致する版は見つからなかったよ");
   await page.locator("#catalog-search").fill("");
   assert.equal(await page.locator('[data-vault][open]').count(), 0);
   assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
-  pass("rejected-versions-only-in-separate-closed-archive");
+  assert.equal(await page.locator("#catalog-count").textContent(), "26件のプレイ用保存版を保管中");
+  pass("user-dismissed-rejected-variants-do-not-appear-or-search");
 
   const desktop = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   const dpage = await desktop.newPage();
