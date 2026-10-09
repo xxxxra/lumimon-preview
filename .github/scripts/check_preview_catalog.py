@@ -1,7 +1,7 @@
 """Deploy gate for the one canonical Lumimon review hub.
 
-Every published playable HTML must have ONE visible, correctly identified entry.
-No private branch is treated as a public playable build, and status labels here
+Every active/reviewable published HTML must have ONE discoverable, identified entry.
+User-excluded rejected builds are hash-pinned, deliberately absent from the hub.\nNo private branch is treated as a public playable build, and status labels here
 do not promote an experimental candidate to canon or Golden Master.
 """
 from hashlib import sha1
@@ -12,6 +12,17 @@ from urllib.parse import urljoin, urlparse
 SITE = Path("site")
 HUB = SITE / "preview" / "index.html"
 BASE = "https://mirror.example/preview/"
+# Explicit user instruction (2026-10-10): take these rejected variants out of
+# the review experience entirely. Keep their published bytes stable only to
+# avoid erasing provenance or reusing historical URLs. They are not candidates.
+USER_EXCLUDED_BLOBS = {
+    "experiments/start-highland-redesign-01/index.html": "3b4b4408a41701d64751e4af4125167a2bdc5957",
+    "experiments/archive/23x17-highland-rejected/index.html": "2add9c97e71ee7d7a471115985ed9df840d2d89d",
+    "experiments/start-highland-redesign-01/checkpoints/e773b76/index.html": "2fd479866854664693ff3da554409c7ccb272d7b",
+    "experiments/archive/start-highland-qa-a609e87/index.html": "cefb369fe000b96c4bc743d94d66c0a625d22448",
+    "experiments/archive/start-highland-grounded-535728b/index.html": "18b70448c07d60c5496cb8bca8d46e15967e6f80",
+}
+
 
 
 def page_path(href):
@@ -93,6 +104,13 @@ required = [SITE / "index.html", *experiments, *references, *candidates]
 expected_files = {file.relative_to(SITE).as_posix(): file for file in required}
 
 for rel, file in expected_files.items():
+    if rel in USER_EXCLUDED_BLOBS:
+        expected_sha = USER_EXCLUDED_BLOBS[rel]
+        if blob_sha(file) != expected_sha:
+            catalog.problems.append(f"Excluded rejected file changed unexpectedly: {rel}")
+        if rel in catalog.playable or expected_path(file) in catalog.visible_hrefs:
+            catalog.problems.append(f"Rejected file has returned to the public review hub: {rel}")
+        continue
     path = expected_path(file)
     if path not in catalog.visible_hrefs:
         catalog.problems.append(f"Published HTML has no visible link: {rel}")
@@ -116,15 +134,10 @@ for rel, file in expected_files.items():
 for rel in sorted(set(catalog.playable) - set(expected_files)):
     catalog.problems.append(f"Catalog claims nonexistent playable file: {rel}")
 
-# Do not silently rehabilitate explicit user-rejected versions.
-for rel in (
-    "experiments/start-highland-redesign-01/index.html",
-    "experiments/archive/23x17-highland-rejected/index.html",
-):
-    if catalog.playable.get(rel, {}).get("review") != "rejected":
-        catalog.problems.append(f"Rejected variant not labeled rejected: {rel}")
-    if catalog.playable.get(rel, {}).get("vault") != "archive-rejected":
-        catalog.problems.append(f"Rejected variant not inside rejected archive: {rel}")
+# Every excluded rejected file must remain present and byte-identical.
+for rel in USER_EXCLUDED_BLOBS:
+    if rel not in expected_files:
+        catalog.problems.append(f"Excluded rejected source unexpectedly missing: {rel}")
 
 # The reviewed comparison is NOT an accepted Golden Master.
 reviewed = "experiments/start-village/index.html"
@@ -140,9 +153,9 @@ for rel in ("index.html", "experiments/memory/index.html",
         catalog.problems.append(f"Important version must remain visible: {rel}")
 
 if set(catalog.vault_summaries) != {
-    "archive-proposals", "archive-rejected", "archive-history", "archive-source"
+    "archive-proposals", "archive-history", "archive-source"
 }:
-    catalog.problems.append("Expected 4 independently accessible archive summaries")
+    catalog.problems.append("Expected 3 independently accessible archive summaries")
 
 
 if catalog.problems:
@@ -153,5 +166,5 @@ if catalog.problems:
 print(
     f"Review hub PASS: {len(experiments)} experimental saves, "
     f"{len(references)} Golden Masters, {len(candidates)} older candidates, "
-    "and current main; all accessible via visible cards or labeled archive summaries, uniquely linked, blob-verified, and status-labeled."
+    "and current main; eligible versions are accessible, rejected files are unlisted and hash-pinned."
 )
