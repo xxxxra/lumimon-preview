@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Verify visible preview catalog
+        run: python3 .github/scripts/check_preview_catalog.py
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
