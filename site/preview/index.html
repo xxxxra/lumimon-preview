@@ -300,6 +300,42 @@ details[open] summary::after{content:"−"}
   .main-action{top:238px;min-width:198px}
   .route{top:56px;width:300px;height:310px}
 }
+
+/* Catalog layout: preserve the existing watercolour cover and hero; sort the reviews below. */
+.page-jumps{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:13px 18px 10px;scrollbar-width:thin;position:relative;z-index:6}
+.page-jumps a{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:999px;padding:8px 14px;border:1px solid rgba(57,123,156,.25);background:rgba(255,255,255,.65);font-size:12px;font-weight:750;white-space:nowrap}
+.page-jumps a:focus-visible,.catalog-entry:focus-visible,.source-link:focus-visible,input:focus-visible{outline:3px solid #397b9c;outline-offset:3px}
+.page-intro{position:relative;z-index:6;margin:12px 0 25px}
+.page-intro .eyebrow{font-size:11px;color:var(--blue-deep);font-weight:800;letter-spacing:.09em}
+.page-intro h2{font-size:24px;line-height:1.35;margin:7px 0 10px;letter-spacing:-.025em}
+.page-intro p{color:var(--sub);font-size:13px;line-height:1.85;margin:0 0 16px}
+.lookup{background:rgba(255,255,255,.76);border:1px solid var(--line);border-radius:16px;padding:15px}
+.lookup label{display:block;font-size:12px;font-weight:800;margin-bottom:9px}
+.lookup input{width:100%;min-height:46px;border-radius:11px;background:#fff;border:1px solid rgba(74,123,150,.32);font-size:16px;color:var(--ink);padding:10px 13px}
+.search-hint,.search-count{font-size:11px;color:var(--sub);line-height:1.6;margin-top:8px}
+.search-count{color:var(--blue-deep);font-weight:750}
+.catalog-section{margin:30px 0;scroll-margin-top:16px}
+.section-heading{display:flex;justify-content:space-between;gap:9px;align-items:baseline;margin-bottom:6px}
+.section-heading h2{font-size:22px;line-height:1.4;margin:0}
+.section-count{font-size:12px;color:var(--sub);white-space:nowrap}
+.section-intro{margin:0 0 15px;color:var(--sub);font-size:12px;line-height:1.8}
+.catalog-cluster{background:rgba(255,255,255,.65);border:1px solid rgba(70,111,134,.15);border-radius:16px;padding:11px 14px 3px;margin-top:12px}
+.catalog-cluster h3{font-size:13px;color:#52788e;margin:3px 2px 7px;line-height:1.5}
+.entry-stack{display:flex;flex-direction:column}
+.catalog-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:70px;padding:13px 2px 14px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none}
+.entry-main{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.entry-top{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 9px}
+.entry-top strong{font-size:14px;line-height:1.55;word-break:break-word}
+.entry-status{font-size:10px;line-height:1.6;color:#536875;border:1px solid rgba(83,104,117,.23);border-radius:20px;padding:0 6px;white-space:nowrap}
+.entry-note{font-size:11px;line-height:1.65;color:var(--sub)}
+.entry-id{font-size:10px;letter-spacing:.025em;color:#92a3ae}
+.entry-arrow{font-size:21px;color:var(--blue-deep);flex:none}
+.pending-entry{opacity:.8}
+.source-link{font-size:12px;color:var(--blue-deep);font-weight:750;text-decoration:underline;text-underline-offset:3px;align-self:flex-start}
+.catalog-footer{color:var(--sub);font-size:11px;line-height:1.9;border-top:1px solid var(--line);margin-top:32px;padding:17px 3px}
+[hidden]{display:none!important}
+@media (hover:hover){.catalog-entry[href]:hover{background:rgba(225,242,249,.7)}.page-jumps a:hover{background:#fff}}
+@media (max-width:390px){.catalog-cluster{padding:10px 12px 2px}.entry-top strong{font-size:13.5px}}
 </style>
 </head>
 <body>
@@ -338,203 +374,67 @@ details[open] summary::after{content:"−"}
     <a class="main-action" href="../">つづきを見る</a>
   </section>
 
-  <section class="memory">
-    <div class="memory-label">すぐに開く</div>
-    <a class="memory-link" href="../experiments/start-highland-redesign-01/">
-      <div class="memory-copy">
-        <strong>新しいはじまりエリア</strong>
-        <span>不採用・高台REDESIGN（履歴として保存）</span>
-      </div>
-      <span class="memory-arrow" aria-hidden="true">›</span>
-    </a>
-    <a class="memory-link" href="../experiments/start-village/">
-      <div class="memory-copy">
-        <strong>以前のはじまり村</strong>
-        <span>過去の比較用・旧31×27版</span>
-      </div>
-      <span class="memory-arrow" aria-hidden="true">›</span>
-    </a>
-    <a class="memory-link" href="../experiments/memory/">
-      <div class="memory-copy">
-        <strong>旅のきおく</strong>
-        <span>相棒が、旅のことを少しずつ覚える</span>
-      </div>
-      <span class="memory-arrow" aria-hidden="true">›</span>
-    </a>
-  </section>
-
-  <section class="archive" aria-label="はじまりエリアの全候補">
-    <h2>保存版・実験版の一覧</h2>
-    <p class="archive-intro">GitHubに残っている昔の案も、没案もまとめたよ。<br>未公開のものは「未公開」と区別してあるよ。</p>
-    <div class="archive-group">
-      <h3>以前のはじまり村・世界の検討</h3>
-      <a class="archive-link" href="../experiments/start-village/">
-        <span class="archive-copy"><strong>以前のはじまり村（31×27）</strong><small>比較用・旧版</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-exp08-faithful-02/">
-        <span class="archive-copy"><strong>EXP08 忠実移植版</strong><small>過去候補</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-exp08-hybrid/">
-        <span class="archive-copy"><strong>EXP08 ハイブリッド版</strong><small>過去候補</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-living-water-03/">
-        <span class="archive-copy"><strong>水辺・暮らし版</strong><small>過去候補</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>家・建物の検討</h3>
-      <a class="archive-link" href="../experiments/start-village-home-grammar-01/">
-        <span class="archive-copy"><strong>家の構成検討版</strong><small>実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-building-polish-01/">
-        <span class="archive-copy"><strong>建物 POLISH 版</strong><small>実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-building-grammar-01/">
-        <span class="archive-copy"><strong>建物構成版</strong><small>実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-village-building-grammar-entrance-fix-01/">
-        <span class="archive-copy"><strong>建物入口修正版</strong><small>実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>不採用・履歴</h3>
-      <a class="archive-link" href="../experiments/start-highland-redesign-01/">
-        <span class="archive-copy"><strong>高台 REDESIGN（最終候補）</strong><small>不採用</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/start-highland-redesign-01/checkpoints/e773b76/">
-        <span class="archive-copy"><strong>高台 REDESIGN（保存された過去版）</strong><small>不採用・履歴</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>不採用（別系統の旧高台案）</h3>
-      <a class="archive-link" href="../experiments/archive/23x17-highland-rejected/">
-        <span class="archive-copy"><strong>高台 23×17 案</strong><small>不採用・PR #31／元の31×27版とは別物</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>高台・集落の過去実験</h3>
-      <a class="archive-link" href="../experiments/archive/highland-home-village-06/">
-        <span class="archive-copy"><strong>高台・家と村 06</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/highland-research-settlement-07/">
-        <span class="archive-copy"><strong>高台・研究集落 07</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/highland-research-town-08/">
-        <span class="archive-copy"><strong>高台・研究町 08</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/highland-research-town-09/">
-        <span class="archive-copy"><strong>高台・研究町 09</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>初期フィールドの過去実験</h3>
-      <a class="archive-link" href="../experiments/archive/early-world-walkable-01/">
-        <span class="archive-copy"><strong>初期フィールド・歩ける版 01</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/early-world-sequenced-02/">
-        <span class="archive-copy"><strong>初期フィールド・進行構成版 02</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>ほかの町の過去実験</h3>
-      <a class="archive-link" href="../experiments/archive/main-town-renderer-03/">
-        <span class="archive-copy"><strong>町の描画 03</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/main-town-renderer-04/">
-        <span class="archive-copy"><strong>町の描画 04</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/main-town-redesign-05/">
-        <span class="archive-copy"><strong>町の再設計 05</strong><small>過去の実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>旅のきおく</h3>
-      <a class="archive-link" href="../experiments/memory/">
-        <span class="archive-copy"><strong>旅のきおく・現在の公開版</strong><small>実験</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/memory-system-01-initial/">
-        <span class="archive-copy"><strong>旅のきおく・初期版</strong><small>保存版</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>同じURLに上書きされていた公開履歴</h3>
-      <a class="archive-link" href="../experiments/archive/start-village-first-public-f45ef62/">
-        <span class="archive-copy"><strong>はじまり村・最初の公開版</strong><small>以前の31×27版の履歴</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/building-grammar-first-public-360a078/">
-        <span class="archive-copy"><strong>建物構成・最初の公開版</strong><small>改修前の履歴</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/start-village-home-grammar-first-a6bf73f/">
-        <span class="archive-copy"><strong>家の構成・最初の公開版</strong><small>改修前の履歴</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/start-highland-qa-a609e87/">
-        <span class="archive-copy"><strong>新しい高台・QA公開版</strong><small>以前の高台REDESIGN履歴</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../experiments/archive/start-highland-grounded-535728b/">
-        <span class="archive-copy"><strong>新しい高台・遠景調整途中版</strong><small>以前の高台REDESIGN履歴</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>公開前の保存候補</h3>
-      <a class="archive-link" href="https://github.com/xxxxra/lumimon/blob/65b9b694d1bda9ad9dd734a595787dd28d961e70/experiments/highland-observatory-settlement-08.html" target="_blank" rel="noopener">
-        <span class="archive-copy"><strong>高台・観測集落 08</strong><small>GitHubにのみ保存／ゲーム画面の公開URLは未作成</small></span>
-        <span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-    <div class="archive-group">
-      <h3>公開履歴が残るがプレイ用URLは未復元</h3>
-      <a class="archive-link" href="https://github.com/xxxxra/lumimon-preview/blob/968653f8f5a5/site/experiments/start-highland-redesign-01/index.html" target="_blank" rel="noopener"><span class="archive-copy"><strong>新しい高台・最初の公開版</strong><small>GitHubで履歴確認可／プレイ用URLは未復元</small></span><span class="archive-arrow" aria-hidden="true">›</span></a>
-      <a class="archive-link" href="https://github.com/xxxxra/lumimon-preview/blob/804b85282b/site/experiments/start-village-home-grammar-01/index.html" target="_blank" rel="noopener"><span class="archive-copy"><strong>家の構成・中間調整版</strong><small>GitHubで履歴確認可／プレイ用URLは未復元</small></span><span class="archive-arrow" aria-hidden="true">›</span></a>
-      <a class="archive-link" href="https://github.com/xxxxra/lumimon-preview/commits/main/site/experiments/memory/index.html" target="_blank" rel="noopener"><span class="archive-copy"><strong>旅のきおく・細かな更新履歴</strong><small>GitHubの変更履歴（過去の全版がプレイできるわけではない）</small></span><span class="archive-arrow" aria-hidden="true">›</span></a>
-    </div>
-    <div class="archive-group">
-      <h3>制作中</h3>
-      <div class="archive-link archive-pending">
-        <span class="archive-copy"><strong>新しいはじまりエリア REDESIGN #46</strong><small>設計・実装準備中／まだゲーム画面なし</small></span>
-      </div>
-    </div>
-  </section>
-
-  <section class="archive" aria-label="本編・比較用の保存版">
-    <h2>本編と比較用</h2>
-    <p class="archive-intro">基準として残しているもの。実験案と混同しないため、ここは別枠。</p>
-    <div class="archive-group">
-      <a class="archive-link" href="../">
-        <span class="archive-copy"><strong>本編</strong><small>現在の実装正本の公開コピー</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../candidate/l44-progression-safe.html">
-        <span class="archive-copy"><strong>L44・進行安全版</strong><small>以前の基準候補</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../reference/golden-master/shiokaze/sio3-4.html">
-        <span class="archive-copy"><strong>シオカゼ Golden Master</strong><small>比較用・保護対象</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-      <a class="archive-link" href="../reference/golden-master/snow/luminaria_snow_village_premium.html">
-        <span class="archive-copy"><strong>雪の村 Golden Master</strong><small>比較用・保護対象</small></span><span class="archive-arrow" aria-hidden="true">›</span>
-      </a>
-    </div>
-  </section>
+<nav class="page-jumps" aria-label="確認する場所"><a href="#beginning">はじまりエリア</a><a href="#memory">旅のきおく</a><a href="#world">フィールド・町</a><a href="#references">本編・基準</a><a href="#source-only">未公開・履歴</a></nav>
+<section class="page-intro"><div class="eyebrow">保存版を見くらべる</div><h2>どの版だったっけ？をなくす</h2><p>過去案も没案も残してあるよ。「不採用」は不採用のまま保存。新しい版ができても、古いURLを上書きしない。</p><div class="lookup"><label for="catalog-search">名前や特徴から探す</label><input id="catalog-search" type="search" placeholder="水辺・EXP08・研究町 など" autocomplete="off" aria-describedby="search-help"><div id="search-help" class="search-hint">検索しなければすべて表示。各ゲームは別タブで開くよ。</div><div id="catalog-count" class="search-count" aria-live="polite">31件のプレイ用保存版を表示中</div></div></section>
+<section class="catalog-section" id="beginning" aria-labelledby="beginning-heading" data-catalog-section><div class="section-heading"><h2 id="beginning-heading">はじまりエリア</h2><span class="section-count">20版</span></div><p class="section-intro">「前のほうがよかった」を見失わないための比較場所。新しい版を勝手に正解扱いしない。</p><div class="catalog-cluster" data-catalog-group><h3>まず見比べる</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="reviewed" data-file="experiments/start-village/index.html" data-blob="75aa25fd53d33d6e2ab8e1f695fe9dfe0ddc3e5b" href="../experiments/start-village/" target="_blank" rel="noopener" aria-label="以前のはじまり村（31×27）・比較基準・未完成・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>以前のはじまり村（31×27）</strong><span class="entry-status">比較基準・未完成</span></span><span class="entry-note">新しい高台案よりまだよかったと確認された版。完成・Golden Masterではない。</span><span class="entry-id">保存ID 75aa25fd</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="rejected" data-file="experiments/start-highland-redesign-01/index.html" data-blob="3b4b4408a41701d64751e4af4125167a2bdc5957" href="../experiments/start-highland-redesign-01/" target="_blank" rel="noopener" aria-label="新しい高台 REDESIGN（最終公開版）・不採用・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>新しい高台 REDESIGN（最終公開版）</strong><span class="entry-status">不採用</span></span><span class="entry-note">広さや追従を直そうとして、見た目がおかしくなった版。</span><span class="entry-id">保存ID 3b4b4408</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>はじまり村の別案</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-exp08-faithful-02/index.html" data-blob="6c9f505e3846fbd17f396c3f650f1827e246d58f" href="../experiments/start-village-exp08-faithful-02/" target="_blank" rel="noopener" aria-label="EXP08 忠実移植版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>EXP08 忠実移植版</strong><span class="entry-status">過去案</span></span><span class="entry-note">EXP08を忠実に移植する方向で検討したもの。</span><span class="entry-id">保存ID 6c9f505e</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-exp08-hybrid/index.html" data-blob="582834481ddc4e0b1a56a8aa61af8694312d1aa9" href="../experiments/start-village-exp08-hybrid/" target="_blank" rel="noopener" aria-label="EXP08 ハイブリッド版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>EXP08 ハイブリッド版</strong><span class="entry-status">過去案</span></span><span class="entry-note">EXP08を組み合わせる方向の検討版。</span><span class="entry-id">保存ID 58283448</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-living-water-03/index.html" data-blob="36ef7322d45463c15343a2d8563a3696af15843b" href="../experiments/start-village-living-water-03/" target="_blank" rel="noopener" aria-label="水辺・暮らし版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>水辺・暮らし版</strong><span class="entry-status">過去案</span></span><span class="entry-note">水辺と暮らしの構成を検討した版。</span><span class="entry-id">保存ID 36ef7322</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>家と建物の検討</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-home-grammar-01/index.html" data-blob="c100b8e2ce5dc442885ce137f731aee46a83cedf" href="../experiments/start-village-home-grammar-01/" target="_blank" rel="noopener" aria-label="家の構成検討版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>家の構成検討版</strong><span class="entry-status">過去案</span></span><span class="entry-note">家まわりの構成を検討した版。</span><span class="entry-id">保存ID c100b8e2</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-building-polish-01/index.html" data-blob="d430c733f424de60c1dd4159f5e9a772648a1138" href="../experiments/start-village-building-polish-01/" target="_blank" rel="noopener" aria-label="建物 POLISH 版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>建物 POLISH 版</strong><span class="entry-status">過去案</span></span><span class="entry-note">建物の見た目を磨く検討。</span><span class="entry-id">保存ID d430c733</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-building-grammar-01/index.html" data-blob="d74737e7dcfe41bccd5b3b1c19f40207ced1751d" href="../experiments/start-village-building-grammar-01/" target="_blank" rel="noopener" aria-label="建物構成版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>建物構成版</strong><span class="entry-status">過去案</span></span><span class="entry-note">BUILDING-01の公開候補。</span><span class="entry-id">保存ID d74737e7</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/start-village-building-grammar-entrance-fix-01/index.html" data-blob="b9ee88092b32d1304def7d1426e62a929006da83" href="../experiments/start-village-building-grammar-entrance-fix-01/" target="_blank" rel="noopener" aria-label="建物入口修正版・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>建物入口修正版</strong><span class="entry-status">過去案</span></span><span class="entry-note">入口まわりを直した別候補。</span><span class="entry-id">保存ID b9ee8809</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>高台・集落の別案</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="rejected" data-file="experiments/archive/23x17-highland-rejected/index.html" data-blob="2add9c97e71ee7d7a471115985ed9df840d2d89d" href="../experiments/archive/23x17-highland-rejected/" target="_blank" rel="noopener" aria-label="旧高台 23×17 案・不採用・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>旧高台 23×17 案</strong><span class="entry-status">不採用</span></span><span class="entry-note">31×27版とは別構造。過去に不採用になった案。</span><span class="entry-id">保存ID 2add9c97</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/highland-home-village-06/index.html" data-blob="5c8367adc5a155297151fb056657290fbe6765e3" href="../experiments/archive/highland-home-village-06/" target="_blank" rel="noopener" aria-label="高台・家と村 06・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台・家と村 06</strong><span class="entry-status">過去案</span></span><span class="entry-note">家と村の配置を検討したもの。</span><span class="entry-id">保存ID 5c8367ad</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/highland-research-settlement-07/index.html" data-blob="28e370f86c54739c845cb2d3e9ef47bf35fefc63" href="../experiments/archive/highland-research-settlement-07/" target="_blank" rel="noopener" aria-label="高台・研究集落 07・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台・研究集落 07</strong><span class="entry-status">過去案</span></span><span class="entry-note">研究集落の構成案。</span><span class="entry-id">保存ID 28e370f8</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/highland-research-town-08/index.html" data-blob="e52abe69234e8fa7420327184ed0f4d490c94fc3" href="../experiments/archive/highland-research-town-08/" target="_blank" rel="noopener" aria-label="高台・研究町 08・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台・研究町 08</strong><span class="entry-status">過去案</span></span><span class="entry-note">研究町の構成案08。</span><span class="entry-id">保存ID e52abe69</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/highland-research-town-09/index.html" data-blob="e3215cc54b4620c5d5933a0b13303a815a7a766d" href="../experiments/archive/highland-research-town-09/" target="_blank" rel="noopener" aria-label="高台・研究町 09・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台・研究町 09</strong><span class="entry-status">過去案</span></span><span class="entry-note">研究町の構成案09。</span><span class="entry-id">保存ID e3215cc5</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>新しい高台 REDESIGN の途中経過</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/start-highland-redesign-01/checkpoints/e773b76/index.html" data-blob="2fd479866854664693ff3da554409c7ccb272d7b" href="../experiments/start-highland-redesign-01/checkpoints/e773b76/" target="_blank" rel="noopener" aria-label="高台 REDESIGN・保存済み旧版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台 REDESIGN・保存済み旧版</strong><span class="entry-status">履歴</span></span><span class="entry-note">不採用系統の過去チェックポイント。</span><span class="entry-id">保存ID 2fd47986</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/start-highland-qa-a609e87/index.html" data-blob="cefb369fe000b96c4bc743d94d66c0a625d22448" href="../experiments/archive/start-highland-qa-a609e87/" target="_blank" rel="noopener" aria-label="高台 REDESIGN・初期QA公開版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台 REDESIGN・初期QA公開版</strong><span class="entry-status">履歴</span></span><span class="entry-note">修正前に公開された別の状態。</span><span class="entry-id">保存ID cefb369f</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/start-highland-grounded-535728b/index.html" data-blob="18b70448c07d60c5496cb8bca8d46e15967e6f80" href="../experiments/archive/start-highland-grounded-535728b/" target="_blank" rel="noopener" aria-label="高台 REDESIGN・遠景調整途中版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>高台 REDESIGN・遠景調整途中版</strong><span class="entry-status">履歴</span></span><span class="entry-note">不採用版へ至る途中の状態。</span><span class="entry-id">保存ID 18b70448</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>はじまり村・建物の公開履歴</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/start-village-first-public-f45ef62/index.html" data-blob="08684ede340c805325ad6b3fcfa82ee07af66df7" href="../experiments/archive/start-village-first-public-f45ef62/" target="_blank" rel="noopener" aria-label="はじまり村・最初の公開版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>はじまり村・最初の公開版</strong><span class="entry-status">履歴</span></span><span class="entry-note">現行の31×27公開版に更新される前の内容。</span><span class="entry-id">保存ID 08684ede</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/building-grammar-first-public-360a078/index.html" data-blob="b6618f3de10cf1901d2f0d5edb345bd38062a0e4" href="../experiments/archive/building-grammar-first-public-360a078/" target="_blank" rel="noopener" aria-label="建物構成・最初の公開版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>建物構成・最初の公開版</strong><span class="entry-status">履歴</span></span><span class="entry-note">建物構成版が更新される前の内容。</span><span class="entry-id">保存ID b6618f3d</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/start-village-home-grammar-first-a6bf73f/index.html" data-blob="eb3a60db7576f730685bd6e8b5b42ec331ccea70" href="../experiments/archive/start-village-home-grammar-first-a6bf73f/" target="_blank" rel="noopener" aria-label="家の構成・最初の公開版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>家の構成・最初の公開版</strong><span class="entry-status">履歴</span></span><span class="entry-note">家の構成検討版が更新される前の内容。</span><span class="entry-id">保存ID eb3a60db</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div></section>
+<section class="catalog-section" id="memory" aria-labelledby="memory-heading" data-catalog-section><div class="section-heading"><h2 id="memory-heading">旅のきおく</h2><span class="section-count">2版</span></div><p class="section-intro">相棒の行動や記憶を試している実験。はじまり村のデザインとは別の系列。</p><div class="catalog-cluster" data-catalog-group><h3>公開できる版</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/memory/index.html" data-blob="58fe21c8e9f22a09d3af7e64491955c2ec23c86f" href="../experiments/memory/" target="_blank" rel="noopener" aria-label="旅のきおく・現在公開版・実験・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>旅のきおく・現在公開版</strong><span class="entry-status">実験</span></span><span class="entry-note">現在、旅のきおくの公開URLで開く版。</span><span class="entry-id">保存ID 58fe21c8</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="experiments/archive/memory-system-01-initial/index.html" data-blob="e2913d69bcc74012c78b19261ab0295f9368de9a" href="../experiments/archive/memory-system-01-initial/" target="_blank" rel="noopener" aria-label="旅のきおく・初期版・履歴・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>旅のきおく・初期版</strong><span class="entry-status">履歴</span></span><span class="entry-note">初期の保存状態。</span><span class="entry-id">保存ID e2913d69</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div></section>
+<section class="catalog-section" id="world" aria-labelledby="world-heading" data-catalog-section><div class="section-heading"><h2 id="world-heading">フィールド・町の実験</h2><span class="section-count">5版</span></div><p class="section-intro">はじまり村と混ぜず、移動や町の描画を試した版として整理。</p><div class="catalog-cluster" data-catalog-group><h3>初期フィールド</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/early-world-walkable-01/index.html" data-blob="194423125b8ac597eb5e8dc2914fbbce0fc3bdc5" href="../experiments/archive/early-world-walkable-01/" target="_blank" rel="noopener" aria-label="初期フィールド・歩ける版 01・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>初期フィールド・歩ける版 01</strong><span class="entry-status">過去案</span></span><span class="entry-note">移動可能な初期フィールドの試作。</span><span class="entry-id">保存ID 19442312</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/early-world-sequenced-02/index.html" data-blob="2ff26fa20fdbd988f49fb74bae34954855086070" href="../experiments/archive/early-world-sequenced-02/" target="_blank" rel="noopener" aria-label="初期フィールド・進行構成版 02・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>初期フィールド・進行構成版 02</strong><span class="entry-status">過去案</span></span><span class="entry-note">初期フィールドの進行を構成した試作。</span><span class="entry-id">保存ID 2ff26fa2</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>町の描画・再設計</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/main-town-renderer-03/index.html" data-blob="9bab802f254651e4449742f5328cdfcc519de10c" href="../experiments/archive/main-town-renderer-03/" target="_blank" rel="noopener" aria-label="町の描画 03・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>町の描画 03</strong><span class="entry-status">過去案</span></span><span class="entry-note">町の描画方式の実験03。</span><span class="entry-id">保存ID 9bab802f</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/main-town-renderer-04/index.html" data-blob="8cb8c135efb4203098e9ed15d2cc483202cb649f" href="../experiments/archive/main-town-renderer-04/" target="_blank" rel="noopener" aria-label="町の描画 04・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>町の描画 04</strong><span class="entry-status">過去案</span></span><span class="entry-note">町の描画方式の実験04。</span><span class="entry-id">保存ID 8cb8c135</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="experiment" data-file="experiments/archive/main-town-redesign-05/index.html" data-blob="eac3d2a9ae4bfc9dba06097f9fe95eedbea9f285" href="../experiments/archive/main-town-redesign-05/" target="_blank" rel="noopener" aria-label="町の再設計 05・過去案・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>町の再設計 05</strong><span class="entry-status">過去案</span></span><span class="entry-note">町の構成を再設計した実験05。</span><span class="entry-id">保存ID eac3d2a9</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div></section>
+<section class="catalog-section" id="references" aria-labelledby="references-heading" data-catalog-section><div class="section-heading"><h2 id="references-heading">本編・比較の基準</h2><span class="section-count">4版</span></div><p class="section-intro">実験とは分けておく。本編もGolden Masterも、この整理では変更していない。</p><div class="catalog-cluster" data-catalog-group><h3>現在の本編と以前の基準</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="canonical" data-file="index.html" data-blob="8414577cd41ff1787a60419706c3426fbe43e6d0" href="../index.html" target="_blank" rel="noopener" aria-label="本編・本編・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>本編</strong><span class="entry-status">本編</span></span><span class="entry-note">実装正本の公開コピー。</span><span class="entry-id">保存ID 8414577c</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="history" data-file="candidate/l44-progression-safe.html" data-blob="1b960be90adce71bccf2cc442b2ca78e58a7c427" href="../candidate/l44-progression-safe.html" target="_blank" rel="noopener" aria-label="L44・進行安全版・保存候補・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>L44・進行安全版</strong><span class="entry-status">保存候補</span></span><span class="entry-note">以前の進行安全基準。</span><span class="entry-id">保存ID 1b960be9</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div>
+<div class="catalog-cluster" data-catalog-group><h3>Golden Master</h3><div class="entry-stack"><a class="catalog-entry" data-catalog-entry data-access="playable" data-status="golden" data-file="reference/golden-master/shiokaze/sio3-4.html" data-blob="e70d57b302c6ca170fda811d4d1f307c66a4c7fc" href="../reference/golden-master/shiokaze/sio3-4.html" target="_blank" rel="noopener" aria-label="シオカゼ・Golden Master・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>シオカゼ</strong><span class="entry-status">Golden Master</span></span><span class="entry-note">既存の景観・体験の比較基準。</span><span class="entry-id">保存ID e70d57b3</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry" data-catalog-entry data-access="playable" data-status="golden" data-file="reference/golden-master/snow/luminaria_snow_village_premium.html" data-blob="c0961f2bb572d68a2314215b6987b960707b8f34" href="../reference/golden-master/snow/luminaria_snow_village_premium.html" target="_blank" rel="noopener" aria-label="雪の村・Golden Master・別タブで開く"><span class="entry-main"><span class="entry-top"><strong>雪の村</strong><span class="entry-status">Golden Master</span></span><span class="entry-note">雪エリアの既存比較基準。</span><span class="entry-id">保存ID c0961f2b</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div></section>
+<section class="catalog-section" id="source-only" aria-labelledby="source-heading" data-catalog-section><div class="section-heading"><h2 id="source-heading">未公開・未復元の履歴</h2></div><p class="section-intro">元ファイルの存在を確認したもの。ここにあるものは「ゲームとして遊べる」とは扱わない。</p><div class="catalog-cluster" data-catalog-group><h3>GitHubにはあるもの</h3><div class="entry-stack"><a class="catalog-entry source-entry" data-catalog-entry data-access="source-only" href="https://github.com/xxxxra/lumimon/blob/65b9b694d1bda9ad9dd734a595787dd28d961e70/experiments/highland-observatory-settlement-08.html" target="_blank" rel="noopener"><span class="entry-main"><span class="entry-top"><strong>高台・観測集落 08</strong><span class="entry-status">GitHubのみ</span></span><span class="entry-note">GitHubの元ファイルのみ。ゲーム公開URLは未作成。</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry source-entry" data-catalog-entry data-access="source-only" href="https://github.com/xxxxra/lumimon-preview/blob/968653f8f5a5/site/experiments/start-highland-redesign-01/index.html" target="_blank" rel="noopener"><span class="entry-main"><span class="entry-top"><strong>高台 REDESIGN・最初の公開版</strong><span class="entry-status">未復元</span></span><span class="entry-note">過去の公開履歴は確認できるが、プレイ用URLを復元できていない。</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry source-entry" data-catalog-entry data-access="source-only" href="https://github.com/xxxxra/lumimon-preview/blob/804b85282b/site/experiments/start-village-home-grammar-01/index.html" target="_blank" rel="noopener"><span class="entry-main"><span class="entry-top"><strong>家の構成・中間調整版</strong><span class="entry-status">未復元</span></span><span class="entry-note">過去の公開履歴は確認できるが、プレイ用URLを復元できていない。</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+<a class="catalog-entry source-entry" data-catalog-entry data-access="source-only" href="https://github.com/xxxxra/lumimon-preview/commits/main/site/experiments/memory/index.html" target="_blank" rel="noopener"><span class="entry-main"><span class="entry-top"><strong>旅のきおく・更新履歴</strong><span class="entry-status">GitHub履歴</span></span><span class="entry-note">多数の途中修正が残る履歴。個々の画面をすべて公開したものではない。</span></span><span class="entry-arrow" aria-hidden="true">↗</span></a></div></div><div class="catalog-cluster" data-catalog-group><h3>制作準備中</h3><div class="entry-stack"><div class="catalog-entry pending-entry" data-catalog-entry data-access="not-built"><span class="entry-main"><span class="entry-top"><strong>新しいはじまりエリア REDESIGN #46</strong><span class="entry-status">制作準備中</span></span><span class="entry-note">Draft PR #46。ゲーム画面はまだないので、過去の版と混同しない。</span><a class="source-link" href="https://github.com/xxxxra/lumimon/pull/46" target="_blank" rel="noopener">GitHubの進行記録 ↗</a></span></div></div></div></section>
+<footer class="catalog-footer">このページが比較・確認の入口です。評価が決まっていない過去案を、自動的に完成版やGolden Masterにはしません。<br>保存されたゲームHTMLは31件。ほかにソースのみの履歴が4件あります。</footer>
+<script>
+(function(){
+  const input=document.getElementById('catalog-search');
+  const entries=[...document.querySelectorAll('[data-catalog-entry]')];
+  const count=document.getElementById('catalog-count');
+  const norm=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('ja').trim();
+  function filter(){
+    const q=norm(input.value);let showing=0;let games=0;
+    for(const item of entries){
+      const match=!q||norm(item.textContent+' '+(item.dataset.file||'')+' '+(item.dataset.status||'')).includes(q);
+      item.hidden=!match;if(match){showing++;if(item.dataset.access==='playable')games++;}
+    }
+    for(const cluster of document.querySelectorAll('[data-catalog-group]')){
+      cluster.hidden=!cluster.querySelector('[data-catalog-entry]:not([hidden])');
+    }
+    for(const section of document.querySelectorAll('[data-catalog-section]')){
+      section.hidden=!section.querySelector('[data-catalog-entry]:not([hidden])');
+    }
+    count.textContent=q?(showing? showing+'件が見つかったよ（ゲーム '+games+'件）':'一致する版は見つからなかったよ'):'31件のプレイ用保存版をすべて表示中';
+  }
+  input.addEventListener('input',filter);filter();
+})();
+</script>
 </main>
 </body>
 </html>
