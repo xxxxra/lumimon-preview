@@ -29,7 +29,7 @@ def expected_path(file):
 
 def blob_sha(file):
     raw = file.read_bytes()
-    return sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
+    return sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
 
 
 class Catalog(HTMLParser):
@@ -122,7 +122,7 @@ if catalog.playable.get(reviewed, {}).get("review") != "reviewed":
     catalog.problems.append(f"User-reviewed working baseline mislabeled: {reviewed}")
 
 if catalog.problems:
-    raise SystemExit("Preview catalog validation FAILED:\\n" + "\\n".join(
+    raise SystemExit("Preview catalog validation FAILED:\n" + "\n".join(
         " - " + error for error in catalog.problems
     ))
 
