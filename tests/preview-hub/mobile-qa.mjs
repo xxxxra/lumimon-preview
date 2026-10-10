@@ -23,11 +23,11 @@ try {
   await page.goto(TARGET, { waitUntil: "load" });
   assert.equal(await page.title(), "るみもん");
   assert.equal(await page.locator('a.main-action').count(), 1);
-  assert.equal(await page.locator('[data-access="playable"]').count(), 26);
+  assert.equal(await page.locator('[data-access="playable"]').count(), 27);
   assert.equal(await page.locator('[data-vault]').count(), 3);
   assert.equal(await page.locator('[data-vault][open]').count(), 0);
   assert.equal(await page.locator('[data-vault] [data-access="playable"]').count(), 21);
-  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
+  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 6);
   assert.equal(await page.locator('#archive-rejected').count(), 0);
   assert.equal(await page.locator('[data-status="rejected"]').count(), 0);
   assert.equal(await page.locator('[data-access="source-only"]').count(), 3);
@@ -35,7 +35,7 @@ try {
   assert.equal(await page.locator('#now [data-status="reviewed"]').count(), 1);
   assert.equal(await page.locator('#standards [data-status="golden"]').count(), 2);
   await page.screenshot({ path: OUT + "/01-mobile-cover.png" });
-  pass("first-glance-has-five-playables-plus-work", { visible: 5, archived: 21, excludedFromHub: 5 });
+  pass("first-glance-has-six-playables", { visible: 6, archived: 21, excludedFromHub: 5 });
 
   const bounds = await page.evaluate(() => {
     const vw = innerWidth;
@@ -74,7 +74,7 @@ try {
 
   await page.locator("#catalog-search").fill("");
   assert.equal(await page.locator('[data-vault][open]').count(), 0);
-  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
+  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 6);
   pass("search-clear-restores-closed-archives");
 
 
@@ -84,15 +84,15 @@ try {
   assert.equal(await page.locator("#catalog-count").textContent(), "一致する版は見つからなかったよ");
   await page.locator("#catalog-search").fill("");
   assert.equal(await page.locator('[data-vault][open]').count(), 0);
-  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 5);
-  assert.equal(await page.locator("#catalog-count").textContent(), "26件のプレイ用保存版を保管中");
+  assert.equal(await page.locator('[data-access="playable"]:visible').count(), 6);
+  assert.equal(await page.locator("#catalog-count").textContent(), "27件のプレイ用保存版を保管中");
   pass("user-dismissed-rejected-variants-do-not-appear-or-search");
 
   const desktop = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   const dpage = await desktop.newPage();
   dpage.on("pageerror", e => report.errors.push("desktop pageerror: " + e.message));
   await dpage.goto(TARGET, { waitUntil: "load" });
-  assert.equal(await dpage.locator('[data-access="playable"]:visible').count(), 5);
+  assert.equal(await dpage.locator('[data-access="playable"]:visible').count(), 6);
   const dw = await dpage.evaluate(() => ({ vw: innerWidth, docWidth: document.documentElement.scrollWidth }));
   assert.ok(dw.docWidth <= dw.vw + 1, "desktop horizontal overflow");
   await dpage.screenshot({ path: OUT + "/05-desktop-cover.png" });
